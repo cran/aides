@@ -18,9 +18,12 @@ knitr::opts_chunk$set(
 knitr::include_graphics("aides_logo.png")
 ```
 
-[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/aides)](https://cran.r-project.org/package=aides)
-[![Monthly Downloads](https://cranlogs.r-pkg.org:443/badges/aides)](https://cranlogs.r-pkg.org:443/badges/aides)
-[![metacran downloads](https://cranlogs.r-pkg.org/badges/grand-total/aides)](https://cran.r-project.org/package=aides)
+
+[![CRAN](https://img.shields.io/cran/v/aides?color=blue&label=CRAN&logo=r)](https://cran.r-project.org/package=aides)
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg?color=grassgreen)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+[![Licence](https://img.shields.io/badge/licence-GPL--3-brightgreen.svg?color=grassgreen)](https://www.gnu.org/licenses/gpl-3.0.en.html)
+[![Monthly Downloads](https://cranlogs.r-pkg.org:443/badges/aides?color=orange)](https://cranlogs.r-pkg.org:443/badges/aides)
+[![metacran downloads](https://cranlogs.r-pkg.org/badges/grand-total/aides?color=orange)](https://cran.r-project.org/package=aides)
 
 
 ## Brief overview
@@ -34,36 +37,41 @@ library(aides)
 
 ## Feature
 
-Briefly, *aides* consists of three functions.
+Briefly, *aides* consists of three tasks as follows:
+
+- **Disparity:** a newly proposed assumption regarding disparities in sample size analysis.
 
 - **Discordance:** a newly proposed assumption regarding discordance in rank of study size analysis.
-- **Disparity:** a newly proposed assumption regarding disparities in sample size analysis.
+
 - **Sequential analysis:** a method to examine the sufficiency of information size.
+
 
 
 ## Flow and functions
 
-Users can import their data and do relevant tests or graphics using functions in package *aides*. The present package consists of three functions listed as follows. 
+Users can import their data and do relevant tests or graphics using functions in package *aides*. The present package consists of four functions listed as follows. 
+
+**Disparity:**  `TestDisparity()`, `PlotDisparity()`.
 
 **Discordance:** `TestDiscordance()`.  
   
-**Disparity:**  `TestDisparity()`.
-
 **Sequential analysis:**  `DoSA()`.
 \
-
-#### Discordance:
-
-**Step 1.** Build or load data.
-
-**Step 2.** Do discordance test using function `TestDiscordance()`.
-
 
 #### Disparity:
 
 **Step 1.** Build or load data.
 
 **Step 2.** Do disparity test using function `TestDisparity()`.
+
+**Optional.** Illustrate user-defined disparity plot using function `PlotDisparity()`.
+
+
+#### Discordance:
+
+**Step 1.** Build or load data.
+
+**Step 2.** Do discordance test using function `TestDiscordance()`.
 
 
 #### Sequential analysis:

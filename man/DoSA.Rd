@@ -20,14 +20,21 @@ DoSA(
   sd2 = NULL,
   n2 = NULL,
   group = c("Group 1", "Group 2"),
+  ref = 2,
   prefer = "small",
   measure = "ES",
   model = "random",
   method = "DL",
+  pooling = "IV",
   alpha = 0.05,
   beta = 0.2,
-  AES = NULL,
-  plot = FALSE
+  PES = "post-hoc",
+  PV = "post-hoc",
+  adjust = "none",
+  plot = FALSE,
+  id = FALSE,
+  invert = FALSE,
+  BSB = FALSE
 )
 }
 \arguments{
@@ -63,6 +70,8 @@ included data.}
 
 \item{group}{CHARACTER for labeling two groups.}
 
+\item{ref}{NUMERIC values of 1 or 2 for indicating group 1 or 2 as reference.}
+
 \item{prefer}{CHARACTER of "small" and "large" for indicating which direction
 is beneficial effect in statistic test.}
 
@@ -72,7 +81,13 @@ is beneficial effect in statistic test.}
 to use random-effects model or fixed-effect model.}
 
 \item{method}{CHARACTER for indicating which estimator should be used in
-random-effects model.}
+random-effects model. In addition to the default "DL" method,
+the current version also supports "REML" and "PM" methods for
+calculating heterogeneity estimator.}
+
+\item{pooling}{CHARACTER for indicating which method has to be used for pooling
+binary data. Current version consists of "IV" and "MH" for
+binary data pooling.}
 
 \item{alpha}{NUMERIC value between 0 to 1 for indicating the assumed type I
 error.}
@@ -80,13 +95,50 @@ error.}
 \item{beta}{NUMERIC value between 0 to 1 for indicating the assumed type II
 error.}
 
-\item{AES}{NUMERIC value for indicating the assumed meaningful effect size.}
+\item{PES}{NUMERIC value for indicating the presumed meaningful effect size.}
 
-\item{plot}{LOGIC value for indicating whether to illustrate proportion of
-excessive cases plot.}
+\item{PV}{NUMERIC value for indicating the presumed variance of the
+meaningful effect size.}
+
+\item{adjust}{CHARACTER for indicating how to adjust expected information size.
+Current version consists of "none" and "D2" for the adjustment.}
+
+\item{plot}{LOGIC value for indicating whether to illustrate alpha-spending
+monitoring plot.}
+
+\item{id}{LOGIC value for indicating whether to label each data source.}
+
+\item{invert}{LOGIC value for indicating whether to invert plot.}
+
+\item{BSB}{LOGIC value for indicating whether to illustrate beta-spending
+boundaries.}
 }
 \value{
 \strong{DoSA()} returns a summary on the result of sequential analysis.
+\item{studies}{Numbers of studies included in the sequential analysis.}
+\item{AIS}{Acquired information size refers to the total sample size in the
+sequential analysis.}
+\item{alpha}{A numeric value of type I error for the sequential analysis.}
+\item{beta}{A numeric value of type II error for the sequential analysis.}
+\item{PES}{A numeric value of presumed meaningful effect size for the
+sequential analysis.}
+\item{Varian}{A numeric value of presumed variance of the meaningful effect
+size for the sequential analysis.}
+\item{Divers}{A numeric value to show diversity in the pooled analysis.}
+\item{AF}{A numeric value of adjustment factor.}
+\item{RIS.org}{A numeric value for required information size without adjustment.}
+\item{RIS.adj}{A numeric value for adjusted required information size.}
+\item{frag}{A vector of fraction of each study included in the sequential
+analysis.}
+\item{weight}{A vector of weight of each study included in the sequential
+analysis.}
+\item{es.cum}{A vector of cumulative effect size in the sequential analysis.}
+\item{se.cum}{A vector of standard error for the cumulative effect size in the
+sequential analysis.}
+\item{zval.cum}{A vector of cumulative z-value in the sequential analysis.}
+\item{asb}{A data frame of alpha-spending values for each study.}
+\item{aslb}{A numeric value for lower alpha-spending boundary.}
+\item{asub}{A numeric value for upper alpha-spending boundary.}
 }
 \description{
 \strong{DoSA()} is a function for conducting sequential analysis.
@@ -101,7 +153,7 @@ data("Fleiss1993cont")
  output <- DoSA(Fleiss1993cont, study, year,
                 m1 = mean.psyc, sd1 = sd.psyc, n1 = n.psyc,
                 m2 = mean.cont, sd2 = sd.cont, n2 = n.cont,
-                measure = "SMD", AES = 0.5,
+                measure = "SMD", PES = 0.5,
                 group = c("Psychotherapy", "Control"), plot = TRUE)
 
 ## End(Not run)

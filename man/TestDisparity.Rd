@@ -4,20 +4,55 @@
 \alias{TestDisparity}
 \title{Test assumption of disparities in sample size.}
 \usage{
-TestDisparity(n, study = NULL, coval = 0.1, plot = FALSE, color = "firebrick3")
+TestDisparity(
+  n,
+  data = NULL,
+  study = NULL,
+  time = NULL,
+  ctfLwr = 0.1,
+  ctfUpr = 0.3,
+  outlier = NULL,
+  plot = FALSE,
+  sort = NULL,
+  color = "firebrick3"
+)
 }
 \arguments{
 \item{n}{NUMERIC values for sample size (n) of each study.}
 
-\item{study}{STRINGS for study label of each study.}
+\item{data}{DATA FRAME consists of three columns for study label, study
+year, and sample size.}
 
-\item{coval}{NUMERIC value of cutting-off value for variability that should be
-smaller than zero.}
+\item{study}{CHARACTER for study labels.}
+
+\item{time}{NUMERIC values of time sequence.}
+
+\item{ctfLwr}{NUMERIC value of cutoff value for lower boundary of variability
+that should be larger than 0.}
+
+\item{ctfUpr}{NUMERIC value of cutoff value for upper boundary of variability
+that should be larger than \code{ctfLwr}.}
+
+\item{outlier}{CHARACTER for method of outlier detection. Current version
+consists of four methods, and three of them can be used for
+normal distribution. The rest one method can be used for data
+with non-normal distribution. For normal distribution data,
+outlier detection can be performed using 1.5 interquartile range
+method ("IQR"), z score method ("Z"), and generalized extreme
+studentized deviate method ("GESD"). For data with non-normal
+distribution, package \emph{aides} detects outliers using median
+absolute deviation method ("MAD"). Parameter \code{outlier} with
+argument "Default" automatically takes "GESD" or "MAD" based on
+data distribution.}
 
 \item{plot}{LOGIC value for indicating whether to illustrate proportion of
 excessive cases plot.}
 
-\item{color}{STRING of a color name for emphasizing the significant
+\item{sort}{CHARACTER of data sorting reference for disparity plot. Current
+version consists of "time", "size", and "excessive" for
+displaying observations on disparity plot of outlier(s).}
+
+\item{color}{CHARACTER of a color name for emphasizing the significant
 disparities in sample size.}
 }
 \value{
@@ -28,20 +63,19 @@ disparities in sample size.}
 }
 \examples{
 ## Not run:
-# 1. Import a dataset of study by Fleiss (1993)
+# 1. Import a dataset of study by Olkin (1995)
 library(meta)
-data("Fleiss1993bin")
-data <- Fleiss1993bin
+data("Olkin1995")
+data <- Olkin1995
 
 # 2. Calculate total sample size and standard error of each study
-data$n  <- data$n.asp + data$n.plac
-data$se <- sqrt((1 / data$d.asp) - (1 / data$n.asp) + (1 / data$d.plac) - (1 / data$n.plac))
+data$n  <- data$n.exp + data$n.cont
 
 # 3. Test disparities in sample sizes
-output <- TestDisparity(data$n, data$study)
+output <- TestDisparity(n, data, author, year)
 
 # 4. Illustrate disparity plot
-TestDisparity(data$n, data$study, plot = TRUE)
+TestDisparity(n, data, author, year, plot = TRUE)
 
 ## End(Not run)
 
@@ -49,6 +83,13 @@ TestDisparity(data$n, data$study, plot = TRUE)
 \references{
 Shapiro, S. S., & Wilk, M. B. (1965). An analysis of variance test for
 normality (complete samples). \strong{Biometrika}, \emph{52(3)}, 591-611.
+
+Rosner, B. (1983). Percentage Points for a Generalized ESD Many-Outlier
+Procedure. \strong{Technometrics}, \emph{25(2)}, 165-172.
+
+Rousseeuw, P. J.  & Croux C. (1993). Alternatives to the Median Absolute
+Deviation, \strong{Journal of the American Statistical Association}, \emph{88(424)},
+1273-1283. http://dx.doi.org/10.1080/01621459.1993.10476408
 
 Hendricks, W. A., & Robey, K. W. (1936). The sampling distribution of the
 coefficient of variation. \strong{The Annals of Mathematical Statistics}, \emph{7(3)},

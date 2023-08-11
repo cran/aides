@@ -5,9 +5,9 @@
 \title{Test assumption of discordance between theoretical and observed study scale.}
 \usage{
 TestDiscordance(
-  data,
   n,
   se,
+  data,
   study = NULL,
   method = "prop",
   coval = 0.2,
@@ -17,11 +17,12 @@ TestDiscordance(
 )
 }
 \arguments{
-\item{data}{DATA FRAME consists of three columns for study label, sample}
-
 \item{n}{NUMERIC values for sample size (n) of each study.}
 
 \item{se}{NUMERIC values for standard error of each study.}
+
+\item{data}{DATA FRAME consists of three columns for study label, sample
+size, and standard error.}
 
 \item{study}{CHARACTER for study label of each study.}
 

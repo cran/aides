@@ -6,6 +6,7 @@
 #' **TestDiscordance()** is a function for discordance in rank of study size analysis.
 #'
 #' @param data   DATA FRAME consists of three columns for study label, sample
+#'               size, and standard error.
 #' @param n      NUMERIC values for sample size (n) of each study.
 #' @param se     NUMERIC values for standard error of each study.
 #' @param study  CHARACTER for study label of each study.
@@ -57,9 +58,9 @@
 
 
 
-TestDiscordance <- function(data,
-                            n,
+TestDiscordance <- function(n,
                             se,
+                            data,
                             study  = NULL,
                             method = "prop",
                             coval  = 0.2,
@@ -100,6 +101,11 @@ TestDiscordance <- function(data,
                                ),
                         tot)
 
+  setPar <- par(no.readonly = TRUE)
+  on.exit(par(setPar))
+  infoLgcWarning <- getOption("warn")
+  options(warn = -1)
+  on.exit(options(warn = infoLgcWarning))
 
 
 
@@ -212,15 +218,15 @@ TestDiscordance <- function(data,
   }
 
   if (lgcData | lgcN | lgcSE | lgcStudy | lgcMethod | lgcCOVal | lgcTotVal | lgcPlot | lgcColor)
-    stop(paste(ifelse(lgcData, paste(infoStopData, "\n", "")),
-               ifelse(lgcN, paste(infoStopN, "\n", "")),
-               ifelse(lgcSE, paste(infoStopSE, "\n", "")),
-               ifelse(lgcStudy, paste(infoStopStudy, "\n", "")),
-               ifelse(lgcMethod, paste(infoStopMethod, "\n", "")),
-               ifelse(lgcCOVal, paste(infoStopCOVal, "\n", "")),
-               ifelse(lgcTotVal, paste(infoStopTotVal, "\n", "")),
-               ifelse(lgcPlot, paste(infoStopPlot, "\n", "")),
-               ifelse(lgcColor, paste(infoStopColor, "\n", "")),
+    stop(paste(ifelse(lgcData, paste(infoStopData, "\n", sep = ""), ""),
+               ifelse(lgcN, paste(infoStopN, "\n", sep = ""), ""),
+               ifelse(lgcSE, paste(infoStopSE, "\n", sep = ""), ""),
+               ifelse(lgcStudy, paste(infoStopStudy, "\n", sep = ""), ""),
+               ifelse(lgcMethod, paste(infoStopMethod, "\n", sep = ""), ""),
+               ifelse(lgcCOVal, paste(infoStopCOVal, "\n", sep = ""), ""),
+               ifelse(lgcTotVal, paste(infoStopTotVal, "\n", sep = ""), ""),
+               ifelse(lgcPlot, paste(infoStopPlot, "\n", sep = ""), ""),
+               ifelse(lgcColor, paste(infoStopColor, "\n", sep = ""), ""),
                sep = "")
          )
 

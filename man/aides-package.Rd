@@ -2,14 +2,36 @@
 % Please edit documentation in R/aides-package.R
 \docType{package}
 \name{aides-package}
-\alias{aides}
 \alias{aides-package}
-\title{aides: Aides for Pooled Analysis of Aggregate Data}
+\title{aides: Additive Information & Details of Evidence Synthesis}
 \description{
-A supportive collection of functions for pooled analysis of aggregate data. The current version supports users to test assumptions before relevant analysis of bias from study size and sequential analysis such as mentioned by Wetterslev, J., Jakobsen, J. C., & Gluud, C. (2017) \doi{10.1186/s12874-017-0315-7}.
-}
-\author{
-\strong{Maintainer}: Enoch Kang \email{y.enoch.kang@gmail.com} (\href{https://orcid.org/0000-0002-4903-942X}{ORCID}) [translator]
+\emph{aides}, an R package, has been proposed to be a useful collection of
+functions designed to offer supplementary information and intricacies in data
+synthesis and evidence evaluation. Essentially, package \emph{aides} serves
+as an aiding toolkit for pooled analysis of aggregated data, crafted with a
+vision to support a more inclusive and informed approach to evidence-based
+decision-making; and it is developed with values on flexibility, ease of use,
+and comprehensibility. Package \emph{aides} will be updated with advances of
+methodology of data synthesis and evidence evaluation. The initial goals are
+to simplify analysis process for both professionals and public users, and to
+support them in navigating the complexities of synthesized evidence. Long-term
+goal of package \emph{aides} is to support knowledge translation and decision-making
+based on the obtained information with comprehensive understanding of the
+evidence.
 
+Package \emph{aides} is currently is developed using \bold{R version 4.2.2 (2022-10-31 ucrt)}.
+Extra imported packages are as follows:
+
+\itemize{
+\item \href{https://cran.r-project.org/src/contrib/Archive/boot/boot_1.3-28.tar.gz}{\emph{boot} (version 1.3-28)}
+\item \href{https://cran.r-project.org/src/contrib/Archive/metafor/metafor_3.8-1.tar.gz}{\emph{metafor} (version 3.8-1)}
+\item \href{https://cran.r-project.org/src/contrib/Archive/meta/meta_6.2-1.tar.gz}{\emph{meta} (version 6.2-3)}
 }
-\keyword{internal}
+}
+\details{
+Current version consists of four functions, including three functions for
+examining fundamental assumptions before test of small-study effects (i.e.
+function \code{\link{TestDisparity}}, \code{\link{PlotDisparity}}, and \code{\link{TestDiscordance}})
+and a function for performing sequential analysis (i.e. \code{\link{DoSA}}).
+}
+\keyword{package}
