@@ -12,6 +12,7 @@ TestDisparity(
   ctfLwr = 0.1,
   ctfUpr = 0.3,
   outlier = NULL,
+  vrblty = NULL,
   plot = FALSE,
   sort = NULL,
   color = "firebrick3"
@@ -45,6 +46,14 @@ absolute deviation method ("MAD"). Parameter \code{outlier} with
 argument "Default" automatically takes "GESD" or "MAD" based on
 data distribution.}
 
+\item{vrblty}{CHARACTER for method of variability detection. Current version
+consists of two methods in terms of coefficient of variation
+(CV) and robust CV (RCV) using MAD. For normal distribution data,
+variability detection can be performed common CV method, and
+MAD based RCV could be used for data with non-normal distribution.
+Default argument for parameter \code{vrblty} is "CV" in order to
+detect variability.}
+
 \item{plot}{LOGIC value for indicating whether to illustrate proportion of
 excessive cases plot.}
 
@@ -57,6 +66,27 @@ disparities in sample size.}
 }
 \value{
 \strong{TestDisparity()} returns a summary of result regarding disparities in sample size.
+\item{disparity}{String to return the overall judgement of disparity test.}
+\item{w.normality}{A numeric value of statistics of normality test to show whether
+sample sizes among studies are distributed normally.}
+\item{p.normality}{A numeric value of p-value of normality test to show whether
+sample sizes among studies are distributed normally.}
+\item{outlier.method}{String shows outlier detection method used in disparity test.}
+\item{vrblty.method}{String shows variability detection method used in disparity test.}
+\item{outlier}{A data frame to show details of identified outliers (studies).}
+\item{prop.outlier}{A numeric value to show proportion of outliers among all studies.}
+\item{n.excessive}{A numeric value of excessive cases among all samples.}
+\item{p.prop.outlier}{A numeric value of p-value of disparity outlier test.}
+\item{lci.prop.outlier}{A numeric value for lower limit of 95\% confidence interval
+of disparity outlier test.}
+\item{uci.prop.outlier}{A numeric value for upper limit of 95\% confidence interval
+of disparity outlier test.}
+\item{variability}{A numeric value to show variability among all studies.}
+\item{p.variability}{A numeric value of p-value of disparity variability test.}
+\item{lci.variability}{A numeric value for lower limit of 95\% confidence interval of
+disparity variability test.}
+\item{uci.variability}{A numeric value for lower limit of 95\% confidence interval of
+disparity variability test.}
 }
 \description{
 \strong{TestDisparity()} is a function for disparities in sample size analysis.
@@ -87,6 +117,10 @@ normality (complete samples). \strong{Biometrika}, \emph{52(3)}, 591-611.
 Rosner, B. (1983). Percentage Points for a Generalized ESD Many-Outlier
 Procedure. \strong{Technometrics}, \emph{25(2)}, 165-172.
 
+Leys, C., Ley, C., Klein, O., Bernard, P., & Licata, L. (2013). Detecting
+outliers: Do not use standard deviation around the mean, use absolute deviation
+around the median. \strong{Journal of experimental social psychology}, \emph{49(4)}, 764-766.
+
 Rousseeuw, P. J.  & Croux C. (1993). Alternatives to the Median Absolute
 Deviation, \strong{Journal of the American Statistical Association}, \emph{88(424)},
 1273-1283. http://dx.doi.org/10.1080/01621459.1993.10476408
@@ -99,7 +133,7 @@ Sokal, R. R., & Braumann, C. A. (1980). Significance tests for coefficients
 of variation and variability profiles. \strong{Systematic Biology}, \emph{29(1)}, 50-66.
 }
 \seealso{
-\code{\link{TestDiscordance}}
+\code{\link{TestDiscordance}}, \code{\link{PlotDisparity}}
 }
 \author{
 Enoch Kang

@@ -5,27 +5,40 @@
 #' @description
 #' **PlotDisparity()** is a function for illustrating graphics of disparities in sample size analysis.
 #'
-#' @param object    OBJECT of the disparity test output in **disparity** class.
-#' @param which     CHARACTER for indicating type of disparity plot. Current
-#'                  version consists of five plots, including disparity plot of
-#'                  variability and outliers based on:
-#'                  (1) coefficient of variance ("CV"),
-#'                  (2) IQR-outlier ("IQR"),
-#'                  (3) Z-outlier ("Z"),
-#'                  (4) GESD-outlier ("GESD"),
-#'                  (5) MAD-outlier ("MAD").
-#' @param lgcTtl    LOGIC value for indicating whether to show main title.
-#' @param lgcTtlX   LOGIC value for indicating whether to show title on axis X.
-#' @param lgcTtlY   LOGIC value for indicating whether to show title on axis Y.
-#' @param lgcLgnd   LOGIC value for indicating whether to show legend.
-#' @param lgcLblZn  LOGIC value for indicating whether to show labels of
-#'                  variability zone.
-#' @param szFntTtl  NUMERIC value for indicating font size of main title.
-#' @param szFntTtlX NUMERIC value for indicating font size of title on axis X.
-#' @param szFntTtlY NUMERIC value for indicating font size of title on axis Y.
-#' @param szFntAxsX NUMERIC value(s) for indicating font size of study label(s).
-#' @param szFntAxsY NUMERIC value for indicating font size of scale on axis Y.
-#' @param szFntLgnd NUMERIC value for indicating font size of legend.
+#' @param object     OBJECT of the disparity test output in **disparity** class.
+#' @param which      CHARACTER for indicating type of disparity plot. Current
+#'                   version consists of five plots, including disparity plot of
+#'                   variability and outliers based on:
+#'                   (1) coefficient of variance ("CV"),
+#'                   (2) IQR-outlier ("IQR"),
+#'                   (3) Z-outlier ("Z"),
+#'                   (4) GESD-outlier ("GESD"),
+#'                   (5) MAD-outlier ("MAD").
+#' @param lgcTtl     LOGIC value for indicating whether to show main title.
+#' @param lgcTtlX    LOGIC value for indicating whether to show title on axis X.
+#' @param lgcTtlY    LOGIC value for indicating whether to show title on axis Y.
+#' @param lgcLgnd    LOGIC value for indicating whether to show legend.
+#' @param lgcDtls    LOGIC value for indicating whether to show full information
+#'                   of the disparity test rather than plot-related information.
+#' @param lgcLblZn   LOGIC value for indicating whether to show labels of
+#'                   variability zone.
+#' @param txtLbl     CHARACTER for indicating numeric information of each study
+#'                   disparity plot (outlier). Current version provides options
+#'                   for no label (NULL), numbers of cases ("n"), numbers of
+#'                   excessive cases ("n.excessive"), and proportion of excessive
+#'                   cases ("prop.excessive").
+#' @param szFntTtl   NUMERIC value for indicating font size of main title.
+#' @param szFntTtlX  NUMERIC value for indicating font size of title on axis X.
+#' @param szFntTtlY  NUMERIC value for indicating font size of title on axis Y.
+#' @param szFntAxsX  NUMERIC value(s) for indicating font size of study label(s).
+#' @param szFntEC    NUMERIC value(s) for indicating font size of study label(s)
+#'                   for those studies with excessive case.
+#' @param szFntAxsY  NUMERIC value for indicating font size of scale on axis Y.
+#' @param szFntLgnd  NUMERIC value for indicating font size of legend.
+#' @param szFntLbl   NUMERIC value(s) for indicating font size of label(s) for
+#'                   observed value(s).
+#' @param szFntLblEC NUMERIC value(s) for indicating font size of label(s) for
+#'                   observed value(s) with excessive case.
 #' @param szPnt     NUMERIC value(s) for indicating size(s) of observed point(s).
 #' @param szPntEC   NUMERIC value for indicating size of observed point(s)
 #'                  with excessive cases.
@@ -53,6 +66,8 @@
 #' @param clrVrtnM  CHARACTER of a color name for moderate variability zone.
 #' @param clrVrtnH  CHARACTER of a color name for high variability zone.
 #' @param clrLblZn  CHARACTER of color name(s) for variability zone(s).
+#' @param clrLbl    CHARACTER of color name(s) for observed value(s).
+#' @param clrLblEC  CHARACTER of color name(s) for observed value(s) of studies with excessive cases.
 #' @param clrPnt    CHARACTER of color name(s) for every observed point.
 #' @param clrPntEC  CHARACTER of a color name for proportion of excessive cases.
 #' @param clrPntNEC CHARACTER of a color name for observed point without
@@ -61,6 +76,12 @@
 #'                  case.
 #' @param clrLnEC   CHARACTER of color name for vertical line(s) of excessive
 #'                  case(s).
+#' @param clrLnCV   CHARACTER of color name for line of the association between
+#'                  standard deviation and cases.
+#' @param anglAxsX  NUMERIC value between 0 and 360 for indicating angle of study
+#'                  labels on x axis on the disparity plot (outlier).
+#' @param anglLbl   NUMERIC value between 0 and 360 for indicating angle of
+#'                  observed values on the disparity plot (outlier).
 #' @param sort      CHARACTER of data sorting reference for disparity plot.
 #'                  Currentversion consists of "time", "size", and "excessive"
 #'                  for displaying observations on disparity plot of outlier(s).
@@ -97,43 +118,53 @@
 
 
 PlotDisparity <- function(object,
-                          which     = NULL,
-                          lgcTtl    = TRUE,
-                          lgcTtlX   = TRUE,
-                          lgcTtlY   = TRUE,
-                          lgcLgnd   = TRUE,
-                          lgcLblZn  = TRUE,
-                          szFntTtl  = NULL,
-                          szFntTtlX = NULL,
-                          szFntTtlY = NULL,
-                          szFntAxsX = NULL,
-                          szFntAxsY = NULL,
-                          szFntLgnd = NULL,
-                          szPnt     = NULL,
-                          szPntEC   = NULL,
-                          szPntNEC  = NULL,
-                          typPltCV  = NULL,
-                          typPnt    = NULL,
-                          typPntEC  = NULL,
-                          typPntNEC = NULL,
-                          typLn0    = NULL,
-                          typLnEC   = NULL,
-                          clrTtl    = NULL,
-                          clrTtlX   = NULL,
-                          clrTtlY   = NULL,
-                          clrAxsX   = NULL,
-                          clrAxsY   = NULL,
-                          clrLgnd   = NULL,
-                          clrVrtnL  = NULL,
-                          clrVrtnM  = NULL,
-                          clrVrtnH  = NULL,
-                          clrLblZn  = NULL,
-                          clrPnt    = NULL,
-                          clrPntEC  = NULL,
-                          clrPntNEC = NULL,
-                          clrLn0    = NULL,
-                          clrLnEC   = NULL,
-                          sort      = NULL) {
+                          which      = NULL,
+                          lgcTtl     = TRUE,
+                          lgcTtlX    = TRUE,
+                          lgcTtlY    = TRUE,
+                          lgcLgnd    = TRUE,
+                          lgcDtls    = FALSE,
+                          lgcLblZn   = TRUE,
+                          txtLbl     = NULL,
+                          szFntTtl   = NULL,
+                          szFntTtlX  = NULL,
+                          szFntTtlY  = NULL,
+                          szFntAxsX  = NULL,
+                          szFntEC    = NULL,
+                          szFntAxsY  = NULL,
+                          szFntLgnd  = NULL,
+                          szFntLbl   = NULL,
+                          szFntLblEC = NULL,
+                          szPnt      = NULL,
+                          szPntEC    = NULL,
+                          szPntNEC   = NULL,
+                          typPltCV   = NULL,
+                          typPnt     = NULL,
+                          typPntEC   = NULL,
+                          typPntNEC  = NULL,
+                          typLn0     = NULL,
+                          typLnEC    = NULL,
+                          clrTtl     = NULL,
+                          clrTtlX    = NULL,
+                          clrTtlY    = NULL,
+                          clrAxsX    = NULL,
+                          clrAxsY    = NULL,
+                          clrLgnd    = NULL,
+                          clrVrtnL   = NULL,
+                          clrVrtnM   = NULL,
+                          clrVrtnH   = NULL,
+                          clrLblZn   = NULL,
+                          clrLbl     = NULL,
+                          clrLblEC   = NULL,
+                          clrPnt     = NULL,
+                          clrPntEC   = NULL,
+                          clrPntNEC  = NULL,
+                          clrLn0     = NULL,
+                          clrLnEC    = NULL,
+                          clrLnCV    = NULL,
+                          anglAxsX   = NULL,
+                          anglLbl    = NULL,
+                          sort       = NULL) {
 
 
   # 01. CHECK core arguments -----
@@ -141,7 +172,7 @@ PlotDisparity <- function(object,
                          FALSE, TRUE)
 
   if (lgcObject) {
-    infoStopObject <- 'Argument "object" must be a `TestDisparity()` output that is an object in **disparity** class.'
+    infoStopObject <- 'Argument for parameter `object` must be a `TestDisparity()` output that is an object in **disparity** class.'
     }
 
 
@@ -156,7 +187,7 @@ PlotDisparity <- function(object,
   # 03. DEFINE core data -----
 
   dataDsprty           <- object$data.disparity
-  infoNumStud          <- nrow(dataDsprty)
+  infoNumStdy          <- nrow(dataDsprty)
   infoCases            <- sum(dataDsprty$n)
   infoMCases           <- mean(dataDsprty$n)
   infoSDCases          <- sd(dataDsprty$n)
@@ -200,9 +231,19 @@ PlotDisparity <- function(object,
   infoMSDCVH           <- -infoCasesMSD3CVL / infoCVH #(infoMCases - infoCV0.3)
   infoPSDCVH           <- infoCasesMSD3CVL / infoCVH #(infoMCases - infoCV0.3)
 
+  infoVrblty           <- object$variability
+  infoPValVrblty       <- object$p.variability
+  infoLCIVrblty        <- object$lci.variability
+  infoUCIVrblty        <- object$uci.variability
+
   infoUnbsCV           <- object$cv.unbiased
   infoStatsT           <- object$t.cv
   infoPValCV           <- object$p.cv
+
+  infoRCVMAD           <- object$cv.robust.MAD
+  infoPvaRCVMAD        <- object$p.cv.robust.MAD
+  infoLCIRCVMAD        <- object$lci.cv.robust.MAD
+  infoUCIRCVMAD        <- object$uci.cv.robust.MAD
 
   setPar <- par(no.readonly = TRUE)
   on.exit(par(setPar))
@@ -231,16 +272,27 @@ PlotDisparity <- function(object,
   lgcLgcLgnd   <- ifelse(is.logical(lgcLgnd),
                          FALSE, TRUE)
 
+  lgcLgcDtls   <- ifelse(is.logical(lgcDtls),
+                         FALSE, TRUE)
+
   lgcLgcLblZn  <- ifelse(is.logical(lgcLblZn),
                          FALSE, TRUE)
+
+  lgcTxtLbl    <- ifelse(is.null(txtLbl),
+                         FALSE,
+                         ifelse(txtLbl %in% c("n",
+                                              "n.excessive",
+                                              "prop.excessive"),
+                                FALSE, TRUE)
+                         )
 
   lgcSzFntTtl  <- ifelse(is.null(szFntTtl),
                          FALSE,
                          ifelse(length(szFntTtl) != 1,
                                 TRUE,
-                                ifelse(isFALSE(is.numeric(szFntTtl)),
+                                ifelse(base::isFALSE(is.numeric(szFntTtl)),
                                        TRUE,
-                                       ifelse(isFALSE(szFntTtl >= 0),
+                                       ifelse(base::isFALSE(szFntTtl >= 0),
                                               TRUE,
                                               ifelse(szFntTtl < 6,
                                                      FALSE, TRUE))))
@@ -250,9 +302,9 @@ PlotDisparity <- function(object,
                          FALSE,
                          ifelse(length(szFntTtlX) != 1,
                                 TRUE,
-                                ifelse(isFALSE(is.numeric(szFntTtlX)),
+                                ifelse(base::isFALSE(is.numeric(szFntTtlX)),
                                        TRUE,
-                                       ifelse(isFALSE(szFntTtlX >= 0),
+                                       ifelse(base::isFALSE(szFntTtlX >= 0),
                                               TRUE,
                                               ifelse(szFntTtlX < 6,
                                                      FALSE, TRUE))))
@@ -262,9 +314,9 @@ PlotDisparity <- function(object,
                          FALSE,
                          ifelse(length(szFntTtlY) != 1,
                                 TRUE,
-                                ifelse(isFALSE(is.numeric(szFntTtlY)),
+                                ifelse(base::isFALSE(is.numeric(szFntTtlY)),
                                        TRUE,
-                                       ifelse(isFALSE(szFntTtlY >= 0),
+                                       ifelse(base::isFALSE(szFntTtlY >= 0),
                                               TRUE,
                                               ifelse(szFntTtlY < 6,
                                                      FALSE, TRUE))))
@@ -272,9 +324,9 @@ PlotDisparity <- function(object,
 
   lgcSzFntAxsX <- ifelse(is.null(szFntAxsX),
                          FALSE,
-                         ifelse(isFALSE(length(szFntAxsX) == 1 | length(szFntAxsX) == infoNumStud),
+                         ifelse(base::isFALSE(length(szFntAxsX) == 1 | length(szFntAxsX) == infoNumStdy),
                                 TRUE,
-                                ifelse(isFALSE(is.numeric(szFntAxsX)),
+                                ifelse(base::isFALSE(is.numeric(szFntAxsX)),
                                        TRUE,
                                        ifelse(FALSE %in% (szFntAxsX >= 0),
                                               TRUE,
@@ -282,11 +334,23 @@ PlotDisparity <- function(object,
                                                      TRUE, FALSE))))
                          )
 
+  lgcSzFntEC <- ifelse(is.null(szFntEC),
+                         FALSE,
+                         ifelse(length(szFntEC) != 1,
+                                TRUE,
+                                ifelse(base::isFALSE(is.numeric(szFntEC)),
+                                       TRUE,
+                                       ifelse(base::isFALSE(szFntEC >= 0),
+                                              TRUE,
+                                              ifelse(szFntEC < 6,
+                                                     FALSE, TRUE))))
+                         )
+
   lgcSzFntAxsY <- ifelse(is.null(szFntAxsY),
                          FALSE,
                          ifelse(length(szFntAxsY) != 1,
                                 TRUE,
-                                ifelse(isFALSE(is.numeric(szFntAxsY)),
+                                ifelse(base::isFALSE(is.numeric(szFntAxsY)),
                                        TRUE,
                                        ifelse(FALSE %in% (szFntAxsY >= 0),
                                               TRUE,
@@ -298,7 +362,7 @@ PlotDisparity <- function(object,
                          FALSE,
                          ifelse(length(szFntLgnd) != 1,
                                 TRUE,
-                                ifelse(isFALSE(is.numeric(szFntLgnd)),
+                                ifelse(base::isFALSE(is.numeric(szFntLgnd)),
                                        TRUE,
                                        ifelse(FALSE %in% (szFntLgnd >= 0),
                                               TRUE,
@@ -306,11 +370,35 @@ PlotDisparity <- function(object,
                                                      TRUE, FALSE))))
                          )
 
+  lgcSzFntLbl <- ifelse(is.null(szFntLbl),
+                         FALSE,
+                         ifelse(length(szFntLbl) != 1,
+                                TRUE,
+                                ifelse(base::isFALSE(is.numeric(szFntLbl)),
+                                       TRUE,
+                                       ifelse(FALSE %in% (szFntLbl >= 0),
+                                              TRUE,
+                                              ifelse(FALSE %in% (szFntLbl < 6),
+                                                     TRUE, FALSE))))
+                         )
+
+  lgcSzFntLblEC <- ifelse(is.null(szFntLblEC),
+                          FALSE,
+                          ifelse(length(szFntLblEC) != 1,
+                                 TRUE,
+                                 ifelse(base::isFALSE(is.numeric(szFntLblEC)),
+                                        TRUE,
+                                        ifelse(FALSE %in% (szFntLblEC >= 0),
+                                               TRUE,
+                                               ifelse(FALSE %in% (szFntLblEC < 6),
+                                                      TRUE, FALSE))))
+                          )
+
   lgcSzPnt     <- ifelse(is.null(szPnt),
                          FALSE,
-                         ifelse(isFALSE(length(szPnt) == 1 | length(szPnt) == infoNumStud),
+                         ifelse(base::isFALSE(length(szPnt) == 1 | length(szPnt) == infoNumStdy),
                                 TRUE,
-                                ifelse(isFALSE(is.numeric(szPnt)),
+                                ifelse(base::isFALSE(is.numeric(szPnt)),
                                        TRUE,
                                        ifelse(FALSE %in% (szPnt >= 0),
                                               TRUE,
@@ -322,7 +410,7 @@ PlotDisparity <- function(object,
                          FALSE,
                          ifelse(length(szPntEC) != 1,
                                 TRUE,
-                                ifelse(isFALSE(is.numeric(szPntEC)),
+                                ifelse(base::isFALSE(is.numeric(szPntEC)),
                                        TRUE,
                                        ifelse(FALSE %in% (szPntEC >= 0),
                                               TRUE,
@@ -334,7 +422,7 @@ PlotDisparity <- function(object,
                          FALSE,
                          ifelse(length(szPntNEC) != 1,
                                 TRUE,
-                                ifelse(isFALSE(is.numeric(szPntNEC)),
+                                ifelse(base::isFALSE(is.numeric(szPntNEC)),
                                        TRUE,
                                        ifelse(FALSE %in% (szPntNEC >= 0),
                                               TRUE,
@@ -350,7 +438,7 @@ PlotDisparity <- function(object,
 
   lgcTypPnt    <- ifelse(is.null(typPnt),
                          FALSE,
-                         ifelse(isFALSE(length(typPnt) == 1 | length(typPnt) == infoNumStud),
+                         ifelse(base::isFALSE(length(typPnt) == 1 | length(typPnt) == infoNumStdy),
                                 TRUE,
                                 ifelse(FALSE %in% (typPnt %in% c(1:5)),
                                        TRUE, FALSE))
@@ -414,7 +502,7 @@ PlotDisparity <- function(object,
 
   lgcClrAxsX   <- ifelse(is.null(clrAxsX),
                          FALSE,
-                         ifelse(isFALSE(length(clrAxsX) == 1  | length(clrAxsX) == infoNumStud),
+                         ifelse(base::isFALSE(length(clrAxsX) == 1  | length(clrAxsX) == infoNumStdy),
                                 TRUE,
                                 ifelse(FALSE %in% (clrAxsX %in% colors()),
                                        TRUE, FALSE))
@@ -438,7 +526,7 @@ PlotDisparity <- function(object,
 
   lgcClrVrtnL    <- ifelse(is.null(clrVrtnL),
                          FALSE,
-                         ifelse(isFALSE(length(clrVrtnL) == 1),
+                         ifelse(base::isFALSE(length(clrVrtnL) == 1),
                                 TRUE,
                                 ifelse(FALSE %in% (clrVrtnL %in% colors()),
                                        TRUE, FALSE))
@@ -446,7 +534,7 @@ PlotDisparity <- function(object,
 
   lgcClrVrtnM    <- ifelse(is.null(clrVrtnM),
                          FALSE,
-                         ifelse(isFALSE(length(clrVrtnM) == 1),
+                         ifelse(base::isFALSE(length(clrVrtnM) == 1),
                                 TRUE,
                                 ifelse(FALSE %in% (clrVrtnM %in% colors()),
                                        TRUE, FALSE))
@@ -454,7 +542,7 @@ PlotDisparity <- function(object,
 
   lgcClrVrtnH    <- ifelse(is.null(clrVrtnH),
                          FALSE,
-                         ifelse(isFALSE(length(clrVrtnH) == 1),
+                         ifelse(base::isFALSE(length(clrVrtnH) == 1),
                                 TRUE,
                                 ifelse(FALSE %in% (clrVrtnH %in% colors()),
                                        TRUE, FALSE))
@@ -462,15 +550,31 @@ PlotDisparity <- function(object,
 
   lgcClrLblZn    <- ifelse(is.null(clrLblZn),
                          FALSE,
-                         ifelse(isFALSE(length(clrLblZn) == 1 | length(clrLblZn) == 3),
+                         ifelse(base::isFALSE(length(clrLblZn) == 1 | length(clrLblZn) == 3),
                                 TRUE,
                                 ifelse(FALSE %in% (clrLblZn %in% colors()),
                                        TRUE, FALSE))
                          )
 
+  lgcClrLbl     <- ifelse(is.null(clrLbl),
+                         FALSE,
+                         ifelse(base::isFALSE(length(clrLbl) == 1 | length(clrLbl) == infoNumStdy),
+                                TRUE,
+                                ifelse(FALSE %in% (clrLbl %in% colors()),
+                                       TRUE, FALSE))
+                         )
+
+  lgcClrLblEC  <- ifelse(is.null(clrLblEC),
+                         FALSE,
+                         ifelse(length(clrLblEC) != 1,
+                                TRUE,
+                                ifelse(FALSE %in% (clrLblEC %in% colors()),
+                                       TRUE, FALSE))
+                         )
+
   lgcClrPnt    <- ifelse(is.null(clrPnt),
                          FALSE,
-                         ifelse(isFALSE(length(clrPnt) == 1 | length(clrPnt) == infoNumStud),
+                         ifelse(base::isFALSE(length(clrPnt) == 1 | length(clrPnt) == infoNumStdy),
                                 TRUE,
                                 ifelse(FALSE %in% (clrPnt %in% colors()),
                                        TRUE, FALSE))
@@ -508,190 +612,266 @@ PlotDisparity <- function(object,
                                        TRUE, FALSE))
                          )
 
-  lgcSort   <- ifelse(is.null(sort), FALSE,
-                      ifelse(length(sort) == 1,
-                             ifelse(sort %in% c("time", "size", "excessive"),
-                                    FALSE, TRUE),
-                             TRUE)
-                      )
+  lgcClrLnCV   <- ifelse(is.null(clrLnCV),
+                         FALSE,
+                         ifelse(length(clrLnCV) != 1,
+                                TRUE,
+                                ifelse(FALSE %in% (clrLnCV %in% colors()),
+                                       TRUE, FALSE))
+                         )
+
+  lgcAnglAxsX  <- ifelse(is.null(anglAxsX),
+                         FALSE,
+                         ifelse(length(anglAxsX) != 1,
+                                TRUE,
+                                ifelse(anglAxsX < 0,
+                                       TRUE,
+                                       ifelse(anglAxsX > 360,
+                                                    TRUE, FALSE)))
+                         )
+
+  lgcAnglLbl   <- ifelse(is.null(anglLbl),
+                         FALSE,
+                         ifelse(length(anglLbl) != 1,
+                                TRUE,
+                                ifelse(anglLbl < 0,
+                                       TRUE,
+                                       ifelse(anglLbl > 360,
+                                              TRUE, FALSE)))
+                         )
+
+  lgcSort      <- ifelse(is.null(sort), FALSE,
+                         ifelse(length(sort) == 1,
+                                ifelse(sort %in% c("time", "size", "excessive"),
+                                       FALSE, TRUE),
+                                TRUE)
+                         )
 
   if (lgcWhich) {
-    infoStopWhich     <- 'Argument "which" must be characters ("CV", "IQR", "Z", "GESD", or "MAD") for indicating type of disparity plot.'
+    infoStopWhich     <- 'Argument for parameter `which` must be characters ("CV", "RCV", "IQR", "Z", "GESD", or "MAD") for indicating type of disparity plot.'
     }
 
   if (lgcLgcTtl) {
-    infoStopTtl       <- 'Argument "lgcTtl" must be a logical value in terms of "TRUE" or "FALSE" for indicating whether to show main title on the plot.'
+    infoStopTtl       <- 'Argument for parameter `lgcTtl` must be a logical value in terms of "TRUE" or "FALSE" for indicating whether to show main title on the plot.'
     }
 
   if (lgcLgcTtlX) {
-    infoStopTtlX      <- 'Argument "lgcTtlX" must be a logical value in terms of "TRUE" or "FALSE" for indicating whether to show title of axis X.'
+    infoStopTtlX      <- 'Argument for parameter `lgcTtlX` must be a logical value in terms of "TRUE" or "FALSE" for indicating whether to show title of axis X.'
     }
 
   if (lgcLgcTtlY) {
-    infoStopTtlY      <- 'Argument "lgcTtlY" must be a logical value in terms of "TRUE" or "FALSE" for indicating whether to show title of axis Y.'
+    infoStopTtlY      <- 'Argument for parameter `lgcTtlY` must be a logical value in terms of "TRUE" or "FALSE" for indicating whether to show title of axis Y.'
     }
 
   if (lgcLgcLgnd) {
-    infoStopLgnd      <- 'Argument "lgcLgnd" must be a logical value in terms of "TRUE" or "FALSE" for indicating whether to show legend on the plot.'
+    infoStopLgnd      <- 'Argument for parameter `lgcLgnd` must be a logical value in terms of "TRUE" or "FALSE" for indicating whether to show legend on the plot.'
+    }
+
+  if (lgcLgcDtls) {
+    infoStopDtls      <- 'Argument for parameter `lgcDtls` must be a logical value in terms of "TRUE" or "FALSE" for indicating whether to show full summary legend on the plot.'
     }
 
   if (lgcLgcLblZn) {
-    infoStopLblZn     <- 'Argument "lgcLblZn" must be a logical value in terms of "TRUE" or "FALSE" for indicating whether to show labels of variability zone.'
+    infoStopLblZn     <- 'Argument for parameter `lgcLblZn` must be a logical value in terms of "TRUE" or "FALSE" for indicating whether to show labels of variability zone.'
+    }
+
+  if (lgcTxtLbl) {
+    infoStopTxtLbl    <- 'Argument for parameter `txtLbl` must be characters ("n", "n.excessive", or "prop.excessive") for indicating which information of each study would like to be shown on disparity plot (outlier).'
     }
 
   if (lgcSzFntTtl) {
-    infoStopSzFntTtl  <- 'Argument "szFntTtl" must be a numeric value between 0 and 5 for indicating font size of the main title.'
+    infoStopSzFntTtl  <- 'Argument for parameter `szFntTtl` must be a numeric value between 0 and 5 for indicating font size of the main title.'
     }
 
   if (lgcSzFntTtlX) {
-    infoStopSzFntTtlX <- 'Argument "szFntTtlX" must be a numeric value between 0 and 5 for indicating font size of the title on axis X.'
+    infoStopSzFntTtlX <- 'Argument for parameter `szFntTtlX` must be a numeric value between 0 and 5 for indicating font size of the title on axis X.'
     }
 
   if (lgcSzFntTtlY) {
-    infoStopSzFntTtlY <- 'Argument "szFntTtlY" must be a numeric value between 0 and 5 for indicating font size of the title on axis Y.'
+    infoStopSzFntTtlY <- 'Argument for parameter `szFntTtlY` must be a numeric value between 0 and 5 for indicating font size of the title on axis Y.'
     }
 
   if (lgcSzFntAxsX) {
-    infoStopSzFntAxsX <- 'Argument "szFntAxsX" must be numeric value(s) between 0 and 5 for indicating font size of axis X.'
+    infoStopSzFntAxsX <- 'Argument for parameter `szFntAxsX` must be numeric value(s) between 0 and 5 for indicating font size of study label on axis X.'
+    }
+
+  if (lgcSzFntEC) {
+    infoStopSzFntEC   <- 'Argument for parameter `szFntEC` must be a numeric value between 0 and 5 for indicating font size of study label on axis X for those studies with excessive cases.'
     }
 
   if (lgcSzFntAxsY) {
-    infoStopSzFntAxsY <- 'Argument "szFntAxsY" must be a numeric value between 0 and 5 for indicating font size of axis X.'
+    infoStopSzFntAxsY <- 'Argument for parameter `szFntAxsY` must be a numeric value between 0 and 5 for indicating font size of axis Y.'
     }
 
   if (lgcSzFntLgnd) {
-    infoStopSzFntLgnd <- 'Argument "szFntLgnd" must be a numeric value between 0 and 5 for indicating font size of plot legend.'
+    infoStopSzFntLgnd <- 'Argument for parameter `szFntLgnd` must be a numeric value between 0 and 5 for indicating font size of plot legend.'
+    }
+
+  if (lgcSzFntLbl) {
+    infoStopSzFntLbl  <- 'Argument for parameter `szFntLbl` must be a numeric value between 0 and 5 for indicating font size of observed values.'
+    }
+
+  if (lgcSzFntLblEC) {
+    infoStopSzFntLblEC <- 'Argument "szFntLblEC" must be a numeric value between 0 and 5 for indicating font size of observed values among the studies with excessive cases.'
     }
 
   if (lgcSzPnt) {
-    infoStopSzPnt     <- 'Argument "szPnt" must be numeric value(s) between 0 and 5 for indicating size(s) of observed point(s).'
+    infoStopSzPnt     <- 'Argument for parameter `szPnt` must be numeric value(s) between 0 and 5 for indicating size(s) of observed point(s).'
     }
 
   if (lgcSzPntEC) {
-    infoStopSzPntEC   <- 'Argument "szPntEC" must be a numeric value between 0 and 5 for indicating size of observed point(s) with excessive cases.'
+    infoStopSzPntEC   <- 'Argument for parameter `szPntEC` must be a numeric value between 0 and 5 for indicating size of observed point(s) with excessive cases.'
     }
 
   if (lgcSzPntNEC) {
-    infoStopSzPntNEC  <- 'Argument "szPntNEC" must be a numeric value between 0 and 5 for indicating size of observed point(s) without excessive cases.'
+    infoStopSzPntNEC  <- 'Argument for parameter `szPntNEC` must be a numeric value between 0 and 5 for indicating size of observed point(s) without excessive cases.'
     }
 
   if (lgcTypPltCV) {
-    infoStopTypPltCV  <- 'Argument "typPltCV" must be characters ("half" or "full") for indicating sub-type of disparity plot for variability.'
+    infoStopTypPltCV  <- 'Argument for parameter `typPltCV` must be characters ("half" or "full") for indicating sub-type of disparity plot for variability.'
     }
 
   if (lgcTypPnt) {
-    infoStopTypPnt    <- 'Argument "typPnt" must be integer(s) between 1 and 5 for indicating shape(s) of observed point(s).'
+    infoStopTypPnt    <- 'Argument for parameter `typPnt` must be integer(s) between 1 and 5 for indicating shape(s) of observed point(s).'
     }
 
   if (lgcTypPntEC) {
-    infoStopTypPntEC  <- 'Argument "typPntEC" must be an integer between 1 and 5 for indicating shape of observed point(s) with excessive cases.'
+    infoStopTypPntEC  <- 'Argument for parameter `typPntEC` must be an integer between 1 and 5 for indicating shape of observed point(s) with excessive cases.'
     }
 
   if (lgcTypPntNEC) {
-    infoStopTypPntNEC <- 'Argument "typPntNEC" must be an integer between 1 and 5 for indicating shape of observed point(s) without excessive cases.'
+    infoStopTypPntNEC <- 'Argument for parameter `typPntNEC` must be an integer between 1 and 5 for indicating shape of observed point(s) without excessive cases.'
     }
 
   if (lgcTypLn0) {
-    infoStopTypLn0    <- 'Argument "typLn0" must be an integer between 1 and 6 for indicating segment type of null line.'
+    infoStopTypLn0    <- 'Argument for parameter `typLn0` must be an integer between 1 and 6 for indicating segment type of null line.'
     }
 
   if (lgcTypLnEC) {
-    infoStopTypLnEC   <- 'Argument "typLnEC" must be an integer between 1 and 6 for indicating segment type of observed point(s) with excessive cases.'
+    infoStopTypLnEC   <- 'Argument for parameter `typLnEC` must be an integer between 1 and 6 for indicating segment type of observed point(s) with excessive cases.'
     }
 
   if (lgcClrTtl) {
-    infoStopClrTtl    <- 'Argument "clrTtl" must be a color name for coloring main title.'
+    infoStopClrTtl    <- 'Argument for parameter `clrTtl` must be a color name for coloring main title.'
     }
 
   if (lgcClrTtlX) {
-    infoStopClrTtlX   <- 'Argument "clrTtlX" must be a color name for coloring the title on axis X.'
+    infoStopClrTtlX   <- 'Argument for parameter `clrTtlX` must be a color name for coloring the title on axis X.'
     }
 
   if (lgcClrTtlY) {
-    infoStopClrTtlY   <- 'Argument "clrTtlY" must be a color name for coloring the title on axis Y.'
+    infoStopClrTtlY   <- 'Argument for parameter `clrTtlY` must be a color name for coloring the title on axis Y.'
     }
 
   if (lgcClrAxsX) {
-    infoStopClrAxsX   <- 'Argument "clrAxsX" must be color name(s) for coloring the axis X.'
+    infoStopClrAxsX   <- 'Argument for parameter `clrAxsX` must be color name(s) for coloring the axis X.'
     }
 
   if (lgcClrAxsY) {
-    infoStopClrAxsY   <- 'Argument "clrAxsY" must be a color name for coloring the axis Y.'
+    infoStopClrAxsY   <- 'Argument for parameter `clrAxsY` must be a color name for coloring the axis Y.'
     }
 
   if (lgcClrLgnd) {
-    infoStopClrLgnd   <- 'Argument "clrLgnd" must be a color name for coloring plot legend.'
+    infoStopClrLgnd   <- 'Argument for parameter `clrLgnd` must be a color name for coloring plot legend.'
     }
 
   if (lgcClrVrtnL) {
-    infoStopClrVrtnL  <- 'Argument "clrVrtnL" must be a color name for coloring low variability zone.'
+    infoStopClrVrtnL  <- 'Argument for parameter `clrVrtnL` must be a color name for coloring low variability zone.'
     }
 
   if (lgcClrVrtnM) {
-    infoStopClrVrtnM  <- 'Argument "clrVrtnM" must be a color name for coloring moderate variability zone.'
+    infoStopClrVrtnM  <- 'Argument for parameter `clrVrtnM` must be a color name for coloring moderate variability zone.'
     }
 
   if (lgcClrVrtnH) {
-    infoStopClrVrtnH  <- 'Argument "clrVrtnH" must be a color name for coloring high variability zone.'
+    infoStopClrVrtnH  <- 'Argument for parameter `clrVrtnH` must be a color name for coloring high variability zone.'
     }
 
   if (lgcClrLblZn) {
-    infoStopClrLblZn  <- 'Argument "clrLblZn" must be color name(s) for coloring variability zone(s).'
+    infoStopClrLblZn  <- 'Argument for parameter `clrLblZn` must be color name(s) for coloring variability zone(s).'
+    }
+
+  if (lgcClrLbl) {
+    infoStopClrLbl    <- 'Argument for parameter `clrLbl` must be color name(s) for coloring observed value(s).'
+    }
+
+  if (lgcClrLblEC) {
+    infoStopClrLblEC  <- 'Argument for parameter `clrLblEC` must be a color name for coloring observed value(s) of the studies with excessive cases.'
     }
 
   if (lgcClrPnt) {
-    infoStopClrPnt    <- 'Argument "clrPnt" must be color name(s) for coloring observed point(s).'
+    infoStopClrPnt    <- 'Argument for parameter `clrPnt` must be color name(s) for coloring observed point(s).'
     }
 
   if (lgcClrPntEC) {
-    infoStopClrPntEC  <- 'Argument "clrPntEC" must be a color name for coloring observed point(s) with excessive cases.'
+    infoStopClrPntEC  <- 'Argument for parameter `clrPntEC` must be a color name for coloring observed point(s) with excessive cases.'
     }
 
   if (lgcClrPntNEC) {
-    infoStopClrPntNEC <- 'Argument "clrPntNEC" must be a color name for coloring observed point(s) without excessive cases.'
+    infoStopClrPntNEC <- 'Argument for parameter `clrPntNEC` must be a color name for coloring observed point(s) without excessive cases.'
     }
 
   if (lgcClrLn0) {
-    infoStopClrLn0    <- 'Argument "clrLn0" must be a color name for coloring segment of null line.'
+    infoStopClrLn0    <- 'Argument for parameter `clrLn0` must be a color name for coloring segment of null line.'
     }
 
   if (lgcClrLnEC) {
-    infoStopClrLnEC   <- 'Argument "clrLnEC" must be a color name for coloring segment of observed point(s) with excessive cases.'
+    infoStopClrLnEC   <- 'Argument for parameter `clrLnEC` must be a color name for coloring segment of observed point(s) with excessive cases.'
+    }
+
+  if (lgcClrLnCV) {
+    infoStopClrLnCV   <- 'Argument for parameter `clrLnCV` must be a color name for coloring line of the association between standard deviation and cases.'
+    }
+
+  if (lgcAnglAxsX) {
+    infoStopAnglAxsX  <- 'Argument for parameter `anglAxsX` must be a numeric value between 0 and 360 for indicating angle of study labels on disparity plot (outlier).'
+    }
+
+  if (lgcAnglLbl) {
+    infoStopAnglLbl   <- 'Argument for parameter `anglLbl` must be a numeric value between 0 and 360 for indicating angle of observed values on disparity plot (outlier).'
     }
 
   if (lgcSort) {
-    infoStopSort  <- 'Argument "sort" must be characters ("time", "size", or "excessive") for indicating data sort reference in order to display disparity plot.'
+    infoStopSort      <- 'Argument for parameter `sort` must be characters ("time", "size", or "excessive") for indicating data sort reference in order to display disparity plot.'
     }
 
 
 
   # 05. RETURN results of argument checking  -----
   if (lgcWhich |
-      lgcLgcTtl | lgcLgcTtlX | lgcLgcTtlY | lgcLgcLgnd |
-      lgcLgcLblZn |
+      lgcLgcTtl | lgcLgcTtlX | lgcLgcTtlY |
+      lgcLgcLgnd | lgcLgcDtls | lgcLgcLblZn | lgcTxtLbl |
       lgcSzFntTtl | lgcSzFntTtlX | lgcSzFntTtlY |
-      lgcSzFntAxsX | lgcSzFntAxsY | lgcSzFntLgnd |
+      lgcSzFntAxsX | lgcSzFntEC |lgcSzFntAxsY |
+      lgcSzFntLgnd | lgcSzFntLbl | lgcSzFntLblEC |
       lgcSzPnt | lgcSzPntEC | lgcSzPntNEC |
       lgcTypPltCV | lgcTypPnt | lgcTypPntEC | lgcTypPntNEC |
       lgcTypLn0 | lgcTypLnEC |
       lgcClrTtl | lgcClrTtlX | lgcClrTtlY |
       lgcClrAxsX | lgcClrAxsY | lgcClrLgnd |
       lgcClrVrtnL | lgcClrVrtnM | lgcClrVrtnH | lgcClrLblZn |
+      lgcClrLbl | lgcClrLblEC |
       lgcClrPnt | lgcClrPntEC | lgcClrPntNEC |
-      lgcClrLn0 | lgcClrLnEC | lgcSort)
+      lgcClrLn0 | lgcClrLnEC | lgcClrLnCV |
+      lgcAnglAxsX | lgcAnglLbl | lgcSort)
 
     stop(paste(ifelse(lgcWhich, paste(infoStopWhich, "\n", sep = ""), ""),
                ifelse(lgcLgcTtl, paste(infoStopTtl, "\n", sep = ""), ""),
                ifelse(lgcLgcTtlX, paste(infoStopTtlX, "\n", sep = ""), ""),
                ifelse(lgcLgcTtlY, paste(infoStopTtlY, "\n", sep = ""), ""),
                ifelse(lgcLgcLgnd, paste(infoStopLgnd, "\n", sep = ""), ""),
+               ifelse(lgcLgcDtls, paste(infoStopDtls, "\n", sep = ""), ""),
                ifelse(lgcLgcLblZn, paste(infoStopLblZn, "\n", sep = ""), ""),
+               ifelse(lgcTxtLbl, paste(infoStopTxtLbl, "\n", sep = ""), ""),
                ifelse(lgcSzFntTtl, paste(infoStopSzFntTtl, "\n", sep = ""), ""),
                ifelse(lgcSzFntTtlX, paste(infoStopSzFntTtlX, "\n", sep = ""), ""),
                ifelse(lgcSzFntTtlY, paste(infoStopSzFntTtlY, "\n", sep = ""), ""),
                ifelse(lgcSzFntAxsX, paste(infoStopSzFntAxsX, "\n", sep = ""), ""),
+               ifelse(lgcSzFntEC, paste(infoStopSzFntEC, "\n", sep = ""), ""),
                ifelse(lgcSzFntAxsY, paste(infoStopSzFntAxsY, "\n", sep = ""), ""),
                ifelse(lgcSzFntLgnd, paste(infoStopSzFntLgnd, "\n", sep = ""), ""),
+               ifelse(lgcSzFntLbl, paste(infoStopSzFntLbl, "\n", sep = ""), ""),
+               ifelse(lgcSzFntLblEC, paste(infoStopSzFntLblEC, "\n", sep = ""), ""),
                ifelse(lgcSzPnt, paste(infoStopSzPnt, "\n", sep = ""), ""),
                ifelse(lgcSzPntEC, paste(infoStopSzPntEC, "\n", sep = ""), ""),
                ifelse(lgcSzPntNEC, paste(infoStopSzPntNEC, "\n", sep = ""), ""),
@@ -711,11 +891,16 @@ PlotDisparity <- function(object,
                ifelse(lgcClrVrtnM, paste(infoStopClrVrtnM, "\n", sep = ""), ""),
                ifelse(lgcClrVrtnH, paste(infoStopClrVrtnH, "\n", sep = ""), ""),
                ifelse(lgcClrLblZn, paste(infoStopClrLblZn, "\n", sep = ""), ""),
+               ifelse(lgcClrLbl, paste(infoStopClrLbl, "\n", sep = ""), ""),
+               ifelse(lgcClrLblEC, paste(infoStopClrLblEC, "\n", sep = ""), ""),
                ifelse(lgcClrPnt, paste(infoStopClrPnt, "\n", sep = ""), ""),
                ifelse(lgcClrPntEC, paste(infoStopClrPntEC, "\n", sep = ""), ""),
                ifelse(lgcClrPntNEC, paste(infoStopClrPntNEC, "\n", sep = ""), ""),
                ifelse(lgcClrLn0, paste(infoStopClrLn0, "\n", sep = ""), ""),
                ifelse(lgcClrLnEC, paste(infoStopClrLnEC, "\n", sep = ""), ""),
+               ifelse(lgcClrLnCV, paste(infoStopClrLnCV, "\n", sep = ""), ""),
+               ifelse(lgcAnglAxsX, paste(infoStopAnglAxsX, "\n", sep = ""), ""),
+               ifelse(lgcAnglLbl, paste(infoStopAnglLbl, "\n", sep = ""), ""),
                ifelse(lgcSort, paste(infoStopSort, "\n", sep = ""), ""),
                sep = "")
          )
@@ -724,9 +909,21 @@ PlotDisparity <- function(object,
 
   # 06. PREPARE data set for disparity plot according to settings -----
   infoWhich    <- ifelse(is.null(which), "CV", which)
+  #infoMethodCV <- "CV"
   infoTypPltCV <- ifelse(is.null(typPltCV), "half", typPltCV)
 
+  infoMethodVrblty <- ifelse(object$vrblty.method == "CV",
+                             "common coefficient of variability",
+                             "robust coefficient of variability")
+
   if (infoWhich == "CV") {
+    if (infoMethodVrblty == "robust coefficient of variability") {
+      infoMSDCVL  <- -infoCasesMSD3CVL / (infoMCases * infoVrblty) # infoVrblty
+      infoPSDCVL  <- infoCasesMSD3CVL / (infoMCases * infoVrblty)  # infoVrblty
+      #infoMSDCVH  <- -infoCasesMSD3CVL / infoCVH #(infoMCases - infoCV0.3)
+      #infoPSDCVH  <- infoCasesMSD3CVL / infoCVH #(infoMCases - infoCV0.3)
+    }
+
     infoMethodOtlr <- object$outlier.method
 
     if (infoMethodOtlr == "IQR") {
@@ -763,6 +960,8 @@ PlotDisparity <- function(object,
 
   colnames(dataPlot)[-which(colnames(dataPlot) %in% c("source", "study", "n", "time", "z.val"))] <- c("outlier", "cases.excessive", "prop.excessive")
 
+  #dataPlot$prop.excessive     <- round(dataPlot$prop.excessive, 3)
+
   dataPlot$prop.excessive.abs <- abs(dataPlot$prop.excessive)
   dataPlot$cases.excessive.CV <- dataDsprty[, c("cases.excessive.CV")]
   dataPlot$prop.excessive.CV  <- dataDsprty[, c("prop.excessive.CV")]
@@ -772,12 +971,12 @@ PlotDisparity <- function(object,
 
   rsltOtlrProp  <- binom.test(x = infoOtlrExcssvCases,
                               n = infoCases,
-                              p = 0.05,
+                              p = 0.1,
                               alternative = "greater"
                               )
 
   infoOtlrProp  <- rsltOtlrProp$estimate
-  infoOtlrPval  <- rsltOtlrProp$p.value
+  infoOtlrPVal  <- rsltOtlrProp$p.value
   infoOtlrLCI   <- rsltOtlrProp$conf.int[1][1]
   infoOtlrUCI   <- rsltOtlrProp$conf.int[1][2]
 
@@ -785,22 +984,133 @@ PlotDisparity <- function(object,
   infoLgcTtlX   <- ifelse(is.null(lgcTtlX), TRUE, lgcTtlX)
   infoLgcTtlY   <- ifelse(is.null(lgcTtlY), TRUE, lgcTtlY)
   infoLgcLgnd   <- ifelse(is.null(lgcLgnd), TRUE, lgcLgnd)
+  infoLgcDtls   <- ifelse(is.null(lgcDtls), FALSE, lgcDtls)
+
+  if (infoLgcLgnd) {
+    if (infoLgcDtls) {
+      txtLgnd <- paste("Disparities in sample size test (outlier detection based on ",
+                        infoMethodOtlr,
+                        "):\n",
+                        "Number of outliers = ", infoOutliers,
+                        " (Excessive cases = ", round(infoOtlrExcssvCases, 3),
+                        "; P-value",
+                        ifelse(infoOtlrPVal < 0.001,
+                               " < 0.001",
+                               paste(" = ",
+                                     round(infoOtlrPVal, 3),
+                                     sep = "")
+                        ),
+                        ")\n",
+                        "Variability (based on ",
+                       infoMethodVrblty,
+                       "):\n",
+                       "Value",
+                        ifelse(infoVrblty < 0.001,
+                               " < 0.001",
+                               paste(" = ",
+                                     round(infoVrblty, 3),
+                                     sep = "")
+                        ),
+                        " (mean cases = ", ceiling(infoMCases),
+                        "; SD = ", round(infoSDCases, 3),
+                        "; P-value",
+                        ifelse(infoPValVrblty < 0.001,
+                               " < 0.001",
+                               paste(" = ",
+                                     round(infoPValVrblty, 3),
+                                     sep = "")
+                        ),
+                        ")\n",
+                        sep = "")
+    } else {
+      txtLgnd <- paste("Disparities in sample size test",
+                        ifelse(infoWhich %in% c("IQR", "Z", "MAD", "GESD"),
+                               paste(" (outlier detection based on ",
+                                     infoMethodOtlr,
+                                     "):\n",
+                                     "Number of outliers = ", infoOutliers,
+                                     " (Excessive cases = ", round(infoOtlrExcssvCases, 3),
+                                     "; P-value",
+                                     ifelse(infoOtlrPVal < 0.001,
+                                            " < 0.001",
+                                            paste(" = ",
+                                                  round(infoOtlrPVal, 3),
+                                                  sep = "")
+                                     ),
+                                     ")\n",
+                                     sep = ""),
+                               paste(" (variability based on ",
+                                     infoMethodVrblty,
+                                     "):\n",
+                                     "Variability",
+                                     ifelse(infoVrblty < 0.001,
+                                            " < 0.001",
+                                            paste(" = ",
+                                                  round(infoVrblty, 3),
+                                                  sep = "")
+                                     ),
+                                     " (mean cases = ", ceiling(infoMCases),
+                                     "; SD = ", round(infoSDCases, 3),
+                                     "; P-value",
+                                     ifelse(infoPValVrblty < 0.001,
+                                            " < 0.001",
+                                            paste(" = ",
+                                                  round(infoPValVrblty, 3),
+                                                  sep = "")
+                                     ),
+                                     ")\n",
+                                     sep = "")
+                        ),
+                        sep = "")
+    }
+  } else {
+    txtLgnd <- ""
+  }
+
   infoLgcLblZn  <- ifelse(is.null(lgcLblZn), TRUE, lgcLblZn)
+
   infoSzFntTtl  <- ifelse(is.null(szFntTtl), 1.5, szFntTtl)
   infoSzFntTtlX <- ifelse(is.null(szFntTtlX), 1.2, szFntTtlX)
   infoSzFntTtlY <- ifelse(is.null(szFntTtlY), 1.2, szFntTtlY)
 
   if (is.null(szFntAxsX)) {
-    infoSzFntAxsX      <- ifelse(infoNumStud < 11, 1,
-                                 1 / sqrt(infoNumStud / 10))
+    infoSzFntAxsX      <- ifelse(infoNumStdy < 11, 1,
+                                 1 / sqrt(infoNumStdy / 10))
     dataPlot$szFntAxsX <- infoSzFntAxsX
   } else {
     infoSzFntAxsX      <- szFntAxsX
     dataPlot$szFntAxsX <- szFntAxsX
   }
 
-  infoSzFntAxsY <- ifelse(is.null(szFntAxsY), 1, szFntAxsY)
-  infoSzFntLgnd <- ifelse(is.null(szFntLgnd), 1.2, szFntLgnd)
+  if (infoWhich %in% c("IQR", "Z", "MAD", "GESD")) {
+    if (is.null(szFntEC)) {
+      infoSzFntEC <- ifelse(infoNumStdy < 11, 1,
+                            1 / sqrt(infoNumStdy / 10))
+    } else {
+      dataPlot[dataPlot$prop.excessive.abs > 0, "szFntAxsX"] <- szFntEC
+    }
+  }
+
+  infoSzFntAxsY  <- ifelse(is.null(szFntAxsY), 1, szFntAxsY)
+  infoSzFntLgnd  <- ifelse(is.null(szFntLgnd), 1, szFntLgnd)
+
+  if (is.null(szFntLbl)) {
+    infoSzFntLbl      <- ifelse(infoNumStdy < 11, 1,
+                                1 / sqrt(infoNumStdy / 10))
+    dataPlot$szFntLbl <- infoSzFntLbl
+  } else {
+    infoSzFntLbl      <- szFntLbl
+    dataPlot$szFntLbl <- szFntLbl
+  }
+
+  if (infoWhich %in% c("IQR", "Z", "MAD", "GESD")) {
+    if (is.null(szFntLblEC)) {
+      infoSzFntLblEC <- ifelse(infoNumStdy < 11, 1,
+                               1 / sqrt(infoNumStdy / 10))
+    } else {
+      dataPlot[dataPlot$prop.excessive.abs > 0, "szFntLbl"] <- szFntLblEC
+    }
+  }
 
   if (is.null(szPnt)) {
     infoSzPnt      <- 1
@@ -818,7 +1128,7 @@ PlotDisparity <- function(object,
     dataPlot[dataPlot$prop.excessive.abs > 0, "szPnt"] <- szPntEC
   }
 
-  if (is.null(szPntEC)) {
+  if (is.null(szPntNEC)) {
     #infoSzPntNEC <- ifelse(is.null(szPntNEC), 1, szPntNEC)
     infoSzPntNEC <- 1
     #dataPlot[dataPlot$prop.excessive.abs == 0, "szPnt"] <- infoSzPntNEC
@@ -895,6 +1205,24 @@ PlotDisparity <- function(object,
                           infoClrLblZn[3],
                           infoClrLblZn[1])
 
+
+  if (is.null(clrLbl)) {
+    infoClrLbl      <- "gray25"
+    dataPlot$clrLbl <- infoSzFntAxsX
+  } else {
+    infoClrLbl      <- clrLbl
+    dataPlot$clrLbl <- clrLbl
+  }
+
+  if (infoWhich %in% c("IQR", "Z", "MAD", "GESD")) {
+    if (is.null(clrLblEC)) {
+      infoClrLblEC <- "gray25"
+      dataPlot[dataPlot$prop.excessive.abs > 0, "clrLbl"] <- infoClrLblEC
+    } else {
+      dataPlot[dataPlot$prop.excessive.abs > 0, "clrLbl"] <- clrLblEC
+    }
+  }
+
   if (is.null(clrPnt)) {
     infoClrPnt      <- "gray"
     dataPlot$clrPnt <- infoClrPnt
@@ -923,6 +1251,14 @@ PlotDisparity <- function(object,
   infoClrLnEC  <- ifelse(is.null(clrLnEC), "firebrick3", clrLnEC)
   dataPlot$pos <- ifelse(dataPlot$prop.excessive < 0, 3, 1)
 
+  infoClrLnCV  <- ifelse(is.null(clrLnCV),
+                         ifelse(infoSDCases > infoCVH,
+                                "firebrick4",
+                                "navyblue"),
+                         clrLnCV)
+
+  infoAnglAxsX <- ifelse(is.null(anglAxsX), 30, anglAxsX)
+  infoAnglLbl  <- ifelse(is.null(anglLbl), 0, anglLbl)
   infoSort     <- ifelse(is.null(sort), "excessive", sort)
 
   if (infoSort == "time") {
@@ -933,6 +1269,35 @@ PlotDisparity <- function(object,
     dataPlot <- dataPlot[order(dataPlot$prop.excessive), ]
   }
 
+  if (is.null(txtLbl)) {
+    infoTxtLbl <- ""
+  } else if (txtLbl == "n") {
+    infoTxtLbl <- dataPlot$n
+  } else if (txtLbl == "n.excessive") {
+    infoTxtLbl <- dataPlot$cases.excessive
+  } else if (txtLbl == "prop.excessive") {
+    infoTxtLbl <- round(dataPlot$prop.excessive, 3)
+  }
+
+  if (is.null(txtLbl)) {
+    dataPlot$txtLbl <- ""
+  } else if (txtLbl == "n") {
+    dataPlot$txtLbl <- dataPlot$n
+  } else if (txtLbl == "n.excessive") {
+    dataPlot$txtLbl <- dataPlot$cases.excessive
+  } else if (txtLbl == "prop.excessive") {
+    dataPlot$txtLbl <- round(dataPlot$prop.excessive, 3)
+  }
+
+
+  dataPlot$position.label.axis.x    <- ifelse(infoAnglAxsX == 0, 1, 2)
+  dataPlot$y.label.excessive        <- ifelse(dataPlot$prop.excessive > 0, -0.1, 0.1)
+  dataPlot$position.label.excessive <- ifelse(dataPlot$prop.excessive > 0,
+                                              ifelse(infoAnglLbl == 0,
+                                                     1, 2),
+                                              ifelse(infoAnglLbl == 0,
+                                                     3, 4)
+                                              )
   dataPlot$source <- c(1:nrow(dataPlot))
 
 
@@ -941,11 +1306,6 @@ PlotDisparity <- function(object,
 
   if (infoWhich == "CV") {
     # Disparity plot (variability)
-
-    #plot(c(-3, 3),
-    #     c(min(dataDsprty$n, infoMCases + infoMCases * 0.1 * c(-3:3)),
-    #       max(dataDsprty$n, infoMCases + infoMCases * 0.1 * c(-3:3)))
-    #     )
 
     if (infoTypPltCV == "full") {
       plot(infoMCases + infoCVL * c(-3.5:3.5),
@@ -964,18 +1324,44 @@ PlotDisparity <- function(object,
            infoCasesPSD3.5CVL, 3,
            col = infoClrVrtnM, lty = 0)
 
-      polygon(c(infoCasesMSD3CVL, infoMCases, infoMCases, infoCasesPSD3CVL),
+      polygon(c(infoCasesMSD3CVL,
+                infoMCases,
+                infoMCases,
+                infoCasesPSD3CVL),
               c(-3, -3, 3, 3),
               col = infoClrVrtnL, lty = 0)
 
-      polygon(c(infoCasesMSD3.5CVL, infoCasesMSD3.5CVL,
-                infoCasesPSD3.5CVL, infoCasesPSD3.5CVL),
-              c(infoMSDCVL, 0,
+      polygon(c(infoCasesMSD3.5CVL,
+                infoCasesMSD3.5CVL,
+                infoCasesPSD3.5CVL,
+                infoCasesPSD3.5CVL),
+              c(infoMSDCVH, 0,
                 0, infoPSDCVH),
               lty = 0,
               col = infoClrVrtnH)
 
+
+      segments(rep(infoMCases * 1.05, 4), c(-1, -1.5, -2, -2.5),
+               rep(infoMCases * 1.07, 4), c(-1, -1.5, -2, -2.5),
+               lwd = c(2.5, 20, 20, 20),
+               col = c(infoClrLnCV,
+                       infoClrVrtnL,
+                       infoClrVrtnM,
+                       infoClrVrtnH)
+               )
+
+      text(rep(infoMCases * 1.08, 4),
+           c(-1, -1.5, -2, -2.5),
+           c("Observed coefficient of variation",
+             "Low variability zone",
+             "Moderate variability zone",
+             "High variability zone"),
+           pos = 4,
+           cex = infoSzFntLgnd,
+           col = infoClrLgnd)
+
       } else {
+
       plot(infoMCases + infoCVL * c(0:4),
            c(0:4),
            type = "n", frame = FALSE,
@@ -998,6 +1384,11 @@ PlotDisparity <- function(object,
               c(0, 0, infoPSDCVH),
               lty = 0,
               col = infoClrVrtnH)
+
+      rect(infoMCases, 3,
+           infoCasesPSD4CVL, 4,
+           lty = 0,
+           col = "white")
 
       if (infoLgcLblZn == TRUE) {
         text(infoMCases + (infoCasesPSD4CVL - infoMCases) * 0.29, #(infoMCases + infoCasesPSD4CV0.1) / 2,
@@ -1036,14 +1427,11 @@ PlotDisparity <- function(object,
     #         lwd = 2.5,
     #         col = "blue4")
 
-    segments(infoCasesMSD4CVL, infoMSDCVL,
-             infoCasesPSD4CVL, infoMSDCVL,
+    segments(infoMCases, 0, #infoCasesMSD4CVL, infoMSDCVL,
+             infoCasesPSD4CVL, infoPSDCVL,
              lty = 1,
              lwd = 2.5,
-             col = ifelse(infoSDCases > infoCVH,
-                          "firebrick4",
-                          "navyblue")
-             )
+             col = infoClrLnCV)
 
     axis(1, las = 1,
          cex.axis = infoSzFntAxsX[1],
@@ -1063,70 +1451,11 @@ PlotDisparity <- function(object,
            ifelse(infoTypPltCV == "full",
                   par("usr")[4] * 0.7,
                   par("usr")[4] * 0.8),
-           paste("Disparities in sample size test (outlier detection based on ",
-                 infoMethodOtlr,
-                 "):\n",
-                 "Number of outliers = ", infoOutliers,
-                 " (Excessive cases = ", round(infoOtlrExcssvCases, 3),
-                 "; P-value",
-                 ifelse(infoOtlrPval < 0.001,
-                        " < 0.001",
-                        paste(" = ",
-                              round(infoOtlrPval, 3),
-                              sep = "")
-                 ),
-                 ")\n",
-                 "Variability",
-                 ifelse(infoUnbsCV < 0.001,
-                        " < 0.001",
-                        paste(" = ",
-                              round(infoUnbsCV, 3),
-                              sep = "")
-                 ),
-                 " (mean cases = ", ceiling(infoMCases),
-                 "; SD = ", round(infoSDCases, 3),
-                 "; t-value",
-                 ifelse(infoStatsT < 0.001,
-                        " < 0.001",
-                        paste(" = ", round(infoStatsT, 3),
-                              sep = "")
-                 ),
-                 "; P-value",
-                 ifelse(infoPValCV < 0.001,
-                        " < 0.001",
-                        paste(" = ",
-                              round(infoPValCV, 3),
-                              sep = "")
-                 ),
-                 ")\n",
-                 sep = ""
-           ),
+           txtLgnd,
            pos = 4,
            cex = infoSzFntLgnd,
            col = infoClrLgnd)
     }
-
-    segments(rep(infoMCases * 1.05, 4), c(-1, -1.5, -2, -2.5),
-             rep(infoMCases * 1.07, 4), c(-1, -1.5, -2, -2.5),
-             lwd = c(2.5, 20, 20, 20),
-             col = c(ifelse(infoSDCases > infoCVH,
-                            "firebrick4",
-                            "navyblue"),
-                     infoClrVrtnL,
-                     infoClrVrtnM,
-                     infoClrVrtnH)
-             )
-
-    text(rep(infoMCases * 1.08, 4),
-         c(-1, -1.5, -2, -2.5),
-         c("Observed coefficient of variation",
-           "Low variability zone",
-           "Moderate variability zone",
-           "High variability zone"),
-         pos = 4,
-         cex = infoSzFntLgnd,
-         col = infoClrLgnd
-         )
 
     if (infoLgcTtl == TRUE) {
       mtext("Disparity plot (variability)",
@@ -1143,14 +1472,14 @@ PlotDisparity <- function(object,
     }
 
     if (infoLgcTtlY == TRUE) {
-      mtext("Number of tandrd deviations",
+      mtext("Number of standrd deviations",
             side = 2, line = 3,
             cex = infoSzFntTtlY,
             col = infoClrTtlY)
     }
 
   } else {
-    # Disparity plot (outlier)
+    # 7.2. Disparity plot (outlier)
 
     plot(dataPlot$source,
          dataPlot$prop.excessive,
@@ -1159,18 +1488,18 @@ PlotDisparity <- function(object,
          ylim = c(ifelse(min(dataPlot$prop.excessive) > -0.5,
                          -0.5,
                          ifelse(min(dataPlot$prop.excessive) > -1,
-                                -1,
-                                min(dataPlot$prop.excessive)
+                                -1.2,
+                                min(dataPlot$prop.excessive) * 1.1
                                 )
                          ),
-         ifelse(max(dataPlot$prop.excessive) < 0.5,
-                0.5,
-                ifelse(max(dataPlot$prop.excessive) < 1,
-                       1,
-                       max(dataPlot$prop.excessive)
-                       )
-                )
-         ),
+                  ifelse(max(dataPlot$prop.excessive) < 0.5,
+                         0.5,
+                         ifelse(max(dataPlot$prop.excessive) < 1,
+                                1.2,
+                                max(dataPlot$prop.excessive) * 1.1
+                                )
+                         )
+                  ),
          xlab = "", ylab = "")
 
     segments(0, 0,
@@ -1196,50 +1525,15 @@ PlotDisparity <- function(object,
          dataPlot$study,
          cex = dataPlot$szFntAxsX,
          col = dataPlot$clrAxsX,
-         xpd = TRUE, pos = 1, srt = 45)
+         xpd = TRUE,
+         pos = dataPlot$position.label.axis.x,
+         srt = infoAnglAxsX)
 
     if (infoLgcLgnd == TRUE) {
       ### TEXT legend
       text(1,
            par("usr")[4] * 0.7,
-           paste("Disparities in sample size test (outlier detection based on ",
-                 infoMethodOtlr,
-                 "):\n",
-                 "Number of outliers = ", infoOutliers,
-                 " (Excessive cases = ", round(infoOtlrExcssvCases, 3),
-                 "; P-value",
-                 ifelse(infoOtlrPval < 0.001,
-                        " < 0.001",
-                        paste(" = ",
-                              round(infoOtlrPval, 3),
-                              sep = "")
-                 ),
-                 ")\n",
-                 "Variability",
-                 ifelse(infoUnbsCV < 0.001,
-                        " < 0.001",
-                        paste(" = ",
-                              round(infoUnbsCV, 3),
-                              sep = "")
-                 ),
-                 " (mean cases = ", ceiling(infoMCases),
-                 "; SD = ", round(infoSDCases, 3),
-                 "; t-value",
-                 ifelse(infoStatsT < 0.001,
-                        " < 0.001",
-                        paste(" = ", round(infoStatsT, 3),
-                              sep = "")
-                 ),
-                 "; P-value",
-                 ifelse(infoPValCV < 0.001,
-                        " < 0.001",
-                        paste(" = ",
-                              round(infoPValCV, 3),
-                              sep = "")
-                 ),
-                 ")\n",
-                 sep = ""
-           ),
+           txtLgnd,
            pos = 4,
            cex = infoSzFntLgnd,
            col = infoClrLgnd)
@@ -1264,6 +1558,20 @@ PlotDisparity <- function(object,
             side = 2, line = 3,
             cex = infoSzFntTtlY,
             col = infoClrTtlY)
+    }
+
+    if (is.null(txtLbl)) {
+      text(dataPlot$source,
+           dataPlot$y.label.excessive,
+           "")
+    } else {
+      text(dataPlot$source,
+           dataPlot$y.label.excessive, #rep(0, infoNumStdy),
+           dataPlot$txtLbl,
+           cex = dataPlot$szFntLbl,
+           pos = dataPlot$position.label.excessive,
+           col = dataPlot$clrLbl,
+           srt = infoAnglLbl)
     }
 
   }

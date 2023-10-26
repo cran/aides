@@ -1,0 +1,445 @@
+---
+title: "An overview on pakcage aides"
+output: 
+  bookdown::html_document2:
+    base_format: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{An overview on pakcage aides}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r echo = FALSE, fig.align = "left", out.width = "30%"}
+knitr::include_graphics("aides_logo.png")
+```
+
+
+[![CRAN](https://img.shields.io/cran/v/aides?color=blue&label=CRAN&logo=r)](https://cran.r-project.org/package=aides)
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg?color=grassgreen)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+[![Licence](https://img.shields.io/badge/licence-GPL--3-brightgreen.svg?color=grassgreen)](https://www.gnu.org/licenses/gpl-3.0.en.html)
+
+\
+
+# Brief overview
+
+Package *aides* is planned to support users to do additional analysis or graphics. Users can use functions in *aides* by calling the library with following syntax:
+
+```{r}
+library(aides)
+```
+
+```{r setup, echo = FALSE, warning = FALSE, message = FALSE}
+library(aides)
+library(meta)
+```
+
+\
+
+# Features
+
+Briefly, *aides* currently consists of three tasks as follows:
+
+- **Disparity:** a newly proposed assumption regarding disparities in sample size analysis.
+
+- **Discordance:** a newly proposed assumption regarding discordance in rank of study size analysis.
+
+- **Sequential analysis:** a method to examine the sufficiency of information size.
+
+\
+
+# Functions and examples
+
+Users can import their data and do relevant tests or graphics using functions in package *aides*. The present package consists of four functions listed as follows: 
+
+**Disparity:**  
+
+`PlotDistrSS()` [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg?color=grassgreen)](https://lifecycle.r-lib.org/articles/stages.html#stable), `TestDisparity()` [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg?color=grassgreen)](https://lifecycle.r-lib.org/articles/stages.html#stable), and `PlotDisparity()` [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg?color=grassgreen)](https://lifecycle.r-lib.org/articles/stages.html#stable).
+
+\
+
+**Discordance:** 
+
+`TestDiscordance()` [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-brightgreen.svg?color=orange)](https://lifecycle.r-lib.org/articles/stages.html#experimental).  
+  
+\
+  
+**Sequential analysis:**  
+
+`DoSA()` [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg?color=grassgreen)](https://lifecycle.r-lib.org/articles/stages.html#stable), `DoOSA()` [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg?color=grassgreen)](https://lifecycle.r-lib.org/articles/stages.html#stable), and `PlotOSA()` [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg?color=grassgreen)](https://lifecycle.r-lib.org/articles/stages.html#stable).
+
+\
+
+## Examples of functions:
+
+### Disparity:
+
+The following steps and syntax demonstrate how user can carry out disparity test. Figure \@ref(fig:plot-disparity-outlier) visualizes the test based on the excessive cases of oulier(s).
+
+**Step 1.** Import data (Olkin 1995)
+
+``` {r, eval = FALSE}
+library(meta)
+data("Olkin1995")
+dataOlkin1995 <- Olkin1995
+```
+
+\
+
+**Step 2.** Process data
+
+``` {r, eval = FALSE}
+dataOlkin1995$n <- dataOlkin1995$n.exp + dataOlkin1995$n.cont
+```
+
+\
+
+**Step 3.** Check distribution of study sizes. Using function `shapiro.test()` is a simple way to test whether sample sizes distribute normally, and further visualization with statistics can be carried out by function `PlotDistrSS()`. 
+
+``` {r, eval = FALSE}
+shapiro.test(dataOlkin1995$n)
+PlotDistrSS(dataOlkin1995$n)
+```
+<a id="result-distrSS"></a>
+``` {r result-distrSS, eval = TRUE, echo = FALSE, warning = FALSE, message = FALSE}
+data("Olkin1995")
+dataOlkin1995 <- Olkin1995
+dataOlkin1995$n <- dataOlkin1995$n.exp + dataOlkin1995$n.cont
+shapiro.test(dataOlkin1995$n)
+```
+
+``` {r plot-distrSS, fig.cap = "An example for visualization of distribution of study sizes", eval = TRUE, echo = FALSE, warning = FALSE, message = FALSE, results = "hide", fig.height = 5, fig.width = 8, fig.align = "center", out.width = "100%"}
+data("Olkin1995")
+dataOlkin1995 <- Olkin1995
+dataOlkin1995$n <- dataOlkin1995$n.exp + dataOlkin1995$n.cont
+PlotDistrSS(n = n,
+            data = dataOlkin1995, 
+            study = author, 
+            time = year)
+```
+
+\
+
+**Step 4.** Test assumption of disparity in study size
+
+``` {r, eval = FALSE}
+TestDisparity(n = n, 
+              data = dataOlkin1995, 
+              study = author, 
+              time = year)
+```
+
+``` {r result-disparity, eval = TRUE, echo = FALSE, warning = FALSE, message = FALSE}
+data("Olkin1995")
+dataOlkin1995 <- Olkin1995
+dataOlkin1995$n <- dataOlkin1995$n.exp + dataOlkin1995$n.cont
+TestDisparity(n = n, 
+              data = dataOlkin1995, 
+              study = author, 
+              time = year)
+```
+
+\
+
+**Step 5.** Illustrate disparity plot
+
+``` {r, eval = FALSE}
+TestDisparity(n = n,
+              data = dataOlkin1995, 
+              study = author, 
+              time = year, 
+              plot = TRUE)
+```
+
+``` {r plot-disparity-outlier, eval = TRUE, fig.cap = "An example for disparity-outlier plot", echo = FALSE, warning = FALSE, message = FALSE, results = "hide", fig.height = 4, fig.width = 8, fig.align = "center", out.width = "100%"}
+data("Olkin1995")
+dataOlkin1995   <- Olkin1995
+dataOlkin1995$n <- dataOlkin1995$n.exp + dataOlkin1995$n.cont
+TestDisparity(n = n,
+              data = dataOlkin1995, 
+              study = author, 
+              time = year, 
+              plot = TRUE)
+```
+
+\
+
+Due to non-normal distribution among the study sizes as shown in Step 3 (Figure \@ref(fig:plot-distrSS) and also see [the result of shapiro test](#result-distrSS)), robust method is recommended for testing variability, which can be carried out by the following syntax:
+
+``` {r, eval = FALSE}
+rsltDisparity <- TestDisparity(n = n, 
+                               data = dataOlkin1995, 
+                               study = author, 
+                               time = year,
+                               vrblty = "MAD")
+```
+
+``` {r result-disparity-vrblty-MAD, eval = TRUE, echo = FALSE, warning = FALSE, message = FALSE}
+data("Olkin1995")
+dataOlkin1995 <- Olkin1995
+dataOlkin1995$n <- dataOlkin1995$n.exp + dataOlkin1995$n.cont
+rsltDisparity <- TestDisparity(n = n, 
+                               data = dataOlkin1995, 
+                               study = author, 
+                               time = year,
+                               vrblty = "MAD")
+```
+
+\
+
+The following syntax instead of step 5 aforementioned is recommended for illustrating disparity plot of variability based on robust coefficient of variation:
+
+``` {r, eval = FALSE}
+PlotDisparity(rsltDisparity, 
+              which = "CV", 
+              szFntAxsX = 1)
+```
+
+``` {r plot-disparity-variability-MAD, eval = TRUE, fig.cap = "An example for disparity-variability (robust) plot", echo = FALSE, warning = FALSE, message = FALSE, results = "hide", fig.height = 6, fig.width = 8, fig.align = "center", out.width = "100%"}
+data("Olkin1995")
+dataOlkin1995   <- Olkin1995
+dataOlkin1995$n <- dataOlkin1995$n.exp + dataOlkin1995$n.cont
+rsltDisparity <- TestDisparity(n = n,
+                               data = dataOlkin1995, 
+                               study = author, 
+                               time = year,
+                               vrblty = "MAD", 
+                               plot = FALSE)
+
+PlotDisparity(rsltDisparity, 
+              which = "CV",
+              szFntAxsX = 1)
+```
+
+\
+
+### Discordance:
+
+The following steps and syntax demonstrate how user can carry out discordance test. Figure \@ref(fig:plot-discordance) visualizes the test.
+
+**Step 1.** Import data (example of the study by Fleiss 1993)
+
+``` {r, eval = FALSE}
+library(meta)
+data("Fleiss1993bin")
+dataFleiss1993bin <- Fleiss1993bin
+```
+
+\
+
+**Step 2.** Process data
+
+``` {r, eval = FALSE}
+dataFleiss1993bin$n  <- dataFleiss1993bin$n.asp + dataFleiss1993bin$n.plac
+dataFleiss1993bin$se <- sqrt((1 / dataFleiss1993bin$d.asp) - (1 / dataFleiss1993bin$n.asp) + (1 / dataFleiss1993bin$d.plac) - (1 / dataFleiss1993bin$n.plac))
+```
+
+\
+
+**Step 3.** Test assumption of discordance in study size
+
+``` {r, eval = FALSE}
+TestDiscordance(n = n, 
+                se = se, 
+                study = study,
+                data = dataFleiss1993bin)
+```
+
+``` {r result-discordance, eval = TRUE, echo = FALSE, warning = FALSE, message = FALSE}
+data("Fleiss1993bin")
+dataFleiss1993bin    <- Fleiss1993bin
+dataFleiss1993bin$n  <- dataFleiss1993bin$n.asp + dataFleiss1993bin$n.plac
+dataFleiss1993bin$se <- sqrt((1 / dataFleiss1993bin$d.asp) - (1 / dataFleiss1993bin$n.asp) + (1 / dataFleiss1993bin$d.plac) - (1 / dataFleiss1993bin$n.plac))
+TestDiscordance(n = n, 
+                se = se, 
+                study = study,
+                data = dataFleiss1993bin)
+```
+
+\
+
+**Step 4.** Illustrate discordance plot
+
+``` {r, eval = FALSE}
+TestDiscordance(n = n, 
+                se = se, 
+                study = study, 
+                data = dataFleiss1993bin, 
+                plot = TRUE)
+```
+
+``` {r plot-discordance, fig.cap = "An example for discordance plot", eval = TRUE, echo = FALSE, warning = FALSE, message = FALSE, results = "hide", fig.height = 6, fig.width = 12, fig.align = "center", out.width = "100%"}
+data("Fleiss1993bin")
+dataFleiss1993bin <- Fleiss1993bin
+dataFleiss1993bin$n  <- dataFleiss1993bin$n.asp + dataFleiss1993bin$n.plac
+dataFleiss1993bin$se <- sqrt((1 / dataFleiss1993bin$d.asp) - (1 / dataFleiss1993bin$n.asp) + (1 / dataFleiss1993bin$d.plac) - (1 / dataFleiss1993bin$n.plac))
+TestDiscordance(n = n, 
+                se = se, 
+                study = study, 
+                data = dataFleiss1993bin, 
+                plot = TRUE)
+```
+
+\
+
+### Sequential analysis:
+
+The following steps and syntax demonstrate how user can carry out sequential analysis. Figure \@ref(fig:plot-sequential) sequential analysis plot.
+
+**Step 1.** Import data (example of the study by Fleiss 1993)
+
+``` {r, eval = FALSE}
+library(meta)
+data("Fleiss1993cont")
+dataFleiss1993cont <- Fleiss1993cont
+```
+
+\
+
+**Step 2.** Do sequential analysis
+
+``` {r, eval = FALSE}
+DoSA(Fleiss1993cont, 
+     source = study, 
+     time = year,
+     m1 = mean.psyc, 
+     sd1 = sd.psyc, 
+     n1 = n.psyc,
+     m2 = mean.cont, 
+     sd2 = sd.cont, 
+     n2 = n.cont,
+     measure = "SMD", 
+     PES = 0.2,
+     group = c("Psychotherapy", "Control"), 
+     plot = FALSE)
+```
+
+``` {r result-DoSA, eval = TRUE, echo = FALSE, warning = FALSE, message = FALSE}
+data("Fleiss1993cont")
+dataFleiss1993cont <- Fleiss1993cont
+DoSA(Fleiss1993cont, 
+     source = study, 
+     time = year,
+     m1 = mean.psyc, 
+     sd1 = sd.psyc, 
+     n1 = n.psyc,
+     m2 = mean.cont, 
+     sd2 = sd.cont, 
+     n2 = n.cont,
+     measure = "SMD", 
+     PES = 0.2,
+     group = c("Psychotherapy", "Control"))
+```
+
+\
+
+**Step 3.** Visualize sequential analysis
+
+``` {r, eval = FALSE}
+DoSA(Fleiss1993cont, 
+     source = study, 
+     time = year,
+     m1 = mean.psyc, 
+     sd1 = sd.psyc, 
+     n1 = n.psyc,
+     m2 = mean.cont, 
+     sd2 = sd.cont, 
+     n2 = n.cont,
+     measure = "SMD", 
+     PES = 0.2,
+     group = c("Psychotherapy", "Control"))
+```
+
+``` {r plot-sequential, fig.cap = "An example for sequential analysis", eval = TRUE, echo = FALSE, warning = FALSE, message = FALSE, results = "hide", fig.height = 6, fig.width = 8, fig.align = "center", out.width = "100%"}
+data("Fleiss1993cont")
+dataFleiss1993cont <- Fleiss1993cont
+DoSA(Fleiss1993cont, 
+     source = study, 
+     time = year,
+     m1 = mean.psyc, 
+     sd1 = sd.psyc, 
+     n1 = n.psyc,
+     m2 = mean.cont, 
+     sd2 = sd.cont, 
+     n2 = n.cont,
+     measure = "SMD", 
+     PES = 0.2,
+     group = c("Psychotherapy", "Control"), 
+     plot = TRUE)
+```
+
+\
+
+Observed sequential analysis is recommended for those pooled analysis without pre-specified parameters for sequential analysis. In this situation, thus, Step 2 should use following syntax:
+
+``` {r, eval = FALSE}
+DoOSA(Fleiss1993cont, 
+     source = study, 
+     time = year,
+     m1 = mean.psyc, 
+     sd1 = sd.psyc, 
+     n1 = n.psyc,
+     m2 = mean.cont, 
+     sd2 = sd.cont, 
+     n2 = n.cont,
+     measure = "SMD", 
+     group = c("Psychotherapy", "Control"))
+```
+
+``` {r result-OSA, eval = TRUE, echo = FALSE, warning = FALSE, message = FALSE}
+data("Fleiss1993cont")
+dataFleiss1993cont <- Fleiss1993cont
+DoOSA(Fleiss1993cont, 
+     source = study, 
+     time = year,
+     m1 = mean.psyc, 
+     sd1 = sd.psyc, 
+     n1 = n.psyc,
+     m2 = mean.cont, 
+     sd2 = sd.cont, 
+     n2 = n.cont,
+     measure = "SMD", 
+     group = c("Psychotherapy", "Control"))
+```
+
+\
+
+Plot for observed sequential analysis can be simply illustrated using is the following syntax instead of step 3 abovementioned:
+
+``` {r, eval = FALSE}
+DoOSA(Fleiss1993cont, 
+     source = study, 
+     time = year,
+     m1 = mean.psyc, 
+     sd1 = sd.psyc, 
+     n1 = n.psyc,
+     m2 = mean.cont, 
+     sd2 = sd.cont, 
+     n2 = n.cont,
+     measure = "SMD", 
+     group = c("Psychotherapy", "Control"),
+     plot = TRUE)
+```
+
+``` {r plot-OSA, fig.cap = "An example for observed sequential analysis plot", eval = TRUE, echo = FALSE, warning = FALSE, message = FALSE, results = "hide", fig.height = 6, fig.width = 8, fig.align = "center", out.width = "100%"}
+data("Fleiss1993cont")
+dataFleiss1993cont <- Fleiss1993cont
+DoOSA(Fleiss1993cont, 
+     source = study, 
+     time = year,
+     m1 = mean.psyc, 
+     sd1 = sd.psyc, 
+     n1 = n.psyc,
+     m2 = mean.cont, 
+     sd2 = sd.cont, 
+     n2 = n.cont,
+     measure = "SMD", 
+     group = c("Psychotherapy", "Control"),
+     plot = TRUE)
+```

@@ -73,7 +73,7 @@ TestDiscordance <- function(n,
     dataCases   <- n
     dataSE      <- se
 
-    if (isFALSE(is.null(study))) {
+    if (base::isFALSE(is.null(study))) {
       dataStudy <- study
     } else {
       dataStudy <- paste(rep("Study ", length(n)),
@@ -92,12 +92,12 @@ TestDiscordance <- function(n,
 
   }
 
-  infoNumStud <- length(dataCases)
+  infoNumStdy <- length(dataCases)
   infoMethod  <- method
   infoCOVal   <- coval
   infoTot     <- ifelse(tot == 999,
-                        ifelse(infoNumStud < 11, 1,
-                               floor(infoNumStud / 10)
+                        ifelse(infoNumStdy < 11, 1,
+                               floor(infoNumStdy / 10)
                                ),
                         tot)
 
@@ -112,15 +112,15 @@ TestDiscordance <- function(n,
   # 02. CHECK arguments -----
   lgcData   <- ifelse(is.null(data),
                       FALSE,
-                      ifelse(isFALSE(length(data) >= 3),
+                      ifelse(base::isFALSE(length(data) >= 3),
                              TRUE, FALSE)
                       )
 
   lgcN      <- ifelse(is.null(dataCases),
                       TRUE,
-                      ifelse(isFALSE(is.numeric(dataCases)),
+                      ifelse(base::isFALSE(is.numeric(dataCases)),
                              TRUE,
-                             ifelse(isFALSE(min(dataCases) > 0),
+                             ifelse(base::isFALSE(min(dataCases) > 0),
                                     TRUE,
                                     ifelse("FALSE" %in% names(table(dataCases %% 1 == 0)),
                                            TRUE, FALSE)
@@ -132,7 +132,7 @@ TestDiscordance <- function(n,
                       TRUE,
                       ifelse(length(dataSE) != length(dataCases),
                              TRUE,
-                             ifelse(isFALSE(is.numeric(dataSE)),
+                             ifelse(base::isFALSE(is.numeric(dataSE)),
                                     TRUE,
                                     ifelse(min(dataCases) < 0,
                                            TRUE, FALSE)
@@ -161,9 +161,9 @@ TestDiscordance <- function(n,
 
   lgcTotVal <- ifelse(is.null(tot),
                       TRUE,
-                      ifelse(isFALSE(is.numeric(tot)),
+                      ifelse(base::isFALSE(is.numeric(tot)),
                              TRUE,
-                             ifelse(isFALSE(tot >= 0),
+                             ifelse(base::isFALSE(tot >= 0),
                                     TRUE,
                                     ifelse(tot %% 1 == 0,
                                            FALSE, TRUE)
@@ -244,7 +244,7 @@ TestDiscordance <- function(n,
 
   # 04. TEST discordance in ranks by sample size and standard error -----
     rsltProp   <- binom.test(x = sum(dataDiscordanceProp),
-                             n = infoNumStud,
+                             n = infoNumStdy,
                              p = infoCOVal,
                              alternative = "greater")
 
@@ -270,7 +270,7 @@ TestDiscordance <- function(n,
 
 
   # 05. BUILD a data frame of the DiSS -----
-    dataRankPlot <- as.data.frame(cbind(seq         = c(1:infoNumStud),
+    dataRankPlot <- as.data.frame(cbind(seq         = c(1:infoNumStdy),
                                         study       = dataStudy,
                                         obs         = dataCases,
                                         se          = dataSE,
@@ -294,8 +294,8 @@ TestDiscordance <- function(n,
                                         0.5,
                                         dataRankPlot$rankSE - infoTot - 0.5)
     dataRankPlot$xRRankTheory <- dataRankPlot$rankSEInvrs + 0.5
-    dataRankPlot$yTRankTheory <- ifelse(dataRankPlot$rankSE + infoTot + 0.5 > infoNumStud,
-                                        infoNumStud + 0.5,
+    dataRankPlot$yTRankTheory <- ifelse(dataRankPlot$rankSE + infoTot + 0.5 > infoNumStdy,
+                                        infoNumStdy + 0.5,
                                         dataRankPlot$rankSE + infoTot + 0.5)
     dataRankPlot$colorObs     <- ifelse(abs(dataRankPlot$rankObs - dataRankPlot$rankSEInvrs) <= infoTot,
                                        "dodgerblue2", color)
@@ -332,7 +332,7 @@ TestDiscordance <- function(n,
 
 
   # 07. RETURN information of function `TestDiscordance()` -----
-    cat(paste("\n"), fill = TRUE, sep = "")
+    #cat(paste("\n"), fill = TRUE, sep = "")
     cat(paste("Summary of discordance in ranks test:\n",
               ifelse(infoMethod == "prop",
                      " Statistics (Bernoulli exact): ",
@@ -371,8 +371,8 @@ TestDiscordance <- function(n,
   # 08. ILLUSTRATE discordance plot -----
     if (plot == TRUE) {
 
-      plot(c(1, infoNumStud * 1.25),
-           c(-infoNumStud/10, infoNumStud),
+      plot(c(1, infoNumStdy * 1.25),
+           c(-infoNumStdy/10, infoNumStdy),
            type = "n", frame = FALSE,
            xaxt = "n", yaxt = "n",
            xlab = "", ylab = "")
@@ -389,8 +389,8 @@ TestDiscordance <- function(n,
 
       # Observations
       points(dataRankPlot$rankSE, dataRankPlot$rankObs,
-             cex = ifelse(infoNumStud < 11, 3,
-                          1/infoNumStud * 30),
+             cex = ifelse(infoNumStdy < 11, 3,
+                          1/infoNumStdy * 30),
              col = dataRankPlot$colorObs,
              pch = 22, bg = dataRankPlot$colorObs)
 
@@ -398,10 +398,10 @@ TestDiscordance <- function(n,
            labels = as.integer(dataRankPlot$rankObs))
       axis(side = 2, at = dataRankPlot$rankSE,
            labels = dataRankPlot$rankSEInvrs, las = 2)
-      text(c(1:infoNumStud), 0.3,
+      text(c(1:infoNumStdy), 0.3,
            dataRankPlot$study,
-           cex = ifelse(infoNumStud < 11, 1,
-                        1 / sqrt(infoNumStud / 10)),
+           cex = ifelse(infoNumStdy < 11, 1,
+                        1 / sqrt(infoNumStdy / 10)),
            pos = 1, srt = 45)
       mtext("Discordance plot", side = 1, cex = 1.5, font = 2,
             line = ifelse(max(nchar(dataRankPlot$study)) < 11, 2,
@@ -409,52 +409,52 @@ TestDiscordance <- function(n,
                                  max(nchar(dataRankPlot$study)) / 5,
                                  4)
             ),
-            at = infoNumStud / 2 + ifelse(infoNumStud %% 2 == 0,
+            at = infoNumStdy / 2 + ifelse(infoNumStdy %% 2 == 0,
                                           0, 0.5)
       )
       mtext("Rank of observed study size", side = 3, cex = 1.2,
-            line = 3, at = infoNumStud / 2 + ifelse(infoNumStud %% 2 == 0,
+            line = 3, at = infoNumStdy / 2 + ifelse(infoNumStdy %% 2 == 0,
                                                     0, 0.5)
       )
       mtext("Rank of theoretical study size", side = 2, cex = 1.2,
-            line = 3, at = infoNumStud / 2 + ifelse(infoNumStud %% 2 == 0,
+            line = 3, at = infoNumStdy / 2 + ifelse(infoNumStdy %% 2 == 0,
                                                     0.5, 0)
       )
 
       # Legend
-      points(infoNumStud * 1.07, infoNumStud,
-             cex = ifelse(infoNumStud < 11, 1,
-                          1 / infoNumStud * 10),
+      points(infoNumStdy * 1.07, infoNumStdy,
+             cex = ifelse(infoNumStdy < 11, 1,
+                          1 / infoNumStdy * 10),
              col = "dodgerblue2",
              pch = 22, bg = "dodgerblue2")
-      text(infoNumStud * 1.08, infoNumStud,
+      text(infoNumStdy * 1.08, infoNumStdy,
            "Observed accordance", pos = 4)
 
-      points(infoNumStud * 1.07, infoNumStud * 0.8,
-             cex = ifelse(infoNumStud < 11, 1,
-                          1 / infoNumStud * 10),
+      points(infoNumStdy * 1.07, infoNumStdy * 0.8,
+             cex = ifelse(infoNumStdy < 11, 1,
+                          1 / infoNumStdy * 10),
              col = "lightcyan",
              pch = 22, bg = "lightcyan")
-      text(infoNumStud * 1.08, infoNumStud * 0.8,
+      text(infoNumStdy * 1.08, infoNumStdy * 0.8,
            "Accordance area", pos = 4)
 
-      points(infoNumStud * 1.07, infoNumStud * 0.6,
-             cex = ifelse(infoNumStud < 11, 1,
-                          1 / infoNumStud * 10),
+      points(infoNumStdy * 1.07, infoNumStdy * 0.6,
+             cex = ifelse(infoNumStdy < 11, 1,
+                          1 / infoNumStdy * 10),
              col = color,
              pch = 22, bg = color)
-      text(infoNumStud * 1.08, infoNumStud * 0.6,
+      text(infoNumStdy * 1.08, infoNumStdy * 0.6,
            "Observed discordance", pos = 4)
 
-      points(infoNumStud * 1.07, infoNumStud * 0.4,
-             cex = ifelse(infoNumStud < 11, 1,
-                          1 / infoNumStud * 10),
+      points(infoNumStdy * 1.07, infoNumStdy * 0.4,
+             cex = ifelse(infoNumStdy < 11, 1,
+                          1 / infoNumStdy * 10),
              col = "lavenderblush",
              pch = 22, bg = "lavenderblush")
-      text(infoNumStud * 1.08, infoNumStud * 0.4,
+      text(infoNumStdy * 1.08, infoNumStdy * 0.4,
            "Discordance area", pos = 4)
 
-      text(infoNumStud * 1.08, infoNumStud * 0.2,
+      text(infoNumStdy * 1.08, infoNumStdy * 0.2,
            paste("Summary \n",
                  "discordance test:\n",
                  " Statistics ",

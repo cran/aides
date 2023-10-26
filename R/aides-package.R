@@ -21,15 +21,16 @@
 #' \itemize{
 #'  \item \href{https://cran.r-project.org/src/contrib/Archive/boot/boot_1.3-28.tar.gz}{\emph{boot} (version 1.3-28)}
 #'  \item \href{https://cran.r-project.org/src/contrib/Archive/metafor/metafor_3.8-1.tar.gz}{\emph{metafor} (version 3.8-1)}
-#'  \item \href{https://cran.r-project.org/src/contrib/Archive/meta/meta_6.2-1.tar.gz}{\emph{meta} (version 6.2-3)}
+#'  \item \href{https://cran.r-project.org/src/contrib/Archive/meta/meta_6.2-1.tar.gz}{\emph{meta} (version 6.2-1)}
 #' }
 #'
 #'
 #' @details
-#' Current version consists of four functions, including three functions for
+#' Current version consists of seven functions, including seven functions for
 #' examining fundamental assumptions before test of small-study effects (i.e.
-#' function \code{\link{TestDisparity}}, \code{\link{PlotDisparity}}, and \code{\link{TestDiscordance}})
-#' and a function for performing sequential analysis (i.e. \code{\link{DoSA}}).
+#' function \code{\link{PlotDistrSS}}, \code{\link{TestDisparity}}, \code{\link{PlotDisparity}}, and \code{\link{TestDiscordance}})
+#' and three functions for performing sequential analysis (i.e. \code{\link{DoSA}}, \code{\link{DoOSA}},
+#' and \code{\link{PlotOSA}}).
 #'
 #' @name aides-package
 #'
@@ -39,10 +40,13 @@
 #'
 #'
 ## usethis namespace: start
+#' @importFrom boot boot
+#' @importFrom boot boot.ci
 #' @importFrom boot inv.logit
 #' @importFrom graphics arrows
 #' @importFrom graphics axis
 #' @importFrom graphics barplot
+#' @importFrom graphics boxplot
 #' @importFrom graphics lines
 #' @importFrom graphics mtext
 #' @importFrom graphics par
@@ -59,6 +63,8 @@
 #' @importFrom grDevices recordPlot
 #' @importFrom grDevices rgb
 #' @importFrom stats binom.test
+#' @importFrom stats density
+#' @importFrom stats dnorm
 #' @importFrom stats IQR
 #' @importFrom stats median
 #' @importFrom stats pnorm
@@ -66,6 +72,7 @@
 #' @importFrom stats qnorm
 #' @importFrom stats qt
 #' @importFrom stats quantile
+#' @importFrom stats rnorm
 #' @importFrom stats sd
 #' @importFrom stats shapiro.test
 #' @importFrom stats wilcox.test

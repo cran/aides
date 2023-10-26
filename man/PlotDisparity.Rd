@@ -11,13 +11,18 @@ PlotDisparity(
   lgcTtlX = TRUE,
   lgcTtlY = TRUE,
   lgcLgnd = TRUE,
+  lgcDtls = FALSE,
   lgcLblZn = TRUE,
+  txtLbl = NULL,
   szFntTtl = NULL,
   szFntTtlX = NULL,
   szFntTtlY = NULL,
   szFntAxsX = NULL,
+  szFntEC = NULL,
   szFntAxsY = NULL,
   szFntLgnd = NULL,
+  szFntLbl = NULL,
+  szFntLblEC = NULL,
   szPnt = NULL,
   szPntEC = NULL,
   szPntNEC = NULL,
@@ -37,11 +42,16 @@ PlotDisparity(
   clrVrtnM = NULL,
   clrVrtnH = NULL,
   clrLblZn = NULL,
+  clrLbl = NULL,
+  clrLblEC = NULL,
   clrPnt = NULL,
   clrPntEC = NULL,
   clrPntNEC = NULL,
   clrLn0 = NULL,
   clrLnEC = NULL,
+  clrLnCV = NULL,
+  anglAxsX = NULL,
+  anglLbl = NULL,
   sort = NULL
 )
 }
@@ -65,8 +75,17 @@ variability and outliers based on:
 
 \item{lgcLgnd}{LOGIC value for indicating whether to show legend.}
 
+\item{lgcDtls}{LOGIC value for indicating whether to show full information
+of the disparity test rather than plot-related information.}
+
 \item{lgcLblZn}{LOGIC value for indicating whether to show labels of
 variability zone.}
+
+\item{txtLbl}{CHARACTER for indicating numeric information of each study
+disparity plot (outlier). Current version provides options
+for no label (NULL), numbers of cases ("n"), numbers of
+excessive cases ("n.excessive"), and proportion of excessive
+cases ("prop.excessive").}
 
 \item{szFntTtl}{NUMERIC value for indicating font size of main title.}
 
@@ -76,9 +95,18 @@ variability zone.}
 
 \item{szFntAxsX}{NUMERIC value(s) for indicating font size of study label(s).}
 
+\item{szFntEC}{NUMERIC value(s) for indicating font size of study label(s)
+for those studies with excessive case.}
+
 \item{szFntAxsY}{NUMERIC value for indicating font size of scale on axis Y.}
 
 \item{szFntLgnd}{NUMERIC value for indicating font size of legend.}
+
+\item{szFntLbl}{NUMERIC value(s) for indicating font size of label(s) for
+observed value(s).}
+
+\item{szFntLblEC}{NUMERIC value(s) for indicating font size of label(s) for
+observed value(s) with excessive case.}
 
 \item{szPnt}{NUMERIC value(s) for indicating size(s) of observed point(s).}
 
@@ -126,6 +154,10 @@ excessive case(s).}
 
 \item{clrLblZn}{CHARACTER of color name(s) for variability zone(s).}
 
+\item{clrLbl}{CHARACTER of color name(s) for observed value(s).}
+
+\item{clrLblEC}{CHARACTER of color name(s) for observed value(s) of studies with excessive cases.}
+
 \item{clrPnt}{CHARACTER of color name(s) for every observed point.}
 
 \item{clrPntEC}{CHARACTER of a color name for proportion of excessive cases.}
@@ -138,6 +170,15 @@ case.}
 
 \item{clrLnEC}{CHARACTER of color name for vertical line(s) of excessive
 case(s).}
+
+\item{clrLnCV}{CHARACTER of color name for line of the association between
+standard deviation and cases.}
+
+\item{anglAxsX}{NUMERIC value between 0 and 360 for indicating angle of study
+labels on x axis on the disparity plot (outlier).}
+
+\item{anglLbl}{NUMERIC value between 0 and 360 for indicating angle of
+observed values on the disparity plot (outlier).}
 
 \item{sort}{CHARACTER of data sorting reference for disparity plot.
 Currentversion consists of "time", "size", and "excessive"

@@ -1,10 +1,10 @@
-#' @title Sequential analysis.
+#' @title Observed sequential analysis.
 #'
 #' @author Enoch Kang
 #'
 #' @description
-#' **DoSA()** is a function for conducting sequential analysis.
-#'#'
+#' **DoOSA()** is a function for conducting observed sequential analysis.
+#'
 #' @param data    DATAFRAME consists of relevant information.
 #' @param source  CHARACTER for labeling the included data sets.
 #' @param time    NUMERIC values of time sequence.
@@ -33,47 +33,41 @@
 #'                the current version also supports "REML" and "PM" methods for
 #'                calculating heterogeneity estimator.
 #' @param pooling CHARACTER for indicating which method has to be used for pooling
-#'                binary data. Besides, current version also supports "MH" and
-#'                "Peto" for binary data pooling.
+#'                binary data. Current version consists of "IV" and "MH" for
+#'                binary data pooling.
 #' @param alpha   NUMERIC value between 0 to 1 for indicating the assumed type I
 #'                error.
 #' @param beta    NUMERIC value between 0 to 1 for indicating the assumed type II
 #'                error.
-#' @param PES     NUMERIC value for indicating the presumed meaningful effect size.
-#' @param PV      NUMERIC value for indicating the presumed variance of the
-#'                meaningful effect size. Current version allows a numeric value,
-#'                "post-hoc", and "PES" based on different considerations.
 #' @param adjust  CHARACTER for indicating how to adjust optimal information size.
 #'                Current version consists of "none", "D2", "I2", "CHL", "CHM", and
 #'                "CHH" for the adjustment.
 #' @param plot    LOGIC value for indicating whether to illustrate alpha-spending
 #'                monitoring plot.
-#' @param id      LOGIC value for indicating whether to label each data source.
-#' @param invert  LOGIC value for indicating whether to invert plot.
-#' @param BSB     LOGIC value for indicating whether to illustrate beta-spending
-#'                boundaries.
 #'
 #'
-#' @details
-#' 1. Basic information for the function **DoSA()**:
-#' **DoSA()** supports sequential analysis of aggregate data synthesis based on
-#' head-to-head comparison using either binary or continuous data in each group.
-#' Minimum information for the function **DoSA()** encompasses a data set of
-#' study-level data, and information for analysis settings in terms of time
-#' sequence, presumed meaningful effect size, and presumed variance of the
-#' meaningful effect size. Operative points of using function **DoSA()** are listed
-#' below:
+#'#' @details
+#' 1. Basic information for the function **DoOSA()**:
+#' **DoOSA()** supports observed sequential analysis of aggregate data synthesis
+#' based on head-to-head comparison using either binary or continuous data in
+#' each group. Minimum information for the function **DoOSA()** encompasses a data
+#' set of study-level data, and time sequence. Operative points of using function
+#' **DoOSA()** are listed below:
 #'
 #' 1.1. Parameter `data` should be used for assigning a data set.
+#'
 #' 1.2. Study-level data have to be assigned according to outcome type:
+#'
 #' 1.2.1. **For dichotomous outcome**: Parameter `n1` and `n2` should be defined
 #' with parameter `r1` and `r2`.
+#'
 #' 1.2.2. **For continuous outcome**: parameter `n1` and `n2` should be defined
 #' with parameter `m1`, `sd1`, `m2`, `sd2`.
-#' 1.3. Parameter `source`, `time`, `PES`, and `PV` are required for conducting
-#' sequential analysis. Other parameters are auxiliary.
 #'
-#' 2. Default in the function **DoSA()**
+#' 1.3. Parameter `source` and `time` are required for doing observed sequential
+#' analysis. Other parameters are auxiliary.
+#'
+#' 2. Default in the function **DoOSA()**
 #' Certain defaults have been elucidated in the introductory section about the
 #' parameters, but some of them need to be elaborated upon due to their complexity.
 #'
@@ -107,21 +101,18 @@
 #'
 #'
 #' @return
-#' **DoSA()** returns a summary on the result of sequential analysis.
+#' **DoOSA()** returns a summary on the result of sequential analysis.
 #' \item{studies}{Numbers of studies included in the sequential analysis.}
 #' \item{AIS}{Acquired information size refers to the total sample size in the
 #'       sequential analysis.}
 #' \item{alpha}{A numeric value of type I error for the sequential analysis.}
 #' \item{beta}{A numeric value of type II error for the sequential analysis.}
-#' \item{PES}{A numeric value of presumed meaningful effect size for the
-#'       sequential analysis.}
-#' \item{RRR}{A numeric value of relative risk reduction.}
-#' \item{variance}{A numeric value of presumed variance of the meaningful effect
-#'       size for the sequential analysis.}
+#' \item{OES}{A numeric value of observed effect size of meta-analysis.}
+#' \item{variance}{A numeric value of variance of meta-analysis.}
 #' \item{diversity}{A numeric value to show diversity in the pooled analysis.}
 #' \item{AF}{A numeric value of adjustment factor.}
-#' \item{RIS.org}{A numeric value for required information size without adjustment.}
-#' \item{RIS.adj}{A numeric value for adjusted required information size.}
+#' \item{OIS.org}{A numeric value for optimal information size without adjustment.}
+#' \item{OIS.adj}{A numeric value for optimal information size with adjustment.}
 #' \item{frag}{A vector of fraction of each study included in the sequential
 #'       analysis.}
 #' \item{weight}{A vector of weight of each study included in the sequential
@@ -150,9 +141,8 @@
 #' https://www.ncss.com/wp-content/themes/ncss/pdf/Procedures/NCSS/Group-Sequential_Analysis_for_Two_Proportions.pdf
 #'
 #'
-#' @seealso \code{\link{DoOSA}}, \code{\link{PlotOSA}},
+#' @seealso \code{\link{DoSA}}, \code{\link{PlotOSA}}
 #'          \code{\link{TestDisparity}}, \code{\link{TestDiscordance}}
-#'
 #'
 #' @examples
 #' ## Not run:
@@ -160,21 +150,20 @@
 #' library(meta)
 #' data("Fleiss1993cont")
 #'
-#' # 2. Perform sequential analysis
-#'  output <- DoSA(Fleiss1993cont, study, year,
-#'                 m1 = mean.psyc, sd1 = sd.psyc, n1 = n.psyc,
-#'                 m2 = mean.cont, sd2 = sd.cont, n2 = n.cont,
-#'                 measure = "SMD", PES = 0.5,
-#'                 group = c("Psychotherapy", "Control"), plot = TRUE)
+#' # 2. Perform observed sequential analysis
+#' DoOSA(Fleiss1993cont, study, year,
+#'       m1 = mean.psyc, sd1 = sd.psyc, n1 = n.psyc,
+#'       m2 = mean.cont, sd2 = sd.cont, n2 = n.cont,
+#'       measure = "SMD",
+#'       group = c("Psychotherapy", "Control"))
 #'
 #' ## End(Not run)
 #'
-#'
-#' @export DoSA
+#' @export DoOSA
 
 
 
-DoSA <- function(data    = NULL,
+DoOSA <- function(data    = NULL,
                  source  = NULL,
                  time    = NULL,
                  n       = NULL,
@@ -197,13 +186,8 @@ DoSA <- function(data    = NULL,
                  pooling = "IV",
                  alpha   = 0.05,
                  beta    = 0.2,
-                 PES     = "post-hoc",
-                 PV      = "post-hoc",
                  adjust  = "none",
-                 plot    = FALSE,
-                 id      = FALSE,
-                 invert  = FALSE,
-                 BSB     = FALSE) {
+                 plot    = FALSE) {
 
   # 01. CHECK arguments -----
   lgcInData   <- ifelse(is.null(data), FALSE, TRUE)
@@ -220,27 +204,25 @@ DoSA <- function(data    = NULL,
   lgcInM2     <- ifelse(is.null(substitute(m2)), FALSE, TRUE)
   lgcInSD2    <- ifelse(is.null(substitute(sd2)), FALSE, TRUE)
   lgcInN2     <- ifelse(is.null(substitute(n2)), FALSE, TRUE)
-  lgcInPES    <- ifelse(is.null(substitute(PES)), FALSE, TRUE)
-  lgcInPV     <- ifelse(is.null(substitute(PV)), FALSE, TRUE)
 
   lgcReq1     <- ifelse(lgcInData == TRUE, TRUE, FALSE)
   lgcReq2     <- ifelse(FALSE %in% c(lgcInN, lgcInES, lgcInSE), FALSE, TRUE)
   lgcReq3     <- ifelse(FALSE %in% c(lgcInR1, lgcInN1, lgcInR2, lgcInN2), FALSE, TRUE)
   lgcReq4     <- ifelse(FALSE %in% c(lgcInM1, lgcInSD1, lgcInN1, lgcInM2, lgcInSD2, lgcInN2), FALSE, TRUE)
-  lgcReq5     <- ifelse(FALSE %in% c(lgcInSource, lgcInTime, lgcInPES, lgcInPV), FALSE, TRUE)
+  lgcReq5     <- ifelse(FALSE %in% c(lgcInSource, lgcInTime), FALSE, TRUE)
 
   lgcStop1     <- ifelse(lgcReq1 == TRUE, FALSE, TRUE)
   infoLgcStop1 <- ifelse(lgcStop1 == TRUE,
-                        'Parameter "data" should be used for assigning a data set.',
+                        'Argument "data" should be used for assigning a data set.',
                         "")
   lgcStop2     <- ifelse(TRUE %in% c(lgcReq2, lgcReq3, lgcReq4), FALSE, TRUE)
-  infoLgcStop2 <- ifelse(lgcStop2 == TRUE, 'Parameter "n", "es", and "se" should be defined for the analysis based on study-level data.
-                        Parameter "n1" and "n2" should be defined with "r1" and "r2" for dichotomous outcome based on arm-level data.
-                        Or parameter "n1" and "n2" should be defined with "m1", "sd1", "m2", "sd2" for continuous outcome based on arm-level data.',
+  infoLgcStop2 <- ifelse(lgcStop2 == TRUE, 'Arguments "n", "es", and "se" should be defined for the analysis based on study-level data.
+                        Arguments "n1" and "n2" should be defined with "r1" and "r2" for dichotomous outcome based on arm-level data.
+                        Or arguments "n1" and "n2" should be defined with "m1", "sd1", "m2", "sd2" for continuous outcome based on arm-level data.',
                         "")
   lgcStop3     <- ifelse(lgcReq5 == TRUE, FALSE, TRUE)
   infoLgcStop3 <- ifelse(lgcStop3 == FALSE,
-                        'Parameter "source", "time", "PES", and "PV" are required',
+                        'Argument "source" and "time" are required',
                         "")
 
   if (lgcStop1 | lgcStop2 | lgcStop3)
@@ -250,6 +232,11 @@ DoSA <- function(data    = NULL,
                sep = "")
          )
 
+  setPar <- par(no.readonly = TRUE)
+  on.exit(par(setPar))
+  infoLgcWarning <- getOption("warn")
+  options(warn = -1)
+  on.exit(options(warn = infoLgcWarning))
 
 
   # 02. DEFINE core data -----
@@ -320,13 +307,8 @@ DoSA <- function(data    = NULL,
                          )
   infoAlpha    <- alpha
   infoBeta     <- beta
-  infoPES      <- PES
-  infoPV       <- PV
   infoAdjust   <- adjust
   infoPlot     <- plot
-  infoID       <- id
-  infoInvert   <- invert
-  infoBSB      <- BSB
 
   if (infoRef == 1) {
     infoGroup[c(1, 2)] <- infoGroup[c(2, 1)]
@@ -443,24 +425,9 @@ DoSA <- function(data    = NULL,
   #infoESMA  <- ifelse(infoModel == "random", outMA$TE.random, outMA$TE.fixed)
   #infoSEMA  <- ifelse(infoModel == "random", outMA$seTE.random, outMA$seTE.fixed)
   #infoVarMA <- (infoSEMA * sqrt(infoCases - 2))^2
-  infoPES   <- ifelse(infoPES == "post-hoc", infoESMA, infoPES)
-  #infoPV    <- ifelse("post-hoc" %in% c(infoPES, infoPV), infoVarMA, infoPV)
-  infoVarObs <- infoVarMA
-
-  if (infoPV == "post-hoc") {
-    infoPV <- infoVarMA
-  } else if (infoPV == "PES") {
-    # Variance of binary outcome based on presumed effect size -----------------
-    infoPV     <- infoVarMA
-    if (lgcReq3) {
-      infoRRR   <- abs(infoPES) / infoProp1
-      infoProp2 <- (infoPES / infoProp1 * infoProp1) + infoProp1
-      infoPV    <- (infoProp2 + infoProp1) / 2 * (1 - (infoProp2 + infoProp1) / 2)
-    }
-  }
-  #--------------------------------------------------------------------
-
-  infoI2 <- outMA$I2
+  infoOES   <- infoESMA
+  infoOV    <- infoVarMA
+  infoI2    <- outMA$I2
 
   # 04. DO sequential analysis -----
   # alpha spending boundary (NCSS 710 Group-Sequential Analysis for Two Proportions 710-17)
@@ -507,83 +474,78 @@ DoSA <- function(data    = NULL,
     infoAF <- 4
   }
 
-  ## 04.04 Calculate required information size (RIS)
-  #infoRIS      <- 4 * ((qnorm(1 - (infoAlpha / 2)) + abs(qnorm(infoBeta)))^2) * (infoSEMA * sqrt(infoCases - 2))^2 / infoPES^2
-  #infoRIS      <- 4 * ((qnorm(1 - (infoAlpha / 2)) + abs(qnorm(infoBeta)))^2) * ((infoSEMA * sqrt(infoCases))^2 / (infoPES^2))
-  #infoRIS      <- 4 * ((qnorm(1 - (infoAlpha / 2)) + abs(qnorm(1 - infoBeta)))^2) * ((infoSEMA * sqrt(infoCases))^2 / (infoPES^2))
-  #infoRIS      <- 4 * ((qnorm(1 - (infoAlpha / 2)) + abs(qnorm(infoBeta)))^2) * ((infoSEMA * sqrt(infoCases))^2 / (infoPES^2))
-  # X infoRIS      <- 4 * ((qnorm(1 - (infoAlpha / 2)) + abs(qnorm(infoBeta)))^2) * (infoSEMA * sqrt(infoCases))^2 / (infoPES)
-  #infoRIS      <- 4 * ((qnorm(1 - (infoAlpha / 2)) + abs(qnorm(infoBeta)))^2) / (infoPES^2)
-  # X infoRIS      <- 4 * ((qnorm(1 - (infoAlpha / 2)) + abs(qnorm(infoBeta)))^2) * infoSEMA / infoPES^2
-  #infoRIS      <- (1 / (1 - infoDivers)) * 4 * ((qnorm(1 - (infoAlpha / 2)) + abs(qnorm(infoBeta)))^2) * ((infoSEMA * sqrt(infoCases))^2 / (infoPES^2))
-  #infoRIS      <- 4 * ((qnorm(1 - (infoAlpha / 2)) + abs(qnorm(infoBeta)))^2) * infoPV / (infoPES^2)
-  infoRISOrg <- 4 * ((qnorm(1 - (infoAlpha / 2)) + abs(qnorm(1 - infoBeta)))^2) * infoPV / infoPES^2
+  ## 04.04 Calculate optimal information size (OIS)
+  #infoOIS      <- 4 * ((qnorm(1 - (infoAlpha / 2)) + abs(qnorm(infoBeta)))^2) * (infoSEMA * sqrt(infoCases - 2))^2 / infoOES^2
+  #infoOIS      <- 4 * ((qnorm(1 - (infoAlpha / 2)) + abs(qnorm(infoBeta)))^2) * ((infoSEMA * sqrt(infoCases))^2 / (infoOES^2))
+  #infoOIS      <- 4 * ((qnorm(1 - (infoAlpha / 2)) + abs(qnorm(1 - infoBeta)))^2) * ((infoSEMA * sqrt(infoCases))^2 / (infoOES^2))
+  #infoOIS      <- 4 * ((qnorm(1 - (infoAlpha / 2)) + abs(qnorm(infoBeta)))^2) * ((infoSEMA * sqrt(infoCases))^2 / (infoOES^2))
+  # X infoOIS      <- 4 * ((qnorm(1 - (infoAlpha / 2)) + abs(qnorm(infoBeta)))^2) * (infoSEMA * sqrt(infoCases))^2 / (infoOES)
+  #infoOIS      <- 4 * ((qnorm(1 - (infoAlpha / 2)) + abs(qnorm(infoBeta)))^2) / (infoOES^2)
+  # X infoOIS      <- 4 * ((qnorm(1 - (infoAlpha / 2)) + abs(qnorm(infoBeta)))^2) * infoSEMA / infoOES^2
+  #infoOIS      <- (1 / (1 - infoDivers)) * 4 * ((qnorm(1 - (infoAlpha / 2)) + abs(qnorm(infoBeta)))^2) * ((infoSEMA * sqrt(infoCases))^2 / (infoOES^2))
+  #infoOIS      <- 4 * ((qnorm(1 - (infoAlpha / 2)) + abs(qnorm(infoBeta)))^2) * infoOV / (infoOES^2)
+  infoOISOrg <- 4 * ((qnorm(1 - (infoAlpha / 2)) + abs(qnorm(1 - infoBeta)))^2) * infoOV / infoOES^2
 
   if (infoAdjust == "none") {
-    infoRIS    <- infoRISOrg
+    infoOIS    <- infoOISOrg
   } else {
-    infoRISAdj <- infoRISOrg * infoAF
-    infoRIS    <- infoRISAdj
+    infoOISAdj <- infoOISOrg * infoAF
+    infoOIS    <- infoOISAdj
   }
 
-  dataPlotSA <- as.data.frame(cbind(sample = c(ceiling(infoRIS/20):infoRIS),
-                                    frag   = c(ceiling(infoRIS/20):infoRIS) / infoRIS)
+  dataPlotOSA <- as.data.frame(cbind(sample = c(ceiling(infoOIS / 20):infoOIS),
+                                    frag   = c(ceiling(infoOIS / 20):infoOIS) / infoOIS)
                               )
-  dataPlotSA$aslb <- -qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(dataPlotSA$frag))) / 2); dataPlotSA$aslb <- ifelse(dataPlotSA$aslb == "-Inf", -10, dataPlotSA$aslb)
-  dataPlotSA$asub <-  qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(dataPlotSA$frag))) / 2); dataPlotSA$asub <- ifelse(dataPlotSA$asub == "Inf", 10, dataPlotSA$asub)
-  dataPlotSA$bsub <-  (qnorm(pnorm(qnorm((infoBeta)) / dataPlotSA$frag)) + (qnorm(pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(1))) - qnorm(pnorm(qnorm((infoBeta)) / sqrt(1))))); dataPlotSA$bsub <- ifelse(dataPlotSA$bsub < 0, 0, dataPlotSA$bsub)
-  dataPlotSA$bslb <- -(qnorm(pnorm(qnorm((infoBeta)) / dataPlotSA$frag)) + (qnorm(pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(1))) - qnorm(pnorm(qnorm((infoBeta)) / sqrt(1))))); dataPlotSA$bslb <- ifelse(dataPlotSA$bslb > 0, 0, dataPlotSA$bslb)
-  infoFragBSB     <- dataPlotSA[max(which(dataPlotSA$bsub == 0)), "frag"]
+  dataPlotOSA$aslb <- -qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(dataPlotOSA$frag))) / 2); dataPlotOSA$aslb <- ifelse(dataPlotOSA$aslb == "-Inf", -10, dataPlotOSA$aslb)
+  dataPlotOSA$asub <-  qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(dataPlotOSA$frag))) / 2); dataPlotOSA$asub <- ifelse(dataPlotOSA$asub == "Inf", 10, dataPlotOSA$asub)
+  dataPlotOSA$bsub <-  (qnorm(pnorm(qnorm((infoBeta)) / dataPlotOSA$frag)) + (qnorm(pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(1))) - qnorm(pnorm(qnorm((infoBeta)) / sqrt(1))))); dataPlotOSA$bsub <- ifelse(dataPlotOSA$bsub < 0, 0, dataPlotOSA$bsub)
+  dataPlotOSA$bslb <- -(qnorm(pnorm(qnorm((infoBeta)) / dataPlotOSA$frag)) + (qnorm(pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(1))) - qnorm(pnorm(qnorm((infoBeta)) / sqrt(1))))); dataPlotOSA$bslb <- ifelse(dataPlotOSA$bslb > 0, 0, dataPlotOSA$bslb)
+  infoFragBSB     <- dataPlotOSA[max(which(dataPlotOSA$bsub == 0)), "frag"]
 
 
-  dataSA <- dataIn[, c("source", "time", "n", "weight", "esCum", "seCum", "zCum")]
-  dataSA <- dataSA[order(dataSA$time), ]
+  dataOSA <- dataIn[, c("source", "time", "n", "weight", "esCum", "seCum", "zCum")]
+  dataOSA <- dataOSA[order(dataOSA$time), ]
 
-  if (infoInvert) {
-    dataSA$zCum <- dataSA$zCum * -1
-    infoPrefer  <- ifelse(infoPrefer == "small", "large", "small")
-  }
-
-  dataSA$nCum  <- 0
+  dataOSA$nCum  <- 0
 
   for (study.i in c(1:infoNumStud)) {
     if (study.i == 1) {
-      dataSA[study.i, "nCum"] <- dataSA[study.i, "n"]
+      dataOSA[study.i, "nCum"] <- dataOSA[study.i, "n"]
     } else {
-      dataSA[study.i, "nCum"] <- dataSA[study.i, "n"] + dataSA[study.i - 1, "nCum"]
+      dataOSA[study.i, "nCum"] <- dataOSA[study.i, "n"] + dataOSA[study.i - 1, "nCum"]
     }
   }
 
-  dataSA$frag  <- dataSA$nCum / infoRIS
-  dataSA$asub  <-  qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(dataSA$frag))) / 2); dataSA$asub <- ifelse(dataSA$asub == "Inf", 10, dataSA$asub)
-  dataSA$aslb  <- -qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(dataSA$frag))) / 2); dataSA$aslb <- ifelse(dataSA$aslb == "-Inf", -10, dataSA$aslb)
-  dataSA$bsub  <-  (qnorm(pnorm(qnorm((infoBeta)) / dataSA$frag)) + (qnorm(pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(1))) - qnorm(pnorm(qnorm((infoBeta)) / sqrt(1))))); dataSA$bsub <- ifelse(dataSA$bsub < 0, 0, dataSA$bsub)
-  dataSA$bslb  <- -(qnorm(pnorm(qnorm((infoBeta)) / dataSA$frag)) + (qnorm(pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(1))) - qnorm(pnorm(qnorm((infoBeta)) / sqrt(1))))); dataSA$bslb <- ifelse(dataSA$bslb > 0, 0, dataSA$bslb)
-  #dataSA$power <- 1 - pnorm(qnorm(1 - infoAlpha / 2) - dataSA$zCum) + pnorm(-qnorm(1 - infoAlpha/2) - dataSA$zCum); dataSA$power
-  #dataSA$power<-1-pnorm(qnorm(1-alpha/2*dataSA$frag)-dataSA$zCum)+pnorm(-qnorm(1-alpha/2*dataSA$frag)-dataSA$zCum);dataSA$power
-  #dataSA$power<-1-pnorm(qnorm(1-alpha/2)/sqrt(dataSA$frag)/2-dataSA$zCum)+pnorm(-qnorm(1-alpha/2)/sqrt(dataSA$frag)/2-dataSA$zCum);dataSA$power
+  dataOSA$frag  <- dataOSA$nCum / infoOIS
+  dataOSA$asub  <-  qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(dataOSA$frag))) / 2); dataOSA$asub <- ifelse(dataOSA$asub == "Inf", 10, dataOSA$asub)
+  dataOSA$aslb  <- -qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(dataOSA$frag))) / 2); dataOSA$aslb <- ifelse(dataOSA$aslb == "-Inf", -10, dataOSA$aslb)
+  dataOSA$bsub  <-  (qnorm(pnorm(qnorm((infoBeta)) / dataOSA$frag)) + (qnorm(pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(1))) - qnorm(pnorm(qnorm((infoBeta)) / sqrt(1))))); dataOSA$bsub <- ifelse(dataOSA$bsub < 0, 0, dataOSA$bsub)
+  dataOSA$bslb  <- -(qnorm(pnorm(qnorm((infoBeta)) / dataOSA$frag)) + (qnorm(pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(1))) - qnorm(pnorm(qnorm((infoBeta)) / sqrt(1))))); dataOSA$bslb <- ifelse(dataOSA$bslb > 0, 0, dataOSA$bslb)
+  #dataOSA$power <- 1 - pnorm(qnorm(1 - infoAlpha / 2) - dataOSA$zCum) + pnorm(-qnorm(1 - infoAlpha/2) - dataOSA$zCum); dataOSA$power
+  #dataOSA$power<-1-pnorm(qnorm(1-alpha/2*dataOSA$frag)-dataOSA$zCum)+pnorm(-qnorm(1-alpha/2*dataOSA$frag)-dataOSA$zCum);dataOSA$power
+  #dataOSA$power<-1-pnorm(qnorm(1-alpha/2)/sqrt(dataOSA$frag)/2-dataOSA$zCum)+pnorm(-qnorm(1-alpha/2)/sqrt(dataOSA$frag)/2-dataOSA$zCum);dataOSA$power
 
 
-  dataSA <- as.data.frame(dataSA)
+  dataOSA <- as.data.frame(dataOSA)
 
-  dataSA <- dataSA[order(dataSA$frag), ]
+  dataOSA <- dataOSA[order(dataOSA$frag), ]
 
-  infoColorASB <- ifelse(dataSA$nCum > infoRIS,
+  infoColorASB <- ifelse(dataOSA$nCum > infoOIS,
                             rgb(1, 1, 1, 1),
                             "gray25")
-  infoPosLabel <- ifelse(dataSA$zCum > 0, 4, 2)
+  infoPosLabel <- ifelse(dataOSA$zCum > 0, 4, 2)
 
-  if (max(dataSA$frag) < infoFragBSB) {
-    dataSA[nrow(dataSA) + 1, ] <- c(NA, NA, NA, NA, NA, NA, NA,
-                                    round(infoRIS * infoFragBSB, 0), infoFragBSB,
+  if (max(dataOSA$frag) < infoFragBSB) {
+    dataOSA[nrow(dataOSA) + 1, ] <- c(NA, NA, NA, NA, NA, NA, NA,
+                                    round(infoOIS * infoFragBSB, 0), infoFragBSB,
                                     qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(infoFragBSB))) / 2),
                                     -qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(infoFragBSB))) / 2),
                                     0, 0#,(1 - infoBeta) * infoFragBSB
                                     )
     }
 
-  dataSA[nrow(dataSA) + 1, ] <- c(NA, NA, NA, NA, NA, NA, NA,
-                                  round(infoRIS, 0), 1,
+  dataOSA[nrow(dataOSA) + 1, ] <- c(NA, NA, NA, NA, NA, NA, NA,
+                                  round(infoOIS, 0), 1,
                                   qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(1))) / 2),
                                   -qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(1))) / 2),
                                   qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(1))) / 2),
@@ -594,13 +556,13 @@ DoSA <- function(data    = NULL,
 
 
   ## 04.05 Adjusted MA -----
-  lgcMAAdj <- abs(dataSA$zCum[infoNumStud]) < abs(dataSA$asub[infoNumStud])
+  lgcMAAdj <- abs(dataOSA$zCum[infoNumStud]) < abs(dataOSA$asub[infoNumStud])
   infoLgcMAAdj  <- ifelse(lgcMAAdj,
                          "Adjusted confidence interval is suggested to be performed.",
                          "Adjusted confidence interval is not necessary to be performed.")
-  infoPValMAAdj <- pnorm(ifelse(dataSA$asub[infoNumStud] > 5.3,
+  infoPValMAAdj <- pnorm(ifelse(dataOSA$asub[infoNumStud] > 5.3,
                                 5.3,
-                                dataSA$asub[infoNumStud]))
+                                dataOSA$asub[infoNumStud]))
 
   if (lgcMAAdj) {
     if (lgcReq2) {
@@ -650,66 +612,76 @@ DoSA <- function(data    = NULL,
 
 
 
-  # 05. BUILD an DoSA object -----
-  lsDoSA <- list(name      = "Sequential analysis",
-                 studies   = infoNumStud,
-                 AIS       = infoCases,
-                 alpha     = infoAlpha,
-                 beta      = infoBeta,
-                 pooling   = infoPooling,
-                 PES       = infoPES,
-                 RRR       = ifelse(infoRRR < 0.001, "< 0.001", round(infoRRR, 3)),
-                 variance  = infoPV,
-                 diversity = infoDivers,
-                 AF        = ifelse(infoAdjust == "none",
-                                    "Undefined",
-                                    infoAF),
-                 RIS.org   = ceiling(infoRISOrg),
-                 RIS.adj   = ifelse(infoAdjust == "none",
-                                    "No adjusted",
-                                    ceiling(infoRISAdj))
-                 )
-  class(lsDoSA)    <- c("aides", "DoSA")
-  lsDoSA$frag      <- paste(round(dataSA$frag[infoNumStud], 4) * 100,
+  # 05. BUILD an DoOSA object -----
+  lsDoOSA <- list(name      = "Observed sequential analysis",
+                  OIS       = infoOIS,
+                  studies   = infoNumStud,
+                  AIS       = infoCases,
+                  alpha     = infoAlpha,
+                  beta      = infoBeta,
+                  measure   = infoMeasure,
+                  model     = infoModel,
+                  method    = infoMethod,
+                  pooling   = infoPooling,
+                  prefer    = infoPrefer,
+                  OES       = infoOES,
+                  RRR       = ifelse(infoRRR < 0.001, "< 0.001", round(infoRRR, 3)),
+                  variance  = infoOV,
+                  diversity = infoDivers,
+                  AF        = ifelse(infoAdjust == "none",
+                                     "Undefined",
+                                     infoAF),
+                  OIS.org   = ceiling(infoOISOrg),
+                  OIS.adj   = ifelse(infoAdjust == "none",
+                                     "No adjusted",
+                                     ceiling(infoOISAdj))
+                  )
+  class(lsDoOSA)    <- c("aides", "DoOSA")
+  lsDoOSA$frag      <- paste(round(dataOSA$frag[infoNumStud], 4) * 100,
                             "%",
                             sep = "")
-  lsDoSA$weight    <- paste(round(dataSA$weight[c(1:infoNumStud)], 4) * 100,
+  lsDoOSA$weight    <- paste(round(dataOSA$weight[c(1:infoNumStud)], 4) * 100,
                             "%",
                             sep = "")
-  lsDoSA$es.cum    <- round(dataSA$esCum[c(1:infoNumStud)], 3)
-  lsDoSA$se.cum    <- round(dataSA$seCum[c(1:infoNumStud)], 3)
-  lsDoSA$zval.cum  <- round(dataSA$zCum[c(1:infoNumStud)], 3)
-  lsDoSA$asb       <- round(dataSA[c(1:infoNumStud), c("aslb", "asub")], 3)
-  lsDoSA$aslb      <- round(dataSA$aslb[infoNumStud], 3)
-  lsDoSA$asub      <- round(dataSA$asub[infoNumStud], 3)
+  lsDoOSA$es.cum    <- round(dataOSA$esCum[c(1:infoNumStud)], 3)
+  lsDoOSA$se.cum    <- round(dataOSA$seCum[c(1:infoNumStud)], 3)
+  lsDoOSA$zval.cum  <- round(dataOSA$zCum[c(1:infoNumStud)], 3)
+  lsDoOSA$asb       <- round(dataOSA[c(1:infoNumStud), c("aslb", "asub")], 3)
+  lsDoOSA$aslb      <- round(dataOSA$aslb[infoNumStud], 3)
+  lsDoOSA$asub      <- round(dataOSA$asub[infoNumStud], 3)
 
   if (infoPlot == TRUE) {
-    lsDoSA$data    <- dataSA
+    lsDoOSA$group          <- infoGroup
+    lsDoOSA$ref            <- infoRef
+    lsDoOSA$color.ASB      <- infoColorASB
+    lsDoOSA$position.label <- infoPosLabel
+    lsDoOSA$data           <- dataOSA
+    lsDoOSA$data.bounds    <- dataPlotOSA
     }
-  #lsDoSA$data.plot <- dataPlotSA
+  #lsDoOSA$data.plot <- dataPlotOSA
 
 
 
-  # 06. RETURN summary of function `DoSA()` -----
+  # 06. RETURN summary of function `DoOSA()` -----
   #cat(paste("\n"), fill = TRUE, sep = "")
-  cat(paste("Summary of sequential analysis (main information)\n",
+  cat(paste("Summary of observed sequential analysis (main information)\n",
             " Acquired sample size: ",
             infoCases,
-            "\n Required sample size",
+            "\n Optimal sample size",
             ifelse(infoAdjust != "none",
                    " (heterogeneity adjusted): ",
                    " (without adjusted): "
                    ),
             ifelse(infoAdjust == "none",
-                   ceiling(infoRISOrg),
-                   ceiling(infoRISAdj)
+                   ceiling(infoOISOrg),
+                   ceiling(infoOISAdj)
                    ),
             "\n Cumulative z score: ",
-            round(dataSA$zCum[infoNumStud], 3),
+            round(dataOSA$zCum[infoNumStud], 3),
             "\n Alpha-spending boundary: ",
-            round(dataSA$asub[infoNumStud], 3),
+            round(dataOSA$asub[infoNumStud], 3),
             " and ",
-            round(dataSA$aslb[infoNumStud], 3),
+            round(dataOSA$aslb[infoNumStud], 3),
             "\n ",
             infoLgcMAAdj,
             sep = ""),
@@ -718,9 +690,9 @@ DoSA <- function(data    = NULL,
   if (lgcMAAdj) {
     cat(paste("\n",
               "Adjusted confidence interval based on type I error ",
-              ifelse(dataSA$asub[infoNumStud] > 5.3,
+              ifelse(dataOSA$asub[infoNumStud] > 5.3,
                      "< 0.000001",
-                     1 - pnorm(dataSA$asub[infoNumStud])
+                     1 - pnorm(dataOSA$asub[infoNumStud])
                      ),
               ": \n",
               round(infoLCIMAAdj, 3),
@@ -731,16 +703,16 @@ DoSA <- function(data    = NULL,
   }
 
   cat(paste("\n",
-            "Summary of sequential analysis (additional information)",
-            "\n 1. Assumed information",
+            "Summary of observed sequential analysis (additional information)",
+            "\n 1. Observed information",
             "\n 1.1. Defined type I error: ",
             infoAlpha,
             "\n 1.2. Defined type II error: ",
             infoBeta,
             "\n 1.3. Defined power: ",
             1 - infoBeta,
-            "\n 1.4. Presumed effect: ",
-            round(infoPES, 3),
+            "\n 1.4. Observed effect size ",
+            round(infoOES, 3),
             ifelse(lgcReq3,
                    paste("\n      (risks in group 1 and 2 were ",
                          round(infoProp1, 10) * 100,
@@ -753,8 +725,8 @@ DoSA <- function(data    = NULL,
                          sep = ""),
                    ""
                    ),
-            "\n 1.5. Presumed variance: ",
-            round(infoPV, 3),
+            "\n 1.5. Observed variance: ",
+            round(infoOV, 3),
 
             "\n",
             "\n 2. Meta-analysis",
@@ -810,7 +782,7 @@ DoSA <- function(data    = NULL,
 
             "\n ",
             "\n 3. Adjustment factor \n ",
-            paste("The required information size is calculated ",
+            paste("The optimal information size is calculated ",
                   ifelse(infoAdjust == "none",
                          "without adjustment factor.",
                          paste("with adjustment factor based on ",
@@ -852,17 +824,17 @@ DoSA <- function(data    = NULL,
 
   if (plot == TRUE) {
 
-    plot(dataSA$nCum * 1.1, dataSA$asub,
+    plot(dataOSA$nCum * 1.1, dataOSA$asub,
          type = "l", frame = F,
-         xlim = c(0, max(dataSA$nCum) * 1.2),
-         ylim = c(ceiling(min(dataSA$aslb)) * (-10) / ceiling(min(dataSA$aslb)),
-                ceiling(max(dataSA$asub)) * 10 / ceiling(max(dataSA$asub)) + 1),
+         xlim = c(0, max(dataOSA$nCum) * 1.2),
+         ylim = c(ceiling(min(dataOSA$aslb)) * (-10) / ceiling(min(dataOSA$aslb)),
+                ceiling(max(dataOSA$asub)) * 10 / ceiling(max(dataOSA$asub)) + 1),
          col = rgb(1, 1, 1, 0),
-         xlab = "Sample size",
+         xlab = "Information size",
          yaxt = "n", #xaxt="n", "darkred"
          #ylab=paste("Favors", Txs[1], "   (Z score)   Favors",Txs[2]),
          ylab = "",
-         main = "Sequential analysis")
+         main = "Observed sequential analysis")
     mtext(paste("(Note: the meta-analysis was conducted in ",
                 ifelse(infoModel == "random",
                        paste("random-effects model based on ",
@@ -874,132 +846,116 @@ DoSA <- function(data    = NULL,
                 sep = ""),
           side = 1, line = 4, cex = 0.6)
 
-    axis(side = 2, at = c(seq(ceiling(min(dataSA$aslb)) * (-10) / ceiling(min(dataSA$aslb)),
-                          ceiling(max(dataSA$asub)) * 10 / ceiling(max(dataSA$asub)), 2)),
+    axis(side = 2, at = c(seq(ceiling(min(dataOSA$aslb)) * (-10) / ceiling(min(dataOSA$aslb)),
+                          ceiling(max(dataOSA$asub)) * 10 / ceiling(max(dataOSA$asub)), 2)),
          padj = 0, hadj = 1, las = 1)
-    mtext("Cumulative\n z score", side = 3, line = 0, at = -infoRIS * 0.05)
+    mtext("Cumulative\n z score", side = 3, line = 0, at = -infoOIS * 0.05)
     mtext(paste("Favors\n", ifelse(infoPrefer == "small", infoGroup[2], infoGroup[1])),
           side = 2, line = 2, at = 5,
           cex = ifelse(max(nchar(infoGroup[2]), nchar(infoGroup[1])) > 10, (1 / sqrt(max(nchar(infoGroup[2]), nchar(infoGroup[1]))))^2 * 10, 1)) #(1/sqrt(seq(11,100,by=1)))^2*10
     mtext(paste("Favors\n", ifelse(infoPrefer == "small", infoGroup[1], infoGroup[2])),
           side = 2, line = 2, at = -5,
           cex = ifelse(max(nchar(infoGroup[2]), nchar(infoGroup[1])) > 10, (1 / sqrt(max(nchar(infoGroup[2]), nchar(infoGroup[1]))))^2 * 10, 1)) #(1/sqrt(seq(11,100,by=1)))^2*10
-    #lines(dataSA$nCum,
-    #      dataSA$asub,
+    #lines(dataOSA$nCum,
+    #      dataOSA$asub,
     #      lwd = 1, col = "darkred", lty = 1)
-    lines(dataPlotSA$sample,
-          dataPlotSA$asub,
+    lines(dataPlotOSA$sample,
+          dataPlotOSA$asub,
           lwd = 1, col = "darkred", lty = 1)
-    points(dataSA[which(!is.na(dataSA[, "source"])), ]$nCum,
-           dataSA[which(!is.na(dataSA[, "source"])), ]$asub,
+    points(dataOSA[which(!is.na(dataOSA[, "source"])), ]$nCum,
+           dataOSA[which(!is.na(dataOSA[, "source"])), ]$asub,
            col = infoColorASB, pch = 15, cex = 0.8)
-    #lines(dataSA$nCum,
-    #      dataSA$aslb,
+    #lines(dataOSA$nCum,
+    #      dataOSA$aslb,
     #      lwd = 1, col = "darkred", lty = 1)
-    lines(dataPlotSA$sample,
-          dataPlotSA$aslb,
+    lines(dataPlotOSA$sample,
+          dataPlotOSA$aslb,
           lwd = 1, col = "darkred", lty = 1)
-    points(dataSA[which(!is.na(dataSA[, "source"])), ]$nCum,
-           dataSA[which(!is.na(dataSA[, "source"])), ]$aslb,
+    points(dataOSA[which(!is.na(dataOSA[, "source"])), ]$nCum,
+           dataOSA[which(!is.na(dataOSA[, "source"])), ]$aslb,
            col = infoColorASB, pch = 15, cex = 0.8)
-    #lines(dataSA$nCum,
-    #      dataSA$bsub,
+    #lines(dataOSA$nCum,
+    #      dataOSA$bsub,
     #      lwd = 1, col = "darkred", lty = 1)
-    #lines(dataSA$nCum,
-    #      dataSA$bslb,
+    #lines(dataOSA$nCum,
+    #      dataOSA$bslb,
     #      lwd = 1, col = "darkred", lty = 1)
-
-    if (infoBSB) {
-      lines(dataPlotSA$sample,
-            dataPlotSA$bsub,
-            lwd = 1, col = "darkred", lty = 1)
-      lines(dataPlotSA$sample,
-            dataPlotSA$bslb,
-            lwd = 1, col = "darkred", lty = 1)
-    }
 
     segments(c(0),
              c(-2, 0, 2),
-             c(max(dataSA$nCum) * 1.1),
+             c(max(dataOSA$nCum) * 1.1),
              c(-2, 0, 2),
              lty = c(2, 1, 2), lwd = 1, col = "gray25")
-    lines(dataSA$nCum,
-          dataSA$zCum,
+    lines(dataOSA$nCum,
+          dataOSA$zCum,
           col = "blue3", lwd = 2)
-    segments(c(0), c(0), dataSA[1, "nCum"], dataSA[1, "zCum"],
+    segments(c(0), c(0), dataOSA[1, "nCum"], dataOSA[1, "zCum"],
              lty = c(1), lwd = 2, col = 'blue3')
-    points(dataSA$nCum,
-           dataSA$zCum,
-           col = "gray25", cex = 1 + dataSA$weight^2, pch = 15)
+    points(dataOSA$nCum,
+           dataOSA$zCum,
+           col = "gray25", cex = 1 + dataOSA$weight^2, pch = 15)
 
-    arrows(max(dataSA$nCum), 0,
-           max(dataSA$nCum) * 1.1, 0,
+    arrows(max(dataOSA$nCum), 0,
+           max(dataOSA$nCum) * 1.1, 0,
            lty = 1, length = 0.1)
 
-    if (infoID) {
-      points(dataSA$nCum,
-             dataSA$zCum - dataSA$zCum,
-             col = "gray25", cex = 0.6, pch = "|")
-      text(dataSA$nCum,
-           #ifelse(dataSA$zCum > 0,
-           #      dataSA$zCum + 0.5,
-           #      dataSA$zCum - 0.5),
-           ifelse(dataSA$zCum > 0, -0.5, 0.5),
-           dataSA$source,
-           srt = 45,
-           #pos = infoPosLabel,
-           pos = 6 - infoPosLabel,
-           cex = 0.8,
-           col = c("gray20"))
-    }
-
-    #text(dataSA$time, dataSA$zCum - 0.5,
-    #     c(round(dataSA$zCum, 2)),
+    #text(dataOSA$time, dataOSA$zCum - 0.5,
+    #     c(round(dataOSA$zCum, 2)),
     #     col = c("gray20"))
 
-    rect(0, -10, infoRIS * 0.8, -7.5,
+    rect(0, -10, infoOIS * 0.8, -7.5,
          lty = 0, col = rgb(1, 1, 1, 0.5))
-    points(dataSA[which(!is.na(dataSA[, "source"])), ]$nCum,
-           dataSA[which(!is.na(dataSA[, "source"])), ]$aslb,
+    points(dataOSA[which(!is.na(dataOSA[, "source"])), ]$nCum,
+           dataOSA[which(!is.na(dataOSA[, "source"])), ]$aslb,
            col = infoColorASB, pch = 15, cex = 0.8)
-    segments(c(0.05), c(-8), c(infoRIS / 20), c(-8),
+    segments(c(0.05), c(-8), c(infoOIS / 20), c(-8),
              lty = c(1), lwd = 2, col = 'blue3')
     #text(0.1, -8.5,
           #paste("Observed z score; observed power:",
-                #round(dataSA$power[length(dataSA$power) - 1], 2)),
+                #round(dataOSA$power[length(dataOSA$power) - 1], 2)),
           #pos = 4, cex = 0.8)
-    text(infoRIS / 15, -8,
+    text(infoOIS / 15, -8,
          paste("Cumulative z score", sep = ""),
          pos = 4, cex = 0.8)
-    segments(c(0.05), c(-9), c(infoRIS / 20), c(-9),
+    segments(c(0.05), c(-9), c(infoOIS / 20), c(-9),
              lty = c(1), lwd = 1.5, col = "darkred")
-    text(infoRIS / 15, -9,
+    text(infoOIS / 15, -9,
          paste("Parameters for alpha-spending boundary:"),
          pos = 4, cex = 0.8)
-    text(infoRIS / 15, -9.7,
+    text(infoOIS / 15, -9.7,
          paste(ifelse(infoMeasure %in% c("MD", "SMD"),
                       infoMeasure,
-                      "Assumed effect: "
-                      ),
-               " = ",
-               round(infoPES, 3),
-               "; assumed power: ", round(1 - infoBeta, 2),
-               "; assumed alpha: ", infoAlpha, sep = ""
+                      "Observed effect"),
+               ifelse(abs(infoOES) < 0.001,
+                      paste(" < 0.001", sep = ""),
+                      paste(" = ", round(infoOES, 3), sep = "")),
+               ifelse(infoMeasure %in% c("MD", "SMD"),
+                      "",
+                      paste(" (RRR",
+                            ifelse(infoRRR < 0.001,
+                                   " < 0.001)",
+                                   paste(" = ", round(infoRRR, 3), ")",
+                                         sep = "")
+                            ),
+                            sep = "")
                ),
-         pos = 4, cex = 0.8)
-    segments(c(infoRIS), c(-9), c(infoRIS), c(9),
+               "; alpha: ", infoAlpha,
+               "; power: ", round(1 - infoBeta, 2),
+               sep = ""),
+         pos = 4)
+    segments(c(infoOIS), c(-9), c(infoOIS), c(9),
              lty = c(2), col = "darkred")
-    text(infoRIS, 10,
-         paste("Required sample size:", ceiling(infoRIS)),
-         pos = ifelse(infoRIS > infoCases, 2, 4),
+    text(infoOIS, 10,
+         paste("Optimal information size:", ceiling(infoOIS)),
+         pos = ifelse(infoOIS > infoCases, 2, 4),
          cex = 0.8)
-    text(infoRIS, 9,
-         paste("Acquired sample size:",
-               ceiling(max(dataSA[which(!is.na(dataSA[, "source"])), ]$nCum))),
-         pos = ifelse(infoRIS > infoCases, 2, 4),
+    text(infoOIS, 9,
+         paste("Acquired information size:",
+               ceiling(max(dataOSA[which(!is.na(dataOSA[, "source"])), ]$nCum))),
+         pos = ifelse(infoOIS > infoCases, 2, 4),
          cex = 0.8)
   }
 
-  output <- lsDoSA
+  output <- lsDoOSA
 
 }

@@ -1,11 +1,103 @@
 # Change of package `aides`
 
+
+## aides 1.2.0. (release version)
+### Date: October 26, 2023
+
+**Release:** *aides* 1.2.0 on the CRAN.
+
+### Date: October 24, 2023
+
+**Add function:** `PlotOSA()` has been added in the *aides* package to visualize observed sequential analysis.
+
+**Add function:** `DoOSA()` has been added in the *aides* package to facilitate sequential method employing observed data, thereby distinguishing it from information derived from prospective planning.
+
+**Add function:** `PlotDistrSS()` has been added in the *aides* package to assist decision on the method selection for outlier detection and variability in disparity test.
+
+<br>
+
+
+## aides 1.1.6. (development version)
+### Date: October 05, 2023
+
+**Modify document:** improve *aides* package manual by adding details section for function `DoSA()`.
+
+<br>
+
+
+## aides 1.1.5. (development version)
+### Date: September 28, 2023
+
+**Modify function:** improve function `DoSA()` for showing information of relative risk reduction.
+
+<br>
+
+
+## aides 1.1.4. (development version)
+### Date: September 20, 2023
+
+**Modify function:** improve function `PlotDisparity()` for fixing bug of labeling proportion of excessive cases.
+
+**Modify document:** improve *aides* package vignette.
+
+<br>
+
+
+## aides 1.1.3. (development version)
+### Date: September 08, 2023
+
+**Modify function:** improve function `TestDisparity()` with robust Coefficient of Variations.
+
+**Modify document:** improve *aides* package manual by detailing returned values from function `TestDisparity()`.
+
+<br>
+
+
+## aides 1.1.2. (development version)
+### Date: August 30, 2023
+
+**Modify function:** improve function `TestDisparity()` with default method for outlier detection according to distribution.
+
+<br>
+
+
+## aides 1.1.1. (development version)
+### Date: August 17, 2023
+
+**Modify function:** improve function `PlotDisparity()` with parameters for legend information, user-defined color of the association line between standard deviation and sample size on disparity plot (variability), and angle of study labels on disparity plot (outlier).
+
+> 1. parameter `lgcDtls` with logic value `TRUE` or `FALSE` can be used for determining whether to show details of disparity test on the plot.
+>
+> 2. parameter `txtLbl` with argument `n`, `n.excessive`, or `prop.excessive` can be used for showing study information of each observed point on disparity plot (outlier).
+>
+> 3. parameter `szFntEC` with a numeric value between 0 and 5 can be used for setting font size of study label on axis X for those studies with excessive cases.
+>
+> 4. parameter `szFntLbl` with numeric value(s) between 0 and 5 can be used for setting font size of observed values.
+>
+> 5. parameter `szFntLblEC` with a numeric value between 0 and 5 can be used for setting font size of observed value(s) among those studies with excessive cases.
+>
+> 6. parameter `clrLnCV` with a color name can be used for changing line of the association between standard deviation and cases on disparity plot (variability).
+>
+> 7. parameter `clrLbl` with color name(s) can be used for coloring observed values on disparity plot (outlier).
+>
+> 8. parameter `clrLblEC` with a color name can be used for coloring observed value(s) among those studies with excessive cases on disparity plot (outlier).
+>
+> 9. parameter `anglAxsX` with a numeric value between 0 and 360 can be used for setting angle of study labels on disparity plot (outlier).
+>
+> 10. parameter `anglLbl` with a numeric value between 0 and 5 can be used for setting angle of observed values on disparity plot (outlier).
+>
+
+<br>
+
+
 ## aides 1.1.0. (release version)
 ### Date: August 11, 2023
 
+**Release:** *aides* 1.0.0 on the CRAN.
+
 **Add function:** `PlotDisparity()` to illustrate disparity plot.
 
-\
+<br>
 
 
 ## aides 1.0.5 (development version)
@@ -18,7 +110,7 @@
 > 2. returning a data frame for user-defined disparity plot by argument `TRUE` for parameter `plot`.
 >
 
-\
+<br>
 
 
 ## aides 1.0.4 (development version)
@@ -32,9 +124,9 @@
 >
 > 3. removing results of normal distribution test from the summary infomation.
 >
->
 
-\
+
+<br>
 
 **Modify function:** improve function `TestDisparity()` with parameters for data input and outlier detection.
 
@@ -46,9 +138,8 @@
 >
 > 4. parameter `outlier` consists of four outlier detection methods (i.e. IQR, Z, GESD, and MAD).
 >
->
 
-\
+<br>
 
 
 ## aides 1.0.3 (development version)
@@ -64,9 +155,8 @@
 >
 > 4. parameter `adjust` with options of adjustment factor (including D-squared, I-squared, and conceptual heterogeneity; default none).
 >
->
 
-\
+<br>
 
 
 ## aides 1.0.2 (development version)
@@ -88,9 +178,8 @@
 >
 > 7. displaying beta-spending boundaries using parameter `BSB = TRUE`.
 >
->
 
-\
+<br>
 
 
 ## aides 1.0.1 (development version)
@@ -139,16 +228,15 @@
 >
 > 4.3. value of the adjustment.
 >
->
 
-\
+<br>
 
 
 ## aides 1.0.0 (release version)
 ### Date: June 20, 2023
 
 **Release:** *aides* 1.0.0 on the CRAN.
-\
+<br>
 
 ### Date: June 15, 2023
 
@@ -161,14 +249,14 @@
 >
 > 3. `DoSA()` is to conduct sequential analysis.
 >
->
 
-\
+<br>
 
 
 ### Writing style of *aides*
 
-This package is written according to Google's R style. For readers, details of naming rules are listed as follows:
+This package is mainly written according to Google's R style. For readers, details of naming rules are listed as follows:
+
 > 1. **.R file** is named using lower case with underscore "_" between words (*e.g. test_disparity.R*). 
 >
 > 2. **function** is named using verb or verb with noun, and the first character of each word is written in capital letter (e.g. `TestDiscordance()`).
@@ -177,9 +265,8 @@ This package is written according to Google's R style. For readers, details of n
 >
 > 4. **variable** is named using noun written in lower case. Words of variable name are separated by "." if a variable name consists of more than two words (e.g. `dataDiSS$w.normality`).
 >
->
 
-\
+<br>
 
 
 ### Version numbering rule of *aides* (June 20, 2023)
@@ -191,5 +278,4 @@ version number consists of three integers with a period between them (eg. versio
 > 2. Changing the second integer refers to an update with a new function without new methodological impact.
 >
 > 3. Updating the third integer refers to a modification in a function.
->
 >

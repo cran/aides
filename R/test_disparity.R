@@ -25,6 +25,13 @@
 #'                absolute deviation method ("MAD"). Parameter `outlier` with
 #'                argument "Default" automatically takes "GESD" or "MAD" based on
 #'                data distribution.
+#' @param vrblty  CHARACTER for method of variability detection. Current version
+#'                consists of two methods in terms of coefficient of variation
+#'                (CV) and robust CV (RCV) using MAD. For normal distribution data,
+#'                variability detection can be performed common CV method, and
+#'                MAD based RCV could be used for data with non-normal distribution.
+#'                Default argument for parameter `vrblty` is "CV" in order to
+#'                detect variability.
 #' @param plot    LOGIC value for indicating whether to illustrate proportion of
 #'                excessive cases plot.
 #' @param sort    CHARACTER of data sorting reference for disparity plot. Current
@@ -36,6 +43,27 @@
 #'
 #' @return
 #' **TestDisparity()** returns a summary of result regarding disparities in sample size.
+#' \item{disparity}{String to return the overall judgement of disparity test.}
+#' \item{w.normality}{A numeric value of statistics of normality test to show whether
+#'       sample sizes among studies are distributed normally.}
+#' \item{p.normality}{A numeric value of p-value of normality test to show whether
+#'       sample sizes among studies are distributed normally.}
+#' \item{outlier.method}{String shows outlier detection method used in disparity test.}
+#' \item{vrblty.method}{String shows variability detection method used in disparity test.}
+#' \item{outlier}{A data frame to show details of identified outliers (studies).}
+#' \item{prop.outlier}{A numeric value to show proportion of outliers among all studies.}
+#' \item{n.excessive}{A numeric value of excessive cases among all samples.}
+#' \item{p.prop.outlier}{A numeric value of p-value of disparity outlier test.}
+#' \item{lci.prop.outlier}{A numeric value for lower limit of 95% confidence interval
+#'       of disparity outlier test.}
+#' \item{uci.prop.outlier}{A numeric value for upper limit of 95% confidence interval
+#'       of disparity outlier test.}
+#' \item{variability}{A numeric value to show variability among all studies.}
+#' \item{p.variability}{A numeric value of p-value of disparity variability test.}
+#' \item{lci.variability}{A numeric value for lower limit of 95% confidence interval of
+#'       disparity variability test.}
+#' \item{uci.variability}{A numeric value for lower limit of 95% confidence interval of
+#'       disparity variability test.}
 #'
 #'
 #' @references
@@ -44,6 +72,10 @@
 #'
 #' Rosner, B. (1983). Percentage Points for a Generalized ESD Many-Outlier
 #' Procedure. **Technometrics**, *25(2)*, 165-172.
+#'
+#' Leys, C., Ley, C., Klein, O., Bernard, P., & Licata, L. (2013). Detecting
+#' outliers: Do not use standard deviation around the mean, use absolute deviation
+#' around the median. **Journal of experimental social psychology**, *49(4)*, 764-766.
 #'
 #' Rousseeuw, P. J.  & Croux C. (1993). Alternatives to the Median Absolute
 #' Deviation, **Journal of the American Statistical Association**, *88(424)*,
@@ -57,7 +89,7 @@
 #' of variation and variability profiles. **Systematic Biology**, *29(1)*, 50-66.
 #'
 #'
-#' @seealso \code{\link{TestDiscordance}}
+#' @seealso \code{\link{TestDiscordance}}, \code{\link{PlotDisparity}}
 #'
 #' @examples
 #' ## Not run:
@@ -88,6 +120,7 @@ TestDisparity <- function(n,
                           ctfLwr  = 0.10,
                           ctfUpr  = 0.30,
                           outlier = NULL,
+                          vrblty  = NULL,
                           plot    = FALSE,
                           sort    = NULL,
                           color   = "firebrick3") {
@@ -96,7 +129,7 @@ TestDisparity <- function(n,
   if (is.null(data)) {
     dataCases  <- n
 
-    if (isFALSE(is.null(study))) {
+    if (base::isFALSE(is.null(study))) {
       vctStudy <- study
     } else {
       vctStudy <- paste(rep("Study ", length(n)),
@@ -104,7 +137,7 @@ TestDisparity <- function(n,
                          sep = "")
     }
 
-    if (isFALSE(is.null(time))) {
+    if (base::isFALSE(is.null(time))) {
       vctTime  <- time
     } else {
       vctTime  <- c(1:length(n))
@@ -148,15 +181,15 @@ TestDisparity <- function(n,
   # 02. CHECK arguments -----
   lgcData     <- ifelse(is.null(data),
                         FALSE,
-                        ifelse(isFALSE(length(data) >= 3),
+                        ifelse(base::isFALSE(length(data) >= 3),
                                TRUE, FALSE)
   )
 
   lgcN        <- ifelse(is.null(dataCases),
                         TRUE,
-                        ifelse(isFALSE(is.numeric(dataCases)),
+                        ifelse(base::isFALSE(is.numeric(dataCases)),
                                TRUE,
-                               ifelse(isFALSE(min(dataCases) > 0),
+                               ifelse(base::isFALSE(min(dataCases) > 0),
                                       TRUE,
                                       ifelse("FALSE" %in% names(table(dataCases %% 1 == 0)),
                                              TRUE, FALSE)
@@ -190,6 +223,11 @@ TestDisparity <- function(n,
 
   lgcOtlr     <- ifelse(is.null(outlier), FALSE,
                         ifelse(outlier %in% c("Default", "IQR", "Z", "GESD", "MAD"),
+                               FALSE, TRUE)
+  )
+
+  lgcVrblty     <- ifelse(is.null(vrblty), FALSE,
+                        ifelse(vrblty %in% c("CV", "MAD"),
                                FALSE, TRUE)
   )
 
@@ -238,6 +276,10 @@ TestDisparity <- function(n,
     infoStopOtlr  <- 'Argument "outlier" must be characters ("Default", "IQR", "Z", "GESD", or "MAD") for indicating the method of outlier detection.'
   }
 
+  if (lgcVrblty) {
+    infoStopVrblty <- 'Argument "vrblty" must be characters ("CV" or "MAD") for indicating the method of variability detection.'
+  }
+
   if (lgcPlot) {
     infoStopPlot  <- 'Argument "plot" must be a logical value in terms of "TRUE" or "FALSE" for indicating whether to illustrate disparity plot.'
     }
@@ -253,7 +295,7 @@ TestDisparity <- function(n,
 
   # 03. RETURN results of argument checking  -----
   if (lgcData | lgcN | lgcStudy | lgcTime |
-      lgcCutoffL | lgcCutoffH | lgcOtlr |
+      lgcCutoffL | lgcCutoffH | lgcOtlr | lgcVrblty |
       lgcPlot | lgcSort | lgcColor)
     stop(paste(ifelse(lgcData, paste(infoStopData, "\n", sep = ""), ""),
                ifelse(lgcN, paste(infoStopN, "\n", sep = ""), ""),
@@ -262,6 +304,7 @@ TestDisparity <- function(n,
                ifelse(lgcCutoffL, paste(infoStopCutoffL, "\n", sep = ""), ""),
                ifelse(lgcCutoffH, paste(infoStopCutoffH, "\n", sep = ""), ""),
                ifelse(lgcOtlr, paste(infoStopOtlr, "\n", sep = ""), ""),
+               ifelse(lgcVrblty, paste(infoStopVrblty, "\n", sep = ""), ""),
                ifelse(lgcPlot, paste(infoStopPlot, "\n", sep = ""), ""),
                ifelse(lgcSort, paste(infoStopSort, "\n", sep = ""), ""),
                ifelse(lgcColor, paste(infoStopColor, "\n", sep = ""), ""),
@@ -271,12 +314,18 @@ TestDisparity <- function(n,
 
   # 04. ANALYZE
   ## 04.01. PREPARE data for testing disparities in sample size -----
-  infoNumStud          <- length(dataCases)
+  infoNumStdy          <- length(dataCases)
   infoAlpha            <- 0.05
   infoMethodOtlrOrg    <- ifelse(is.null(outlier),
                                  "Default",
                                  ifelse(outlier %in% c("Default", "IQR", "Z", "GESD", "MAD"),
                                         outlier,
+                                        "Default")
+                                 )
+  infoMethodVrbltyOrg  <- ifelse(is.null(vrblty),
+                                 "Default",
+                                 ifelse(vrblty %in% c("CV", "MAD"),
+                                        vrblty,
                                         "Default")
                                  )
   infoCases            <- sum(dataCases)
@@ -319,9 +368,9 @@ TestDisparity <- function(n,
 
   infoPlot             <- plot
   infoSort             <- ifelse(is.null(sort), "excessive", sort)
-  vctSeq               <- c(1:infoNumStud)
+  vctSeq               <- c(1:infoNumStdy)
   vctZVal              <- (dataCases - infoMCases) / infoSDCases
-  vctCasesExpct        <- infoMCases + vctZVal * (infoSDCases / sqrt(infoNumStud))
+  vctCasesExpct        <- infoMCases + vctZVal * (infoSDCases / sqrt(infoNumStdy))
 
   dataDisparity$source       <- vctSeq
   dataDisparity$z.val        <- vctZVal
@@ -330,6 +379,13 @@ TestDisparity <- function(n,
   dataDisparity              <- dataDisparity[, c("source", "study",
                                                   "n", "time",
                                                   "z.val", "cases.expect")]
+
+  infoGESD                   <- ifelse(length(which(table(dataDisparity$n) > 1)) > 0,
+                                       "GESD which cannot be used for disparity test due to multiple studies with eaqual sample size.",
+                                       "GESD which can be used for disparity test.")
+  lgcStopGESD                <- ifelse(length(which(table(dataDisparity$n) > 1)) > 0,
+                                      TRUE, FALSE)
+
   dataOtlr                   <- dataDisparity
   dataOtlr$cases.excessive   <- 0
   dataOtlr$prop.excessive    <- 0
@@ -343,24 +399,49 @@ TestDisparity <- function(n,
 
   if (infoMethodOtlrOrg == "Default") {
     if (infoPValNorm < 0.05) {
-      infoMethodOtlr    <- "MAD"
+      infoMethodOtlr <- "MAD"
       #infoMethodOtlrOrg <- "MAD"
-    } else {
-      infoMethodOtlr    <- "GESD"
-      #infoMethodOtlrOrg <- "GESD"
-    }
+    } else if (lgcStopGESD) {
+
+      infoMethodOtlr <- "IQR"
+
+      } else {
+        infoMethodOtlr <- "GESD"
+        #infoMethodOtlrOrg <- "GESD"
+      }
   } else {
     if (infoMethodOtlrOrg %in% c("IQR", "Z", "GESD", "MAD")) {
-      infoMethodOtlr <- infoMethodOtlrOrg
+
+      if (infoMethodOtlrOrg == "GESD") {
+        if (lgcStopGESD) {
+          if (infoPValNorm < 0.05) {
+            infoMethodOtlr    <- "MAD"
+            infoMethodOtlrOrg <- infoGESD
+          } else {
+            infoMethodOtlr <- "IQR"
+          }
+        } else {
+          infoMethodOtlr <- "GESD"
+        }
+      } else {
+        infoMethodOtlr <- infoMethodOtlrOrg
+      }
+
     } else {
       if (infoPValNorm < 0.05) {
         infoMethodOtlr    <- "MAD"
         infoMethodOtlrOrg <- paste(infoMethodOtlrOrg,
                                    " (unrecognized)", sep = "")
       } else {
-        infoMethodOtlr    <- "GESD"
-        infoMethodOtlrOrg <- paste(infoMethodOtlrOrg,
-                                   " (unrecognized)", sep = "")
+        if (lgcStopGESD) {
+          infoMethodOtlr    <- "IQR"
+          infoMethodOtlrOrg <- paste(infoMethodOtlrOrg,
+                                     " (unrecognized)", sep = "")
+        } else {
+          infoMethodOtlr    <- "GESD"
+          infoMethodOtlrOrg <- paste(infoMethodOtlrOrg,
+                                     " (unrecognized)", sep = "")
+        }
       }
     }
 
@@ -376,6 +457,13 @@ TestDisparity <- function(n,
     }
     '
   }
+
+  if (infoMethodVrbltyOrg == "Default") {
+    infoMethodVrblty <- "CV"
+  } else {
+    infoMethodVrblty <- infoMethodVrbltyOrg
+  }
+
 
 
   ## 04.03. TEST Outlier -----
@@ -409,10 +497,10 @@ TestDisparity <- function(n,
                                               0)
   infoCasesExcssvIQR                <- sum(abs(dataDisparity$cases.excessive.IQR))
   dataDisparity$prop.excessive.IQR  <- ifelse(dataDisparity$outlier.IQR == TRUE,
-                                              dataDisparity$cases.excessive.IQR / infoCasesExcssvIQR,
+                                              dataDisparity$cases.excessive.IQR / infoCases,
                                               0)
 
-  if (infoMethodOtlr == "IQR") {
+  if (infoMethodOtlr == "IQR" | lgcStopGESD) {
     infoOutliers             <- sum(vctOutlierIQR == TRUE)
     infoCasesExcssv          <- infoCasesExcssvIQR
     dataOtlr$cases.excessive <- dataDisparity$cases.excessive.IQR
@@ -442,7 +530,7 @@ TestDisparity <- function(n,
                                               0)
   infoCasesExcssvZ                <- sum(abs(dataDisparity$cases.excessive.Z))
   dataDisparity$prop.excessive.Z  <- ifelse(dataDisparity$outlier.Z == TRUE,
-                                              dataDisparity$cases.excessive.Z / infoCasesExcssvZ,
+                                              dataDisparity$cases.excessive.Z / infoCases,
                                               0)
 
   if (infoMethodOtlr == "Z") {
@@ -458,87 +546,96 @@ TestDisparity <- function(n,
   ### Rosner, Bernard (May 1983), Percentage Points for a Generalized ESD Many-Outlier Procedure,Technometrics, 25(2), pp. 165-172.
   ### https://www.itl.nist.gov/div898/handbook/eda/section3/eda35h3.htm
 
-  vctLamda  <- c(1:ceiling(infoNumStud / 2))
-  vctRepeat <- c(1:ceiling(infoNumStud / 2))
-  vctSeq    <- c(1:ceiling(infoNumStud / 2))
-  vctOutlr  <- c(1:ceiling(infoNumStud / 2))
+  if (lgcStopGESD) {
 
-  DoGESD <- function(vctGESD) {
-    vctARES      <- abs(vctGESD - mean(vctGESD)) / sd(vctGESD)
-    dataTempGESD <- data.frame(vctGESD, vctARES)
-    infoRepeat   <- max(dataTempGESD$vctARES)
-    list(infoRepeat, dataTempGESD)
-  }
+    dataDisparity$cases.excessive.GESD <- NA
+    dataDisparity$prop.excessive.GESD  <- NA
 
-  for (i.rept in vctRepeat) {
+  } else {
+    vctLamda  <- c(1:ceiling(infoNumStdy / 2))
+    vctRepeat <- c(1:ceiling(infoNumStdy / 2))
+    vctSeq    <- c(1:ceiling(infoNumStdy / 2))
+    vctOutlr  <- c(1:ceiling(infoNumStdy / 2))
 
-    if (i.rept == 1) {
-      vctGESD1          <- DoGESD(dataCases)
-      dataTempGESD      <- data.frame(vctGESD1[2])
-      vctRepeat[i.rept] <- unlist(vctGESD1[1])
-      vctOutlr[i.rept]  <- dataTempGESD[which(dataTempGESD$vctARES == vctRepeat[1]), "vctGESD"]
-      vctSeq[i.rept]    <- which(dataTempGESD$vctARES == vctRepeat[i.rept])
-      dataGESD          <- dataTempGESD[dataTempGESD$vctARES != max(dataTempGESD$vctARES), ]
-    } else if (i.rept != 1) {
-      vctGESD1          <- DoGESD(dataGESD$vctGESD)
-      dataTempGESD    <- as.data.frame(vctGESD1[2])
-      vctRepeat[i.rept] <- unlist(vctGESD1[1])
-      vctOutlr[i.rept]  <- dataTempGESD[which(dataTempGESD$vctARES == vctRepeat[i.rept]), "vctGESD"]
-      vctSeq[i.rept]    <- which(dataCases == vctOutlr[i.rept])
-      dataGESD          <- dataTempGESD[dataTempGESD$vctARES != max(dataTempGESD$vctARES), ]
+    DoGESD <- function(vctGESD) {
+      vctARES      <- abs(vctGESD - mean(vctGESD)) / sd(vctGESD)
+      dataTempGESD <- data.frame(vctGESD, vctARES)
+      infoRepeat   <- max(dataTempGESD$vctARES)
+      list(infoRepeat, dataTempGESD)
     }
 
-    ### Compute critical value.
-    infoPval         <- 1 - infoAlpha / (2 * (infoNumStud - i.rept + 1))
-    infoTval         <- qt(infoPval, (infoNumStud - i.rept - 1))
-    vctLamda[i.rept] <- infoTval * (infoNumStud - i.rept) / sqrt((infoNumStud - i.rept - 1 + infoTval**2) * (infoNumStud - i.rept + 1))
-  }
+    for (i.rept in vctRepeat) {
 
-  dataGESD         <- data.frame(vctSeq, vctOutlr, vctRepeat, vctLamda)
-  names(dataGESD)  <- c("source", "cases", "statistics", "threshold") # threshold is critical value
-  dataGESD$diff    <- dataGESD$statistics - dataGESD$threshold
-  dataGESD$outlier <- ifelse(dataGESD$diff > 0,
-                             TRUE, FALSE)
-  dataGESD         <- dataGESD[order(dataGESD$source, decreasing = FALSE), ]
+      if (i.rept == 1) {
+        vctGESD1          <- DoGESD(dataCases)
+        dataTempGESD      <- data.frame(vctGESD1[2])
+        vctRepeat[i.rept] <- unlist(vctGESD1[1])
+        vctOutlr[i.rept]  <- dataTempGESD[which(dataTempGESD$vctARES == vctRepeat[1]), "vctGESD"]
+        vctSeq[i.rept]    <- which(dataTempGESD$vctARES == vctRepeat[i.rept])
+        dataGESD          <- dataTempGESD[dataTempGESD$vctARES != max(dataTempGESD$vctARES), ]
+      } else if (i.rept != 1) {
+        vctGESD1          <- DoGESD(dataGESD$vctGESD)
+        dataTempGESD      <- as.data.frame(vctGESD1[2])
+        vctRepeat[i.rept] <- unlist(vctGESD1[1])
+        vctOutlr[i.rept]  <- dataTempGESD[which(dataTempGESD$vctARES == vctRepeat[i.rept]), "vctGESD"]
+        vctSeq[i.rept]    <- which(dataCases == vctOutlr[i.rept])
+        dataGESD          <- dataTempGESD[dataTempGESD$vctARES != max(dataTempGESD$vctARES), ]
+      }
 
-  dataDisparity$outlier.GESD <- FALSE
+      ### Compute critical value.
+      infoPval         <- 1 - infoAlpha / (2 * (infoNumStdy - i.rept + 1))
+      infoTval         <- qt(infoPval, (infoNumStdy - i.rept - 1))
+      vctLamda[i.rept] <- infoTval * (infoNumStdy - i.rept) / sqrt((infoNumStdy - i.rept - 1 + infoTval**2) * (infoNumStdy - i.rept + 1))
+    }
 
-  for (study.i in vctSeq) {
-    if (study.i %in% dataGESD$source) {
-      dataDisparity[study.i, "outlier.GESD"] <- dataGESD[dataGESD$source == study.i, "outlier"]
+    dataGESD         <- data.frame(vctSeq, vctOutlr, vctRepeat, vctLamda)
+    names(dataGESD)  <- c("source", "cases", "statistics", "threshold") # threshold is critical value
+    dataGESD$diff    <- dataGESD$statistics - dataGESD$threshold
+    dataGESD$outlier <- ifelse(dataGESD$diff > 0,
+                               TRUE, FALSE)
+    dataGESD         <- dataGESD[order(dataGESD$source, decreasing = FALSE), ]
+
+    dataDisparity$outlier.GESD <- FALSE
+
+    for (study.i in vctSeq) {
+      if (study.i %in% dataGESD$source) {
+        dataDisparity[study.i, "outlier.GESD"] <- dataGESD[dataGESD$source == study.i, "outlier"]
       }
     }
 
-  dataDisparity$cases.excessive.GESD <- ifelse(dataDisparity$outlier.GESD == TRUE,
-                                            dataDisparity$n - dataDisparity$cases.expect,
-                                            0)
-  infoCasesExcssvGESD                <- sum(abs(dataDisparity$cases.excessive.GESD))
-  dataDisparity$prop.excessive.GESD  <- ifelse(dataDisparity$outlier.GESD == TRUE,
-                                            dataDisparity$cases.excessive.GESD / infoCasesExcssvGESD,
-                                            0)
+    dataDisparity$cases.excessive.GESD <- ifelse(dataDisparity$outlier.GESD == TRUE,
+                                                 dataDisparity$n - dataDisparity$cases.expect,
+                                                 0)
+    infoCasesExcssvGESD                <- sum(abs(dataDisparity$cases.excessive.GESD))
+    dataDisparity$prop.excessive.GESD  <- ifelse(dataDisparity$outlier.GESD == TRUE,
+                                                 dataDisparity$cases.excessive.GESD / infoCases,
+                                                 0)
 
-  if (infoMethodOtlr == "GESD") {
-    infoOutliers             <- sum(dataGESD$outlier == TRUE)
-    infoCasesExcssv          <- infoCasesExcssvGESD
-    dataOtlr$cases.excessive <- dataDisparity$cases.excessive.GESD
-    dataOtlr$prop.excessive  <- dataDisparity$prop.excessive.GESD
+    if (infoMethodOtlr == "GESD") {
+      infoOutliers             <- sum(dataGESD$outlier == TRUE)
+      infoCasesExcssv          <- infoCasesExcssvGESD
+      dataOtlr$cases.excessive <- dataDisparity$cases.excessive.GESD
+      dataOtlr$prop.excessive  <- dataDisparity$prop.excessive.GESD
     }
+
+  }
 
 
 
 
   ### 04.03.04 Median absolute deviation (MAD) -----
   ### Peter J. Rousseeuw & Christophe Croux (1993) Alternatives to the Median Absolute Deviation, Journal of the American Statistical Association, 88:424, 1273-1283. http://dx.doi.org/10.1080/01621459.1993.10476408
+  ### Leys, C., Ley, C., Klein, O., Bernard, P., & Licata, L. (2013). Detecting outliers: Do not use standard deviation around the mean, use absolute deviation around the median. Journal of experimental social psychology, 49(4), 764-766.
   infoMedianOrg   <- median(dataCases)
   infoB           <- 1 / qnorm(0.75)
   vctDiffMedian   <- dataCases - infoMedianOrg
   vctMAD          <- abs(vctDiffMedian)
   infoMADStdz     <- infoB * median(vctMAD)
-  infoC           <- 2.5 # conservative
+  infoC           <- 2.5 # conservative (Leys et al. 2013)
   #vctOutlierVal  <- abs(vctMAD - infoMedianOrg) / infoMADStdz
   vctOutlierVal   <- abs(dataCases - infoMedianOrg) / infoMADStdz
   vctOutlierMAD   <- ifelse(vctOutlierVal > infoC, TRUE, FALSE)
-  dataOutlierMAD  <- data.frame(source = c(1:infoNumStud),
+  dataOutlierMAD  <- data.frame(source = c(1:infoNumStdy),
                                 cases = dataCases,
                                 distance = vctDiffMedian,
                                 mad = vctMAD,
@@ -547,7 +644,6 @@ TestDisparity <- function(n,
   dataMAD         <- dataOutlierMAD
   infoCutCasesMAD <- c(-infoC * infoMADStdz + infoMedianOrg,
                        infoC * infoMADStdz + infoMedianOrg)
-
 
   dataDisparity$outlier.MAD <- FALSE
 
@@ -566,7 +662,7 @@ TestDisparity <- function(n,
                                                )
   infoCasesExcssvMAD                <- sum(abs(dataDisparity$cases.excessive.MAD))
   dataDisparity$prop.excessive.MAD  <- ifelse(dataDisparity$outlier.MAD == TRUE,
-                                               dataDisparity$cases.excessive.MAD / infoCasesExcssvMAD,
+                                               dataDisparity$cases.excessive.MAD / infoCases,
                                                0)
 
   if (infoMethodOtlr == "MAD") {
@@ -580,12 +676,17 @@ TestDisparity <- function(n,
 
   ## 04.04. TEST significance of outlier -----
   ### Binomial test for detection the impact of outliers
+  #### 5% loss to follow-up would be impact outcome
+  #### Haynes, R. B., Sackett, D. L., Richardson, W. S., Rosenberg, W., & Langley, G. R. (1997). Evidence-based medicine: How to practice & teach EBM. Canadian Medical Association. Journal, 157(6), 788.
+  #### 20% loss to follow-up would be impact outcome
+  #### Kristman, V., Manno, M., & Côté, P. (2004). Loss to follow-up in cohort studies: how much is too much?. European journal of epidemiology, 19, 751-760.
+  #### Kristman, V. L., Manno, M., & Côté, P. (2005). Methods to account for attrition in longitudinal data: do they work? A simulation study. European journal of epidemiology, 20, 657-662.
 
-    rsltOtlrProp  <- binom.test(x = infoCasesExcssv, # infoCasesOutlierIQR,
-                                n = infoCases,
-                                p = 0.05, # infoPropExpctIQR
-                                alternative = "greater"
-                                )
+  rsltOtlrProp <- binom.test(x = infoCasesExcssv, # infoCasesOutlierIQR,
+                             n = infoCases,
+                             p = 0.1, # infoPropExpctIQR
+                             alternative = "greater"
+                             )
 
     infoOtlrProp        <- rsltOtlrProp$estimate
     infoOtlrExcssvCases <- rsltOtlrProp$statistic
@@ -605,42 +706,42 @@ TestDisparity <- function(n,
   ### 04.05.01 Coefficient of variation (normal distribution) -----
 
   infoOrgnCV     <- infoSDCases / infoMCases  # original coefficient of variance
-  infoUnbsCV     <- infoOrgnCV * (1 + 1 / (4 * infoNumStud))  # unbiased coefficient of variance
-  infoSECV       <- infoUnbsCV / sqrt(2 * infoNumStud) * (sqrt((1 + 2) * (infoUnbsCV / 100)^2))
-  infoDiffCV     <- infoOrgnCV - infoCutoffL
+  infoUnbsCV     <- infoOrgnCV * (1 + 1 / (4 * infoNumStdy))  # unbiased coefficient of variance
+  infoSECV       <- infoUnbsCV / sqrt(2 * infoNumStdy) * (sqrt((1 + 2) * (infoUnbsCV / 100)^2))
+  infoDiffCV     <- infoOrgnCV - infoCutoffH
   infoStatsT     <- infoDiffCV / infoSECV
-  infoDFCV       <- infoNumStud - 1
-  infoCrtTCV     <- qt(infoAlpha, infoNumStud)
+  infoDFCV       <- infoNumStdy - 1
+  infoCrtTCV     <- qt(infoAlpha, infoNumStdy)
   infoPValCV     <- pt(infoStatsT,
                         df = infoDFCV,
                         lower.tail = FALSE)
   infoLCICV      <- infoDiffCV - infoSECV * infoCrtTCV
   infoUCICV      <- infoDiffCV + infoSECV * infoCrtTCV
-  infoCutCasesCV <- c(floor(infoMCases * (1 - infoCutoffL)), ceiling(infoMCases * (1 + infoCutoffL)))
-  vctExcCasesCV  <- ifelse(dataCases < infoCutCasesCV[1],
-                            dataCases - infoCutCasesCV[1],
-                            ifelse(dataCases > infoCutCasesCV[2],
-                                   dataCases - infoCutCasesCV[2],
+  vctCutCasesCV  <- c(floor(infoMCases * (1 - infoCutoffH)), ceiling(infoMCases * (1 + infoCutoffH)))
+  vctExcCasesCV  <- ifelse(dataCases < vctCutCasesCV[1],
+                            dataCases - vctCutCasesCV[1],
+                            ifelse(dataCases > vctCutCasesCV[2],
+                                   dataCases - vctCutCasesCV[2],
                                    0)
                             )
 
-  dataDisparity$outlier.CV <- ifelse(dataDisparity$n < infoCutCasesCV[1],
-                                     TRUE,
-                                     ifelse(dataDisparity$n > infoCutCasesCV[2],
-                                            TRUE,
-                                            FALSE)
-                                     )
+  dataDisparity$study.excessive.CV <- ifelse(dataDisparity$n < vctCutCasesCV[1],
+                                             TRUE,
+                                             ifelse(dataDisparity$n > vctCutCasesCV[2],
+                                                    TRUE,
+                                                    FALSE)
+                                             )
 
-  dataDisparity$cases.excessive.CV <- ceiling(ifelse(dataDisparity$n < infoCutCasesCV[1],
-                                                     dataDisparity$n - infoCutCasesCV[1],
-                                                     ifelse(dataDisparity$n > infoCutCasesCV[2],
-                                                            dataDisparity$n - infoCutCasesCV[2],
+  dataDisparity$cases.excessive.CV <- ceiling(ifelse(dataDisparity$n < vctCutCasesCV[1],
+                                                     dataDisparity$n - vctCutCasesCV[1],
+                                                     ifelse(dataDisparity$n > vctCutCasesCV[2],
+                                                            dataDisparity$n - vctCutCasesCV[2],
                                                             0
                                                             )
                                                      )
                                               )
   infoCasesExcssvCV                <- sum(abs(dataDisparity$cases.excessive.CV))
-  dataDisparity$prop.excessive.CV  <- ifelse(dataDisparity$outlier.CV == TRUE,
+  dataDisparity$prop.excessive.CV  <- ifelse(dataDisparity$study.excessive.CV == TRUE,
                                               dataDisparity$cases.excessive.CV / infoCasesExcssvCV,
                                               0)
 
@@ -648,17 +749,40 @@ TestDisparity <- function(n,
   ### 04.05.02 Robust coefficient of variation (RCV, non-normal distribution) -----
   ### RCV based on MAD
   ### Arachchige CNPG, Prendergast LA, Staudte RG. Robust analogs to the coefficient of variation. J Appl Stat. 2020 Aug 20;49(2):268-290. doi: 10.1080/02664763.2020.1808599
+  ### based on returns from 04.03.04 Median absolute deviation (MAD)
 
-  infoRCVMedian   <- infoB * (vctMAD / infoMedianOrg)
+  infoMAD           <- median(vctMAD)
+  infoRCVMAD        <- infoB * (infoMAD / infoMedianOrg)
+  vctCutCasesRCVMAD <- c(floor(infoMCases * (1 - infoRCVMAD)),
+                         ceiling(infoMCases * (1 + infoRCVMAD)))
+  vctExcCasesRCVMAD <- ifelse(dataCases < vctCutCasesRCVMAD[1],
+                              vctCutCasesRCVMAD[1] - dataCases,
+                              ifelse(dataCases < vctCutCasesRCVMAD[2],
+                                     dataCases - vctCutCasesRCVMAD[2],
+                                     0)
+                              )
 
-  infoCutCasesRCV <- c(-infoC * infoMADStdz + infoMedianOrg,
-                       infoC * infoMADStdz + infoMedianOrg)
-  vctExcCasesRCV  <- ifelse(dataCases < infoCutCasesRCV[1],
-                            infoCutCasesRCV[1] - dataCases,
-                            ifelse(dataCases < infoCutCasesRCV[2],
-                                   dataCases - infoCutCasesRCV[2],
-                                   0)
-                            )
+  TestRCVMAD <- function(vctRCVMed1, i.boot) {
+    vctRCVMed2         <- vctRCVMed1[i.boot]
+    infoMedRCVBoot     <- median(vctRCVMed2)
+    infoB              <- 1 / qnorm(0.75)
+    vctDiffMedRCVBoot  <- vctRCVMed2 - infoMedRCVBoot
+    vctMADRCVBoot      <- abs(vctDiffMedRCVBoot)
+    #infoMADStdzRCVBoot <- infoB * median(vctMADRCVBoot)
+    infoMADRCVBoot     <- median(vctMADRCVBoot)
+    infoRCVMAD         <- infoB * (infoMADRCVBoot / infoMedRCVBoot)
+    return(infoRCVMAD)
+  }
+
+  set.seed(101020)
+  rsltRCVMADBoot    <- boot::boot(dataCases, TestRCVMAD, R = 1000)
+  vctCIRCVMADBoot   <- boot::boot.ci(boot.out = rsltRCVMADBoot, type = c("norm", "basic", "perc", "bca"))
+  infoLCIRCVMADBoot <- vctCIRCVMADBoot$bca[4]
+  infoUCIRCVMADBoot <- vctCIRCVMADBoot$bca[5]
+
+  #### P-value of bootstrap: pval = (1 + sum(s >= s0))/(N+1)
+  #### Davison, A. C., & Hinkley, D. V. (1997). Bootstrap methods and their application (No. 1). Cambridge university press. P. 114
+  infoPValRCVMADBoot <- (1 + sum(infoCutoffH >= rsltRCVMADBoot$t)) / (1000 + 1)
 
 
 
@@ -666,12 +790,23 @@ TestDisparity <- function(n,
   # 06. BUILD an disparity object -----
   ### 06.01 CREATE core list of disparity object -----
 
+  #infoDisparaty <- ifelse(infoOtlrPval < 0.05,
+  #                        "Suspected",
+  #                        ifelse(infoPValCV < 0.05,
+  #                               "Suspected",
+  #                                "Undetected"
+  #                               )
+  #                        )
+
   infoDisparaty <- ifelse(infoOtlrPval < 0.05,
                           "Suspected",
-                          ifelse(infoPValCV < 0.05,
-                                 "Suspected",
-                                  "Undetected"
-                                 )
+                          ifelse(infoMethodVrblty == "CV",
+                                 ifelse(infoPValCV < 0.05,
+                                        "Suspected",
+                                        "Undetected"),
+                                 ifelse(infoPValRCVMADBoot < 0.05,
+                                        "Suspected",
+                                        "Undetected"))
                           )
 
   dataDiSS <- list(name      = "Disparities in sample size test",
@@ -682,6 +817,8 @@ TestDisparity <- function(n,
   dataDiSS$p.normality        <- outptNorm$p.value
   dataDiSS$outlier.method.set <- infoMethodOtlrOrg
   dataDiSS$outlier.method     <- infoMethodOtlr
+  dataDiSS$vrblty.method.set  <- infoMethodVrbltyOrg
+  dataDiSS$vrblty.method      <- infoMethodVrblty
   dataDiSS$outlier            <- dataOtlr[dataOtlr$prop.excessive > 0, ] #dataOutlier
   dataDiSS$prop.outlier       <- infoOtlrProp
   dataDiSS$n.excessive        <- infoOtlrExcssvCases
@@ -690,6 +827,26 @@ TestDisparity <- function(n,
   dataDiSS$uci.prop.outlier   <- infoOtlrUCI
   dataDiSS$ctf.lwr.cv         <- infoCutoffL
   dataDiSS$ctf.upr.cv         <- infoCutoffH
+  dataDiSS$variability        <- ifelse(infoMethodVrblty == "CV",
+                                        infoUnbsCV,
+                                        ifelse(infoMethodVrblty == "MAD",
+                                               infoRCVMAD,
+                                               "???"))
+  dataDiSS$p.variability      <- ifelse(infoMethodVrblty == "CV",
+                                        infoPValCV,
+                                        ifelse(infoMethodVrblty == "MAD",
+                                               infoPValRCVMADBoot,
+                                               "???"))
+  dataDiSS$lci.variability    <- ifelse(infoMethodVrblty == "CV",
+                                        infoLCICV,
+                                        ifelse(infoMethodVrblty == "MAD",
+                                               infoLCIRCVMADBoot,
+                                               "???"))
+  dataDiSS$uci.variability    <- ifelse(infoMethodVrblty == "CV",
+                                        infoUCICV,
+                                        ifelse(infoMethodVrblty == "MAD",
+                                               infoUCIRCVMADBoot,
+                                               "???"))
   dataDiSS$cv                 <- infoOrgnCV
   dataDiSS$cv.unbiased        <- infoUnbsCV
   dataDiSS$diff.cv            <- infoDiffCV
@@ -699,7 +856,12 @@ TestDisparity <- function(n,
   dataDiSS$p.cv               <- infoPValCV # ifelse(outptNorm$p.value <= 0.05, infoPValCV, NA)
   dataDiSS$lci.cv             <- infoLCICV
   dataDiSS$uci.cv             <- infoUCICV
-  dataDiSS$cov.cases          <- infoCutCasesCV
+  dataDiSS$cov.cases          <- vctCutCasesCV
+  dataDiSS$cv.robust.MAD      <- infoRCVMAD
+  dataDiSS$boot.robust.MAD    <- rsltRCVMADBoot$t
+  dataDiSS$p.cv.robust.MAD    <- infoPValRCVMADBoot # ifelse(infoPValRCVMADBoot <= 0.05, infoPValRCVMADBoot, NA)
+  dataDiSS$lci.cv.robust.MAD  <- infoLCIRCVMADBoot
+  dataDiSS$uci.cv.robust.MAD  <- infoUCIRCVMADBoot
   dataDiSS$n.excessive        <- sum(abs(dataOtlr$cases.excessive))
   dataDiSS$prop.excessive     <- sum(abs(dataOtlr$cases.excessive)) / infoCases
   #dataDiSS$data.plot    <- dataCasesPlot
@@ -711,11 +873,13 @@ TestDisparity <- function(n,
 
   if (infoPlot) {
     dataDiSS$data.disparity <- dataDisparity
+  } else if (base::isFALSE(is.null(vrblty))) {
+    dataDiSS$data.disparity <- dataDisparity
   }
 
 
   # 07. RETURN summary of function `TestDisparity()` -----
-  cat(paste("\n"), fill = TRUE, sep = "")
+  #cat(paste("\n"), fill = TRUE, sep = "")
 
   cat(paste("Summary of disparities in sample size test:\n",
             "Number of outliers = ", infoOutliers,
@@ -729,18 +893,12 @@ TestDisparity <- function(n,
                          )
                    ),
             ")\n",
-            "Variability = ", round(infoUnbsCV, 3),
-            " (t-value",
-            ifelse(infoStatsT < 0.001,
-                   " < 0.001",
-                   paste(" = ", round(infoStatsT, 3),
-                         sep = "")
-                   ),
-            "; P-value",
-            ifelse(infoPValCV < 0.001,
+            "Variability = ", round(dataDiSS$variability, 3),
+            " (P-value",
+            ifelse(dataDiSS$p.variability < 0.001,
                    " < 0.001",
                    paste(" = ",
-                         round(infoPValCV, 3),
+                         round(dataDiSS$p.variability, 3),
                          sep = ""
                          )
                    ),
@@ -757,19 +915,29 @@ TestDisparity <- function(n,
                          ""),
                   sep = ""),
             "\n",
-            "\nNote: ",
-            ifelse(infoDisparaty == "Suspected",
-                   paste("Suspected disparities in sample size due to ",
-                         ifelse(infoOtlrPval < 0.05,
-                                ifelse(infoPValCV < 0.05,
-                                       "outlier(s) and variability.",
-                                       "outlier(s)."),
-                                ifelse(infoPValCV < 0.05,
-                                       "variability.",
-                                       "???")),
-                         sep = ""),
-                   "No significant finding in the stepwised tests of disparities in sample size."
-                   ),
+            paste("Variability detection method: ", infoMethodVrblty,
+                  ifelse(infoMethodVrblty != infoMethodVrbltyOrg,
+                         ifelse(infoMethodVrbltyOrg == "Default",
+                                "",
+                                paste("\nPre-defined method: ", infoMethodVrbltyOrg,
+                                      "\n(variability detection method was automatically changed according to data distribution.)",
+                                      sep = "")
+                         ),
+                         ""),
+                  sep = ""),
+            "\n",        #    "\nNote: ",
+        #    ifelse(infoDisparaty == "Suspected",
+        #           paste("Suspected disparities in sample size due to ",
+        #                 ifelse(infoOtlrPval < 0.05,
+        #                        ifelse(infoPValCV < 0.05,
+        #                               "outlier(s) and variability.",
+        #                               "outlier(s)."),
+        #                        ifelse(infoPValCV < 0.05,
+        #                               "variability.",
+        #                               "???")),
+        #                 sep = ""),
+        #           "No significant finding in the stepwised tests of disparities in sample size."
+        #           ),
             sep = ""
             ),
       fill = TRUE, sep = ""
@@ -809,19 +977,20 @@ TestDisparity <- function(n,
          ylim = c(ifelse(min(dataPlot$prop.excessive) > -0.5,
                          -0.5,
                          ifelse(min(dataPlot$prop.excessive) > -1,
-                                -1,
-                                min(dataPlot$prop.excessive)
+                                -1.2,
+                                min(dataPlot$prop.excessive) * 1.1
+                                )
+                         ),
+                  ifelse(max(dataPlot$prop.excessive) < 0.5,
+                         0.5,
+                         ifelse(max(dataPlot$prop.excessive) < 1,
+                                1.2,
+                                max(dataPlot$prop.excessive) * 1.1
+                                )
                          )
-         ),
-         ifelse(max(dataPlot$prop.excessive) < 0.5,
-                0.5,
-                ifelse(max(dataPlot$prop.excessive) < 1,
-                       1,
-                       max(dataPlot$prop.excessive)
-                )
-         )
-         ),
-         xlab = "", ylab = "")
+                  ),
+         xlab = "",
+         ylab = "")
     segments(0, 0,
              nrow(dataPlot), 0,
              col = "blue4")
@@ -849,37 +1018,29 @@ TestDisparity <- function(n,
                       )
                ),
                ")\n",
-               "Variability",
-               ifelse(infoUnbsCV < 0.001,
-                      " < 0.001",
-                      paste(" = ",
-                            round(infoUnbsCV, 3),
-                            sep = "")
-               ),
-               " (t-value",
-               ifelse(infoStatsT < 0.001,
-                      " < 0.001",
-                      paste(" = ", round(infoStatsT, 3),
-                            sep = "")
-               ),
-               "; P-value",
-               ifelse(infoPValCV < 0.001,
-                      " < 0.001",
-                      paste(" = ",
-                            round(infoPValCV, 3),
-                            sep = ""
-                      )
-               ),
-               ")\n",
+             #  "Variability",
+            #   ifelse(dataDiSS$variability < 0.001,
+            #          " < 0.001",
+            #          paste(" = ",
+            #                round(dataDiSS$variability, 3),
+            #                sep = "")
+            #  ),
+            #   " (P-value",
+            #   ifelse(dataDiSS$p.variability < 0.001,
+            #          " < 0.001",
+            #          paste(" = ", round(dataDiSS$p.variability, 3),
+            #                sep = "")
+            #   ),
+            #   ")\n",
                sep = ""
          ),
          pos = 4, cex = 1.2)
     axis(2, las = 2)
-    text(dataOtlr$source,
+    text(dataPlot$source,
          par("usr")[3],
-         dataOtlr$study,
-         cex = ifelse(infoNumStud < 11, 1,
-                      1 / sqrt(infoNumStud / 10)),
+         dataPlot$study,
+         cex = ifelse(infoNumStdy < 11, 1,
+                      1 / sqrt(infoNumStdy / 10)),
          xpd = TRUE, pos = 1, srt = 45)
     mtext("Disparity plot (outlier)", side = 3, cex = 2)
     mtext("Study", side = 1, cex = 1.2, line = 4)
@@ -887,6 +1048,7 @@ TestDisparity <- function(n,
 
 
     ### Disparity plot (variability)
+    '
     plot(infoMCases + infoCVL * c(0:4), #infoMCases + infoCV0.1 * c(0:4),
          c(0:4),
          type = "n", frame = FALSE,
@@ -1005,6 +1167,7 @@ TestDisparity <- function(n,
           side = 1, line = 3, cex = 1.2)
     mtext("Number of tandrd deviations",
           side = 2, line = 3, cex = 1.2)
+    '
 
   }
 
