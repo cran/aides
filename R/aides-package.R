@@ -26,11 +26,11 @@
 #'
 #'
 #' @details
-#' Current version consists of seven functions, including seven functions for
+#' Current version consists of eight functions, including seven functions for
 #' examining fundamental assumptions before test of small-study effects (i.e.
 #' function \code{\link{PlotDistrSS}}, \code{\link{TestDisparity}}, \code{\link{PlotDisparity}}, and \code{\link{TestDiscordance}})
 #' and three functions for performing sequential analysis (i.e. \code{\link{DoSA}}, \code{\link{DoOSA}},
-#' and \code{\link{PlotOSA}}).
+#' \code{\link{PlotOSA}}, and \code{\link{PlotPower}}).
 #'
 #' @name aides-package
 #'
@@ -58,6 +58,7 @@
 #' @importFrom graphics text
 #' @importFrom graphics title
 #' @importFrom grDevices col2rgb
+#' @importFrom grDevices colorRampPalette
 #' @importFrom grDevices colors
 #' @importFrom grDevices rainbow
 #' @importFrom grDevices recordPlot
@@ -66,6 +67,7 @@
 #' @importFrom stats density
 #' @importFrom stats dnorm
 #' @importFrom stats IQR
+#' @importFrom stats ks.test
 #' @importFrom stats median
 #' @importFrom stats pnorm
 #' @importFrom stats pt
@@ -77,5 +79,7 @@
 #' @importFrom stats shapiro.test
 #' @importFrom stats wilcox.test
 #' @importFrom utils capture.output
+#' @importFrom utils head
+#' @importFrom utils tail
 ## usethis namespace: end
 NULL

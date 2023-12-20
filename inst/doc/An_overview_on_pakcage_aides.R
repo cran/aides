@@ -42,6 +42,13 @@ PlotDistrSS(n = n,
             time = year)
 
 ## ----eval = FALSE-------------------------------------------------------------
+#  PlotDistrSS(n = n,
+#              data = dataOlkin1995,
+#              study = author,
+#              time = year,
+#              method = "ks")
+
+## ----eval = FALSE-------------------------------------------------------------
 #  TestDisparity(n = n,
 #                data = dataOlkin1995,
 #                study = author,
@@ -155,126 +162,116 @@ TestDiscordance(n = n,
 
 ## ----eval = FALSE-------------------------------------------------------------
 #  library(meta)
-#  data("Fleiss1993cont")
-#  dataFleiss1993cont <- Fleiss1993cont
+#  data("Fleiss1993bin")
+#  dataFleiss1993bin <- Fleiss1993bin
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  DoSA(Fleiss1993cont,
+#  DoSA(Fleiss1993bin,
 #       source = study,
 #       time = year,
-#       m1 = mean.psyc,
-#       sd1 = sd.psyc,
-#       n1 = n.psyc,
-#       m2 = mean.cont,
-#       sd2 = sd.cont,
-#       n2 = n.cont,
-#       measure = "SMD",
-#       PES = 0.2,
-#       group = c("Psychotherapy", "Control"),
-#       plot = FALSE)
+#       r1 = d.asp,
+#       n1 = n.asp,
+#       r2 = d.plac,
+#       n2 = n.plac,
+#       measure = "RR",
+#       PES = 0.1,
+#       group = c("Aspirin", "Placebo"))
 
 ## ----result-DoSA, eval = TRUE, echo = FALSE, warning = FALSE, message = FALSE----
-data("Fleiss1993cont")
-dataFleiss1993cont <- Fleiss1993cont
-DoSA(Fleiss1993cont, 
+data("Fleiss1993bin")
+dataFleiss1993bin <- Fleiss1993bin
+DoSA(Fleiss1993bin, 
      source = study, 
      time = year,
-     m1 = mean.psyc, 
-     sd1 = sd.psyc, 
-     n1 = n.psyc,
-     m2 = mean.cont, 
-     sd2 = sd.cont, 
-     n2 = n.cont,
-     measure = "SMD", 
-     PES = 0.2,
-     group = c("Psychotherapy", "Control"))
+     r1 = d.asp, 
+     n1 = n.asp, 
+     r2 = d.plac, 
+     n2 = n.plac, 
+     measure = "RR",
+     PES = 0.1,
+     group = c("Aspirin", "Placebo"))
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  DoSA(Fleiss1993cont,
+#  DoSA(Fleiss1993bin,
 #       source = study,
 #       time = year,
-#       m1 = mean.psyc,
-#       sd1 = sd.psyc,
-#       n1 = n.psyc,
-#       m2 = mean.cont,
-#       sd2 = sd.cont,
-#       n2 = n.cont,
-#       measure = "SMD",
-#       PES = 0.2,
-#       group = c("Psychotherapy", "Control"))
-
-## ----plot-sequential, fig.cap = "An example for sequential analysis", eval = TRUE, echo = FALSE, warning = FALSE, message = FALSE, results = "hide", fig.height = 6, fig.width = 8, fig.align = "center", out.width = "100%"----
-data("Fleiss1993cont")
-dataFleiss1993cont <- Fleiss1993cont
-DoSA(Fleiss1993cont, 
-     source = study, 
-     time = year,
-     m1 = mean.psyc, 
-     sd1 = sd.psyc, 
-     n1 = n.psyc,
-     m2 = mean.cont, 
-     sd2 = sd.cont, 
-     n2 = n.cont,
-     measure = "SMD", 
-     PES = 0.2,
-     group = c("Psychotherapy", "Control"), 
-     plot = TRUE)
-
-## ----eval = FALSE-------------------------------------------------------------
-#  DoOSA(Fleiss1993cont,
-#       source = study,
-#       time = year,
-#       m1 = mean.psyc,
-#       sd1 = sd.psyc,
-#       n1 = n.psyc,
-#       m2 = mean.cont,
-#       sd2 = sd.cont,
-#       n2 = n.cont,
-#       measure = "SMD",
-#       group = c("Psychotherapy", "Control"))
-
-## ----result-OSA, eval = TRUE, echo = FALSE, warning = FALSE, message = FALSE----
-data("Fleiss1993cont")
-dataFleiss1993cont <- Fleiss1993cont
-DoOSA(Fleiss1993cont, 
-     source = study, 
-     time = year,
-     m1 = mean.psyc, 
-     sd1 = sd.psyc, 
-     n1 = n.psyc,
-     m2 = mean.cont, 
-     sd2 = sd.cont, 
-     n2 = n.cont,
-     measure = "SMD", 
-     group = c("Psychotherapy", "Control"))
-
-## ----eval = FALSE-------------------------------------------------------------
-#  DoOSA(Fleiss1993cont,
-#       source = study,
-#       time = year,
-#       m1 = mean.psyc,
-#       sd1 = sd.psyc,
-#       n1 = n.psyc,
-#       m2 = mean.cont,
-#       sd2 = sd.cont,
-#       n2 = n.cont,
-#       measure = "SMD",
-#       group = c("Psychotherapy", "Control"),
+#       r1 = d.asp,
+#       n1 = n.asp,
+#       r2 = d.plac,
+#       n2 = n.plac,
+#       measure = "RR",
+#       PES = 0.1,
+#       group = c("Aspirin", "Placebo"),
 #       plot = TRUE)
 
-## ----plot-OSA, fig.cap = "An example for observed sequential analysis plot", eval = TRUE, echo = FALSE, warning = FALSE, message = FALSE, results = "hide", fig.height = 6, fig.width = 8, fig.align = "center", out.width = "100%"----
-data("Fleiss1993cont")
-dataFleiss1993cont <- Fleiss1993cont
-DoOSA(Fleiss1993cont, 
+## ----plot-sequential, fig.cap = "An example for sequential analysis", eval = TRUE, echo = FALSE, warning = FALSE, message = FALSE, results = "hide", fig.height = 6, fig.width = 8, fig.align = "center", out.width = "100%"----
+data("Fleiss1993bin")
+dataFleiss1993bin <- Fleiss1993bin
+DoSA(Fleiss1993bin, 
      source = study, 
      time = year,
-     m1 = mean.psyc, 
-     sd1 = sd.psyc, 
-     n1 = n.psyc,
-     m2 = mean.cont, 
-     sd2 = sd.cont, 
-     n2 = n.cont,
-     measure = "SMD", 
-     group = c("Psychotherapy", "Control"),
+     r1 = d.asp, 
+     n1 = n.asp, 
+     r2 = d.plac, 
+     n2 = n.plac, 
+     measure = "RR",
+     PES = 0.1,
+     group = c("Aspirin", "Placebo"),
      plot = TRUE)
+
+## ----eval = FALSE-------------------------------------------------------------
+#  DoOSA(Fleiss1993bin,
+#        source = study,
+#        time = year,
+#        r1 = d.asp,
+#        n1 = n.asp,
+#        r2 = d.plac,
+#        n2 = n.plac,
+#        measure = "RR",
+#        group = c("Aspirin", "Placebo"))
+
+## ----result-OSA, eval = TRUE, echo = FALSE, warning = FALSE, message = FALSE----
+data("Fleiss1993bin")
+dataFleiss1993bin <- Fleiss1993bin
+DoOSA(Fleiss1993bin, 
+      source = study, 
+      time = year,
+      r1 = d.asp, 
+      n1 = n.asp, 
+      r2 = d.plac, 
+      n2 = n.plac, 
+      measure = "RR",
+      group = c("Aspirin", "Placebo"))
+
+## ----eval = FALSE-------------------------------------------------------------
+#  output <- DoOSA(Fleiss1993bin,
+#                  source = study,
+#                  time = year,
+#                  r1 = d.asp,
+#                  n1 = n.asp,
+#                  r2 = d.plac,
+#                  n2 = n.plac,
+#                  measure = "RR",
+#                  group = c("Aspirin", "Placebo"),
+#                  plot = TRUE)
+
+## ----eval = FALSE-------------------------------------------------------------
+#  PlotPower(output)
+
+## ----plot-power, fig.cap = "An example for illustrating sequential-adjusted power", eval = TRUE, echo = FALSE, warning = FALSE, message = FALSE, results = "hide", fig.height = 6, fig.width = 8, fig.align = "center", out.width = "100%"----
+data("Fleiss1993bin")
+dataFleiss1993bin <- Fleiss1993bin
+output <- DoOSA(Fleiss1993bin, 
+                source = study,
+                time = year,
+                r1 = d.asp, 
+                n1 = n.asp, 
+                r2 = d.plac, 
+                n2 = n.plac, 
+                measure = "RR",
+                group = c("Aspirin", "Placebo"),
+                plot = TRUE)
+
+
+PlotPower(output)
 

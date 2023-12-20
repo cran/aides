@@ -9,10 +9,12 @@ TestDisparity(
   data = NULL,
   study = NULL,
   time = NULL,
+  outlier = NULL,
+  ctf = 0.2,
+  vrblty = NULL,
   ctfLwr = 0.1,
   ctfUpr = 0.3,
-  outlier = NULL,
-  vrblty = NULL,
+  rplctns = 1000,
   plot = FALSE,
   sort = NULL,
   color = "firebrick3"
@@ -28,12 +30,6 @@ year, and sample size.}
 
 \item{time}{NUMERIC values of time sequence.}
 
-\item{ctfLwr}{NUMERIC value of cutoff value for lower boundary of variability
-that should be larger than 0.}
-
-\item{ctfUpr}{NUMERIC value of cutoff value for upper boundary of variability
-that should be larger than \code{ctfLwr}.}
-
 \item{outlier}{CHARACTER for method of outlier detection. Current version
 consists of four methods, and three of them can be used for
 normal distribution. The rest one method can be used for data
@@ -46,6 +42,10 @@ absolute deviation method ("MAD"). Parameter \code{outlier} with
 argument "Default" automatically takes "GESD" or "MAD" based on
 data distribution.}
 
+\item{ctf}{NUMERIC value of cutoff value for proportion of excessive cases
+in outlier-based disparity test, and the value should be larger
+than 0.}
+
 \item{vrblty}{CHARACTER for method of variability detection. Current version
 consists of two methods in terms of coefficient of variation
 (CV) and robust CV (RCV) using MAD. For normal distribution data,
@@ -53,6 +53,16 @@ variability detection can be performed common CV method, and
 MAD based RCV could be used for data with non-normal distribution.
 Default argument for parameter \code{vrblty} is "CV" in order to
 detect variability.}
+
+\item{ctfLwr}{NUMERIC value of cutoff value for lower boundary of variability
+that should be larger than 0.}
+
+\item{ctfUpr}{NUMERIC value of cutoff value for upper boundary of variability
+that should be larger than \code{ctfLwr}.}
+
+\item{rplctns}{INTEGER value of bootstrap replications for obtaining probability
+of variability-based disparity test, and the integer must be equal
+or larger than 1,000.}
 
 \item{plot}{LOGIC value for indicating whether to illustrate proportion of
 excessive cases plot.}

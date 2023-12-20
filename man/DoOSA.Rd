@@ -28,7 +28,7 @@ DoOSA(
   pooling = "IV",
   alpha = 0.05,
   beta = 0.2,
-  adjust = "none",
+  adjust = "D2",
   plot = FALSE
 )
 }
@@ -145,13 +145,13 @@ method. The arguments \code{"MH"} and \code{"Peto"} are exclusively available fo
 outcomes, while the argument \code{"IV"} will be automatically applied in the case
 of continuous outcomes.
 
-2.4. Default on the parameter \code{adjust} is \code{"None"} for keeping the required
-information size (RIS) without adjustment. Other eligible arguments for the
-parameter are \code{"D2"} for adjusted RIS based on diversity (D-squared statistics),
-\code{"I2"} for adjusted RIS based on I-squared statistics, \code{"CHL"} for adjusted RIS
-based on low heterogeneity by multiplying 1.33, \code{"CHM"} for adjusted RIS by
-multiplying 2 due to moderate heterogeneity, and \code{"CHL"} for adjusted RIS by
-multiplying 4 due to high heterogeneity.}
+2.4. Default on the parameter \code{adjust} is \code{"D2"} for adjusting optimal information
+size (OIS) based on diversity (D-squared statistics). Other eligible arguments
+for the parameter are \code{"None"} for the OIS without adjustment, \code{"I2"} for adjusted
+OIS based on I-squared statistics, \code{"CHL"} for adjusted OIS based on low
+heterogeneity by multiplying 1.33, \code{"CHM"} for adjusted OIS by multiplying 2
+due to moderate heterogeneity, and \code{"CHL"} for adjusted OIS by multiplying 4
+due to high heterogeneity.}
 }
 \value{
 \strong{DoOSA()} returns a summary on the result of sequential analysis.
@@ -166,7 +166,7 @@ sequential analysis.}
 \item{AF}{A numeric value of adjustment factor.}
 \item{OIS.org}{A numeric value for optimal information size without adjustment.}
 \item{OIS.adj}{A numeric value for optimal information size with adjustment.}
-\item{frag}{A vector of fraction of each study included in the sequential
+\item{frctn}{A vector of fraction of each study included in the sequential
 analysis.}
 \item{weight}{A vector of weight of each study included in the sequential
 analysis.}
@@ -185,14 +185,14 @@ sequential analysis.}
 ## Not run:
 # 1. Import a dataset of study by Fleiss (1993)
 library(meta)
-data("Fleiss1993cont")
+data("Fleiss1993bin")
 
 # 2. Perform observed sequential analysis
-DoOSA(Fleiss1993cont, study, year,
-      m1 = mean.psyc, sd1 = sd.psyc, n1 = n.psyc,
-      m2 = mean.cont, sd2 = sd.cont, n2 = n.cont,
-      measure = "SMD",
-      group = c("Psychotherapy", "Control"))
+output <- DoOSA(Fleiss1993bin, study, year,
+                r1 = d.asp, n1 = n.asp,
+                r2 = d.plac, n2 = n.plac,
+                measure = "RR",
+                group = c("Aspirin", "Control"))
 
 ## End(Not run)
 
@@ -212,8 +212,7 @@ In \emph{PASS Documentation}. Available online:
 https://www.ncss.com/wp-content/themes/ncss/pdf/Procedures/NCSS/Group-Sequential_Analysis_for_Two_Proportions.pdf
 }
 \seealso{
-\code{\link{DoSA}}, \code{\link{PlotOSA}}
-\code{\link{TestDisparity}}, \code{\link{TestDiscordance}}
+\code{\link{DoSA}}, \code{\link{PlotOSA}}, \code{\link{PlotPower}}
 }
 \author{
 Enoch Kang

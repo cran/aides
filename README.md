@@ -17,7 +17,7 @@
 <!-- badges: start -->
 
 &nbsp; [![CRAN](https://img.shields.io/cran/v/aides?color=blue&label=CRAN&logo=r&logoColor=skyblue)](https://cran.r-project.org/package=aides)
-&nbsp; [![Update date](https://img.shields.io/badge/Update%20date-2023.08.11-blue.svg?logo=r&logoColor=skyblue)](https://github.com/EnochKang/RES/blob/main/aides/NEWS.md)
+&nbsp; [![Update date](https://img.shields.io/badge/Update%20date-2023.20.12-blue.svg?logo=r&logoColor=skyblue)](https://github.com/EnochKang/RES/blob/main/aides/NEWS.md)
 &nbsp; [![Licence](https://img.shields.io/badge/licence-GPL--3-brightgreen.svg?color=blue&label=Licence&logo=gnu&logoColor=skyblue)](https://www.gnu.org/licenses/gpl-3.0.en.html)
 
 &nbsp; [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg?color=green&label=Lifecycle&logo=r&logoColor=green)](https://lifecycle.r-lib.org/articles/stages.html#stable)
@@ -101,7 +101,7 @@ Users can import their data and do relevant tests or graphics using functions in
 
 - **Discordance:** `TestDiscordance()`.  
   
-- **Sequential analysis:**  `DoSA()`. `DoOSA()`, and `PlotOSA()`.
+- **Sequential analysis:**  `DoSA()`. `DoOSA()`, `PlotOSA()`, and `PlotPower()`.
 <br>
 
 #### Disparity:
@@ -252,8 +252,8 @@ The following steps and syntax demonstrate how user can carry out sequential ana
 
 ``` {r}
 library(meta)
-data("Fleiss1993cont")
-data <- Fleiss1993cont
+data("Fleiss1993bin")
+data <- Fleiss1993bin
 ```
 
 
@@ -261,11 +261,11 @@ data <- Fleiss1993cont
 
 ```{r}
 DoSA(Fleiss1993cont, study, year,
-                m1 = mean.psyc, sd1 = sd.psyc, n1 = n.psyc,
-                m2 = mean.cont, sd2 = sd.cont, n2 = n.cont,
-                measure = "SMD", PES = 0.5,
-                group = c("Psychotherapy", "Control"), 
-                plot = TRUE)
+     r1 = d.asp, n1 = n.asp,
+     r2 = d.plac, n2 = n.plac,
+     measure = "RR", PES = 0.5,
+     group = c("Aspirin", "Control"), 
+     plot = TRUE)
 ```
 
 <p align = "center" width = "50%">

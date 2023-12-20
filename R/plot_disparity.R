@@ -1554,7 +1554,7 @@ PlotDisparity <- function(object,
     }
 
     if (infoLgcTtlY == TRUE) {
-      mtext("Proportion of outliers",
+      mtext("Proportion of excessive cases",
             side = 2, line = 3,
             cex = infoSzFntTtlY,
             col = infoClrTtlY)

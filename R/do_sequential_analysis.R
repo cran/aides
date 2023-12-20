@@ -97,13 +97,13 @@
 #' outcomes, while the argument `"IV"` will be automatically applied in the case
 #' of continuous outcomes.
 #'
-#' 2.4. Default on the parameter `adjust` is `"None"` for keeping the required
-#' information size (RIS) without adjustment. Other eligible arguments for the
-#' parameter are `"D2"` for adjusted RIS based on diversity (D-squared statistics),
-#' `"I2"` for adjusted RIS based on I-squared statistics, `"CHL"` for adjusted RIS
-#' based on low heterogeneity by multiplying 1.33, `"CHM"` for adjusted RIS by
-#' multiplying 2 due to moderate heterogeneity, and `"CHL"` for adjusted RIS by
-#' multiplying 4 due to high heterogeneity.
+#' 2.4. Default on the parameter `adjust` is `"D2"` for adjusting required
+#' information size (RIS) based on diversity (D-squared statistics). Other eligible
+#' arguments for the parameter are `"None"` for the RIS without adjustment, `"I2"`
+#' for adjusted RIS based on I-squared statistics, `"CHL"` for adjusted RIS based
+#' on low heterogeneity by multiplying 1.33, `"CHM"` for adjusted RIS by multiplying
+#' 2 due to moderate heterogeneity, and `"CHL"` for adjusted RIS by multiplying
+#' 4 due to high heterogeneity.
 #'
 #'
 #' @return
@@ -122,7 +122,7 @@
 #' \item{AF}{A numeric value of adjustment factor.}
 #' \item{RIS.org}{A numeric value for required information size without adjustment.}
 #' \item{RIS.adj}{A numeric value for adjusted required information size.}
-#' \item{frag}{A vector of fraction of each study included in the sequential
+#' \item{frctn}{A vector of fraction of each study included in the sequential
 #'       analysis.}
 #' \item{weight}{A vector of weight of each study included in the sequential
 #'       analysis.}
@@ -150,22 +150,22 @@
 #' https://www.ncss.com/wp-content/themes/ncss/pdf/Procedures/NCSS/Group-Sequential_Analysis_for_Two_Proportions.pdf
 #'
 #'
-#' @seealso \code{\link{DoOSA}}, \code{\link{PlotOSA}},
-#'          \code{\link{TestDisparity}}, \code{\link{TestDiscordance}}
+#' @seealso \code{\link{DoOSA}}, \code{\link{PlotOSA}}, \code{\link{PlotPower}}
 #'
 #'
 #' @examples
 #' ## Not run:
 #' # 1. Import a dataset of study by Fleiss (1993)
 #' library(meta)
-#' data("Fleiss1993cont")
+#' data("Fleiss1993bin")
 #'
-#' # 2. Perform sequential analysis
-#'  output <- DoSA(Fleiss1993cont, study, year,
-#'                 m1 = mean.psyc, sd1 = sd.psyc, n1 = n.psyc,
-#'                 m2 = mean.cont, sd2 = sd.cont, n2 = n.cont,
-#'                 measure = "SMD", PES = 0.5,
-#'                 group = c("Psychotherapy", "Control"), plot = TRUE)
+#' # 2. Perform observed sequential analysis
+#' output <- DoSA(Fleiss1993bin, study, year,
+#'                r1 = d.asp, n1 = n.asp,
+#'                r2 = d.plac, n2 = n.plac,
+#'                measure = "RR",
+#'                PES = 0.05,
+#'                group = c("Aspirin", "Control"))
 #'
 #' ## End(Not run)
 #'
@@ -199,7 +199,7 @@ DoSA <- function(data    = NULL,
                  beta    = 0.2,
                  PES     = "post-hoc",
                  PV      = "post-hoc",
-                 adjust  = "none",
+                 adjust  = "D2",
                  plot    = FALSE,
                  id      = FALSE,
                  invert  = FALSE,
@@ -527,13 +527,13 @@ DoSA <- function(data    = NULL,
   }
 
   dataPlotSA <- as.data.frame(cbind(sample = c(ceiling(infoRIS/20):infoRIS),
-                                    frag   = c(ceiling(infoRIS/20):infoRIS) / infoRIS)
+                                    frctn  = c(ceiling(infoRIS/20):infoRIS) / infoRIS)
                               )
-  dataPlotSA$aslb <- -qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(dataPlotSA$frag))) / 2); dataPlotSA$aslb <- ifelse(dataPlotSA$aslb == "-Inf", -10, dataPlotSA$aslb)
-  dataPlotSA$asub <-  qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(dataPlotSA$frag))) / 2); dataPlotSA$asub <- ifelse(dataPlotSA$asub == "Inf", 10, dataPlotSA$asub)
-  dataPlotSA$bsub <-  (qnorm(pnorm(qnorm((infoBeta)) / dataPlotSA$frag)) + (qnorm(pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(1))) - qnorm(pnorm(qnorm((infoBeta)) / sqrt(1))))); dataPlotSA$bsub <- ifelse(dataPlotSA$bsub < 0, 0, dataPlotSA$bsub)
-  dataPlotSA$bslb <- -(qnorm(pnorm(qnorm((infoBeta)) / dataPlotSA$frag)) + (qnorm(pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(1))) - qnorm(pnorm(qnorm((infoBeta)) / sqrt(1))))); dataPlotSA$bslb <- ifelse(dataPlotSA$bslb > 0, 0, dataPlotSA$bslb)
-  infoFragBSB     <- dataPlotSA[max(which(dataPlotSA$bsub == 0)), "frag"]
+  dataPlotSA$aslb <- -qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(dataPlotSA$frctn))) / 2); dataPlotSA$aslb <- ifelse(dataPlotSA$aslb == "-Inf", -10, dataPlotSA$aslb)
+  dataPlotSA$asub <-  qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(dataPlotSA$frctn))) / 2); dataPlotSA$asub <- ifelse(dataPlotSA$asub == "Inf", 10, dataPlotSA$asub)
+  dataPlotSA$bsub <-  (qnorm(pnorm(qnorm((infoBeta)) / dataPlotSA$frctn)) + (qnorm(pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(1))) - qnorm(pnorm(qnorm((infoBeta)) / sqrt(1))))); dataPlotSA$bsub <- ifelse(dataPlotSA$bsub < 0, 0, dataPlotSA$bsub)
+  dataPlotSA$bslb <- -(qnorm(pnorm(qnorm((infoBeta)) / dataPlotSA$frctn)) + (qnorm(pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(1))) - qnorm(pnorm(qnorm((infoBeta)) / sqrt(1))))); dataPlotSA$bslb <- ifelse(dataPlotSA$bslb > 0, 0, dataPlotSA$bslb)
+  infoFrctnBSB     <- dataPlotSA[max(which(dataPlotSA$bsub == 0)), "frctn"]
 
 
   dataSA <- dataIn[, c("source", "time", "n", "weight", "esCum", "seCum", "zCum")]
@@ -554,31 +554,31 @@ DoSA <- function(data    = NULL,
     }
   }
 
-  dataSA$frag  <- dataSA$nCum / infoRIS
-  dataSA$asub  <-  qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(dataSA$frag))) / 2); dataSA$asub <- ifelse(dataSA$asub == "Inf", 10, dataSA$asub)
-  dataSA$aslb  <- -qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(dataSA$frag))) / 2); dataSA$aslb <- ifelse(dataSA$aslb == "-Inf", -10, dataSA$aslb)
-  dataSA$bsub  <-  (qnorm(pnorm(qnorm((infoBeta)) / dataSA$frag)) + (qnorm(pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(1))) - qnorm(pnorm(qnorm((infoBeta)) / sqrt(1))))); dataSA$bsub <- ifelse(dataSA$bsub < 0, 0, dataSA$bsub)
-  dataSA$bslb  <- -(qnorm(pnorm(qnorm((infoBeta)) / dataSA$frag)) + (qnorm(pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(1))) - qnorm(pnorm(qnorm((infoBeta)) / sqrt(1))))); dataSA$bslb <- ifelse(dataSA$bslb > 0, 0, dataSA$bslb)
+  dataSA$frctn <- dataSA$nCum / infoRIS
+  dataSA$asub  <-  qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(dataSA$frctn))) / 2); dataSA$asub <- ifelse(dataSA$asub == "Inf", 10, dataSA$asub)
+  dataSA$aslb  <- -qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(dataSA$frctn))) / 2); dataSA$aslb <- ifelse(dataSA$aslb == "-Inf", -10, dataSA$aslb)
+  dataSA$bsub  <-  (qnorm(pnorm(qnorm((infoBeta)) / dataSA$frctn)) + (qnorm(pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(1))) - qnorm(pnorm(qnorm((infoBeta)) / sqrt(1))))); dataSA$bsub <- ifelse(dataSA$bsub < 0, 0, dataSA$bsub)
+  dataSA$bslb  <- -(qnorm(pnorm(qnorm((infoBeta)) / dataSA$frctn)) + (qnorm(pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(1))) - qnorm(pnorm(qnorm((infoBeta)) / sqrt(1))))); dataSA$bslb <- ifelse(dataSA$bslb > 0, 0, dataSA$bslb)
   #dataSA$power <- 1 - pnorm(qnorm(1 - infoAlpha / 2) - dataSA$zCum) + pnorm(-qnorm(1 - infoAlpha/2) - dataSA$zCum); dataSA$power
-  #dataSA$power<-1-pnorm(qnorm(1-alpha/2*dataSA$frag)-dataSA$zCum)+pnorm(-qnorm(1-alpha/2*dataSA$frag)-dataSA$zCum);dataSA$power
-  #dataSA$power<-1-pnorm(qnorm(1-alpha/2)/sqrt(dataSA$frag)/2-dataSA$zCum)+pnorm(-qnorm(1-alpha/2)/sqrt(dataSA$frag)/2-dataSA$zCum);dataSA$power
+  #dataSA$power<-1-pnorm(qnorm(1-alpha/2*dataSA$frctn)-dataSA$zCum)+pnorm(-qnorm(1-alpha/2*dataSA$frctn)-dataSA$zCum);dataSA$power
+  #dataSA$power<-1-pnorm(qnorm(1-alpha/2)/sqrt(dataSA$frctn)/2-dataSA$zCum)+pnorm(-qnorm(1-alpha/2)/sqrt(dataSA$frctn)/2-dataSA$zCum);dataSA$power
 
 
   dataSA <- as.data.frame(dataSA)
 
-  dataSA <- dataSA[order(dataSA$frag), ]
+  dataSA <- dataSA[order(dataSA$frctn), ]
 
   infoColorASB <- ifelse(dataSA$nCum > infoRIS,
                             rgb(1, 1, 1, 1),
                             "gray25")
   infoPosLabel <- ifelse(dataSA$zCum > 0, 4, 2)
 
-  if (max(dataSA$frag) < infoFragBSB) {
+  if (max(dataSA$frctn) < infoFrctnBSB) {
     dataSA[nrow(dataSA) + 1, ] <- c(NA, NA, NA, NA, NA, NA, NA,
-                                    round(infoRIS * infoFragBSB, 0), infoFragBSB,
-                                    qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(infoFragBSB))) / 2),
-                                    -qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(infoFragBSB))) / 2),
-                                    0, 0#,(1 - infoBeta) * infoFragBSB
+                                    round(infoRIS * infoFrctnBSB, 0), infoFrctnBSB,
+                                    qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(infoFrctnBSB))) / 2),
+                                    -qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(infoFrctnBSB))) / 2),
+                                    0, 0#,(1 - infoBeta) * infoFrctnBSB
                                     )
     }
 
@@ -670,7 +670,7 @@ DoSA <- function(data    = NULL,
                                     ceiling(infoRISAdj))
                  )
   class(lsDoSA)    <- c("aides", "DoSA")
-  lsDoSA$frag      <- paste(round(dataSA$frag[infoNumStud], 4) * 100,
+  lsDoSA$frctn      <- paste(round(dataSA$frctn[infoNumStud], 4) * 100,
                             "%",
                             sep = "")
   lsDoSA$weight    <- paste(round(dataSA$weight[c(1:infoNumStud)], 4) * 100,
@@ -852,7 +852,7 @@ DoSA <- function(data    = NULL,
 
   if (plot == TRUE) {
 
-    plot(dataSA$nCum * 1.1, dataSA$asub,
+    plot(dataSA$nCum * 1.2, dataSA$asub,
          type = "l", frame = F,
          xlim = c(0, max(dataSA$nCum) * 1.2),
          ylim = c(ceiling(min(dataSA$aslb)) * (-10) / ceiling(min(dataSA$aslb)),

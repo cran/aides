@@ -4,7 +4,7 @@
 \alias{PlotDistrSS}
 \title{Illustrate distribution of study sizes.}
 \usage{
-PlotDistrSS(n, data = NULL, study = NULL, time = NULL)
+PlotDistrSS(n, data = NULL, study = NULL, time = NULL, method = "default")
 }
 \arguments{
 \item{n}{NUMERIC values for sample size (n) of each study.}
@@ -15,6 +15,9 @@ year, and sample size.}
 \item{study}{CHARACTER for study labels.}
 
 \item{time}{NUMERIC values of time sequence.}
+
+\item{method}{CHARACTER for indicating which method should be used for testing
+normality.}
 }
 \value{
 \strong{PlotDistrSS()} returns a plot of distribution of sample sizes.

@@ -1,6 +1,50 @@
 # Change of package `aides`
 
 
+
+## aides 1.3.0. (release version)
+### Date: December 21, 2023
+
+**Release:** *aides* 1.3.0 on the CRAN.
+
+### Date: December 15, 2023
+
+**Add function:** `PlotPower()` has been added in the *aides* package to visualize sequential-adjusted power.
+
+<br>
+
+
+## aides 1.2.3. (development version)
+### Date: December 08, 2023
+
+**Modify document:** improve function `DoOSA()` for better sequential-adjusted power.
+
+**Modify function:** improve function `PlotOSA()` for better visualization.
+
+<br>
+
+
+## aides 1.2.2. (development version)
+### Date: November 03, 2023
+
+**Modify function:** improve function `PlotDistrSS()` with parameters `method` for indicating normality test method in terms of Shapiro test or Kolmogorov-Smirnov test.
+
+<br>
+
+
+## aides 1.2.1. (development version)
+### Date: October 31, 2023
+
+**Modify function:** improve function `TestDisparity()` with parameters for user-defined cutoff value of proportion of excessive cases in outlier-based disparity test, and for user-defined bootstrap replications for obtaining probability in variability-based disparity test.
+
+> 1. parameter `ctf` with a numeric argument can be used for determining the threshold for proportion of excessive cases in outlier-based disparity test.
+>
+> 2. parameter `rplctns` with an integer argument can be used for assigning bootstrap replications for obtaining probability of variability-based disparity test.
+>
+
+<br>
+
+
 ## aides 1.2.0. (release version)
 ### Date: October 26, 2023
 

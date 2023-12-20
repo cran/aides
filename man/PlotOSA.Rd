@@ -12,7 +12,7 @@ PlotOSA(
   lgcLblStdy = FALSE,
   lgcInvert = FALSE,
   lgcSmooth = TRUE,
-  szFntTtl = 2,
+  szFntTtl = 1.8,
   szFntTtlX = 1.2,
   szFntTtlY = NULL,
   szFntAxsX = 0.8,
@@ -47,7 +47,7 @@ PlotOSA(
   clrLblOIS = "black",
   clrLblAIS = "black",
   clrPntStdy = "gray25",
-  clrPntASB = "gray75",
+  clrPntASB = "none",
   clrLn0 = "gray25",
   clrLnSig = "gray",
   clrLnZCum = "blue4",
@@ -189,20 +189,21 @@ boundaries.}
 \strong{PlotOSA()} returns a plot of observed sequential analysis.
 }
 \description{
-\strong{PlotOSA()} is a function for conducting observed sequential analysis.
+\strong{PlotOSA()} is a function for plotting observed sequential analysis.
 }
 \examples{
 ## Not run:
 # 1. Import a dataset of study by Fleiss (1993)
 library(meta)
-data("Fleiss1993cont")
+data("Fleiss1993bin")
 
 # 2. Perform observed sequential analysis
- output <- DoOSA(Fleiss1993cont, study, year,
-                 m1 = mean.psyc, sd1 = sd.psyc, n1 = n.psyc,
-                 m2 = mean.cont, sd2 = sd.cont, n2 = n.cont,
-                 measure = "SMD",
-                 group = c("Psychotherapy", "Control"), plot = TRUE)
+ output <- DoOSA(Fleiss1993bin, study, year,
+                 r1 = d.asp, n1 = n.asp,
+                 r2 = d.plac, n2 = n.plac,
+                 measure = "RR",
+                 group = c("Aspirin", "Control"),
+                 plot = TRUE)
 
 # 3. Illustrate plot of observed sequential analysis
  PlotOSA(output)
@@ -225,7 +226,7 @@ In \emph{PASS Documentation}. Available online:
 https://www.ncss.com/wp-content/themes/ncss/pdf/Procedures/NCSS/Group-Sequential_Analysis_for_Two_Proportions.pdf
 }
 \seealso{
-\code{\link{DoSA}}, \code{\link{DoOSA}}
+\code{\link{DoSA}}, \code{\link{DoOSA}}, \code{\link{PlotPower}}
 }
 \author{
 Enoch Kang

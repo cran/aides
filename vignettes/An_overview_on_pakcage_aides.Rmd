@@ -29,7 +29,13 @@ knitr::include_graphics("aides_logo.png")
 
 # Brief overview
 
-Package *aides* is planned to support users to do additional analysis or graphics. Users can use functions in *aides* by calling the library with following syntax:
+The *aides*, a R package, emerges as a valuable collection of functions designed to provide supplementary information and intricacies in the critical processes of data synthesis and evidence evaluation. In the realm of evidence-based decision-making, these processes are pivotal, shaping the foundation upon which informed conclusions are drawn. The *aides*, essentially a toolkit for pooled analysis of aggregated data, is meticulously crafted to enhance the inclusivity and depth of this decision-making approach.
+
+Developed with core values of flexibility, ease of use, and comprehensibility, *aides* plays a crucial role in simplifying the often complex analysis process. This accessibility extends to both seasoned professionals and the broader public, fostering a more widespread engagement with synthesized evidence. The significance of such engagement cannot be overstated, as it empowers individuals to navigate through the intricacies of data, promoting a better understanding of the evidence at hand.
+
+Moreover, *aides* is committed to staying at the forefront of advances in the methodology of data synthesis and evidence evaluation. This commitment ensures that users have access to some advanced methods, further enhancing the robustness and reliability of their decision-making processes. In the long term, the overarching goal of the aides package is to contribute to knowledge translation, enabling individuals to make decisions based on a comprehensive understanding of the evidence. In essence, *aides* serves as a beacon, guiding users through the complex terrain of data synthesis and evidence evaluation, ultimately facilitating informed and impactful decision-making. 
+
+Users are suggested to use functions in *aides* by calling the library with following syntax:
 
 ```{r}
 library(aides)
@@ -56,7 +62,7 @@ Briefly, *aides* currently consists of three tasks as follows:
 
 # Functions and examples
 
-Users can import their data and do relevant tests or graphics using functions in package *aides*. The present package consists of four functions listed as follows: 
+Users can import their data and do relevant tests or graphics using functions in package *aides*. The present package consists of eight functions listed as follows: 
 
 **Disparity:**  
 
@@ -72,7 +78,7 @@ Users can import their data and do relevant tests or graphics using functions in
   
 **Sequential analysis:**  
 
-`DoSA()` [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg?color=grassgreen)](https://lifecycle.r-lib.org/articles/stages.html#stable), `DoOSA()` [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg?color=grassgreen)](https://lifecycle.r-lib.org/articles/stages.html#stable), and `PlotOSA()` [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg?color=grassgreen)](https://lifecycle.r-lib.org/articles/stages.html#stable).
+`DoSA()` [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg?color=grassgreen)](https://lifecycle.r-lib.org/articles/stages.html#stable), `DoOSA()` [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg?color=grassgreen)](https://lifecycle.r-lib.org/articles/stages.html#stable), `PlotOSA()` [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg?color=grassgreen)](https://lifecycle.r-lib.org/articles/stages.html#stable), and `PlotPower()` [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-brightgreen.svg?color=orange)](https://lifecycle.r-lib.org/articles/stages.html#experimental).
 
 \
 
@@ -122,6 +128,16 @@ PlotDistrSS(n = n,
             data = dataOlkin1995, 
             study = author, 
             time = year)
+```
+
+If users would like to check normality using Kolmogorov-Smirnov test, they can set parameter `method` with argument `"ks"` in the function `PlotDistrSS()`. 
+
+``` {r, eval = FALSE}
+PlotDistrSS(n = n,
+            data = dataOlkin1995, 
+            study = author, 
+            time = year,
+            method = "ks")
 ```
 
 \
@@ -296,8 +312,8 @@ The following steps and syntax demonstrate how user can carry out sequential ana
 
 ``` {r, eval = FALSE}
 library(meta)
-data("Fleiss1993cont")
-dataFleiss1993cont <- Fleiss1993cont
+data("Fleiss1993bin")
+dataFleiss1993bin <- Fleiss1993bin
 ```
 
 \
@@ -305,36 +321,31 @@ dataFleiss1993cont <- Fleiss1993cont
 **Step 2.** Do sequential analysis
 
 ``` {r, eval = FALSE}
-DoSA(Fleiss1993cont, 
+DoSA(Fleiss1993bin, 
      source = study, 
      time = year,
-     m1 = mean.psyc, 
-     sd1 = sd.psyc, 
-     n1 = n.psyc,
-     m2 = mean.cont, 
-     sd2 = sd.cont, 
-     n2 = n.cont,
-     measure = "SMD", 
-     PES = 0.2,
-     group = c("Psychotherapy", "Control"), 
-     plot = FALSE)
+     r1 = d.asp, 
+     n1 = n.asp, 
+     r2 = d.plac, 
+     n2 = n.plac, 
+     measure = "RR",
+     PES = 0.1,
+     group = c("Aspirin", "Placebo"))
 ```
 
 ``` {r result-DoSA, eval = TRUE, echo = FALSE, warning = FALSE, message = FALSE}
-data("Fleiss1993cont")
-dataFleiss1993cont <- Fleiss1993cont
-DoSA(Fleiss1993cont, 
+data("Fleiss1993bin")
+dataFleiss1993bin <- Fleiss1993bin
+DoSA(Fleiss1993bin, 
      source = study, 
      time = year,
-     m1 = mean.psyc, 
-     sd1 = sd.psyc, 
-     n1 = n.psyc,
-     m2 = mean.cont, 
-     sd2 = sd.cont, 
-     n2 = n.cont,
-     measure = "SMD", 
-     PES = 0.2,
-     group = c("Psychotherapy", "Control"))
+     r1 = d.asp, 
+     n1 = n.asp, 
+     r2 = d.plac, 
+     n2 = n.plac, 
+     measure = "RR",
+     PES = 0.1,
+     group = c("Aspirin", "Placebo"))
 ```
 
 \
@@ -342,35 +353,32 @@ DoSA(Fleiss1993cont,
 **Step 3.** Visualize sequential analysis
 
 ``` {r, eval = FALSE}
-DoSA(Fleiss1993cont, 
+DoSA(Fleiss1993bin, 
      source = study, 
      time = year,
-     m1 = mean.psyc, 
-     sd1 = sd.psyc, 
-     n1 = n.psyc,
-     m2 = mean.cont, 
-     sd2 = sd.cont, 
-     n2 = n.cont,
-     measure = "SMD", 
-     PES = 0.2,
-     group = c("Psychotherapy", "Control"))
+     r1 = d.asp, 
+     n1 = n.asp, 
+     r2 = d.plac, 
+     n2 = n.plac, 
+     measure = "RR",
+     PES = 0.1,
+     group = c("Aspirin", "Placebo"),
+     plot = TRUE)
 ```
 
 ``` {r plot-sequential, fig.cap = "An example for sequential analysis", eval = TRUE, echo = FALSE, warning = FALSE, message = FALSE, results = "hide", fig.height = 6, fig.width = 8, fig.align = "center", out.width = "100%"}
-data("Fleiss1993cont")
-dataFleiss1993cont <- Fleiss1993cont
-DoSA(Fleiss1993cont, 
+data("Fleiss1993bin")
+dataFleiss1993bin <- Fleiss1993bin
+DoSA(Fleiss1993bin, 
      source = study, 
      time = year,
-     m1 = mean.psyc, 
-     sd1 = sd.psyc, 
-     n1 = n.psyc,
-     m2 = mean.cont, 
-     sd2 = sd.cont, 
-     n2 = n.cont,
-     measure = "SMD", 
-     PES = 0.2,
-     group = c("Psychotherapy", "Control"), 
+     r1 = d.asp, 
+     n1 = n.asp, 
+     r2 = d.plac, 
+     n2 = n.plac, 
+     measure = "RR",
+     PES = 0.1,
+     group = c("Aspirin", "Placebo"),
      plot = TRUE)
 ```
 
@@ -379,67 +387,70 @@ DoSA(Fleiss1993cont,
 Observed sequential analysis is recommended for those pooled analysis without pre-specified parameters for sequential analysis. In this situation, thus, Step 2 should use following syntax:
 
 ``` {r, eval = FALSE}
-DoOSA(Fleiss1993cont, 
-     source = study, 
-     time = year,
-     m1 = mean.psyc, 
-     sd1 = sd.psyc, 
-     n1 = n.psyc,
-     m2 = mean.cont, 
-     sd2 = sd.cont, 
-     n2 = n.cont,
-     measure = "SMD", 
-     group = c("Psychotherapy", "Control"))
+DoOSA(Fleiss1993bin, 
+      source = study, 
+      time = year,
+      r1 = d.asp, 
+      n1 = n.asp, 
+      r2 = d.plac, 
+      n2 = n.plac, 
+      measure = "RR",
+      group = c("Aspirin", "Placebo"))
 ```
 
 ``` {r result-OSA, eval = TRUE, echo = FALSE, warning = FALSE, message = FALSE}
-data("Fleiss1993cont")
-dataFleiss1993cont <- Fleiss1993cont
-DoOSA(Fleiss1993cont, 
-     source = study, 
-     time = year,
-     m1 = mean.psyc, 
-     sd1 = sd.psyc, 
-     n1 = n.psyc,
-     m2 = mean.cont, 
-     sd2 = sd.cont, 
-     n2 = n.cont,
-     measure = "SMD", 
-     group = c("Psychotherapy", "Control"))
+data("Fleiss1993bin")
+dataFleiss1993bin <- Fleiss1993bin
+DoOSA(Fleiss1993bin, 
+      source = study, 
+      time = year,
+      r1 = d.asp, 
+      n1 = n.asp, 
+      r2 = d.plac, 
+      n2 = n.plac, 
+      measure = "RR",
+      group = c("Aspirin", "Placebo"))
 ```
 
 \
 
-Plot for observed sequential analysis can be simply illustrated using is the following syntax instead of step 3 abovementioned:
+Observed sequential analysis is illustrated in using the same function (`DoOSA()`) with argument `TRUE` for the parameter `plot`, and plot of sequential-adjusted power could be an alternative graphic of observed sequential analysis. These analyses and graphics can be carried out by the following two steps with syntax.
+
+**Step 1.** Conduct observed sequential analysis (example of the study by Fleiss 1993).
 
 ``` {r, eval = FALSE}
-DoOSA(Fleiss1993cont, 
-     source = study, 
-     time = year,
-     m1 = mean.psyc, 
-     sd1 = sd.psyc, 
-     n1 = n.psyc,
-     m2 = mean.cont, 
-     sd2 = sd.cont, 
-     n2 = n.cont,
-     measure = "SMD", 
-     group = c("Psychotherapy", "Control"),
-     plot = TRUE)
+output <- DoOSA(Fleiss1993bin, 
+                source = study,
+                time = year,
+                r1 = d.asp, 
+                n1 = n.asp, 
+                r2 = d.plac, 
+                n2 = n.plac, 
+                measure = "RR",
+                group = c("Aspirin", "Placebo"),
+                plot = TRUE)
 ```
 
-``` {r plot-OSA, fig.cap = "An example for observed sequential analysis plot", eval = TRUE, echo = FALSE, warning = FALSE, message = FALSE, results = "hide", fig.height = 6, fig.width = 8, fig.align = "center", out.width = "100%"}
-data("Fleiss1993cont")
-dataFleiss1993cont <- Fleiss1993cont
-DoOSA(Fleiss1993cont, 
-     source = study, 
-     time = year,
-     m1 = mean.psyc, 
-     sd1 = sd.psyc, 
-     n1 = n.psyc,
-     m2 = mean.cont, 
-     sd2 = sd.cont, 
-     n2 = n.cont,
-     measure = "SMD", 
-     group = c("Psychotherapy", "Control"),
-     plot = TRUE)
+**Step 2.** Visualize sequential-adjusted power
+
+``` {r, eval = FALSE}
+PlotPower(output)
+```
+
+``` {r plot-power, fig.cap = "An example for illustrating sequential-adjusted power", eval = TRUE, echo = FALSE, warning = FALSE, message = FALSE, results = "hide", fig.height = 6, fig.width = 8, fig.align = "center", out.width = "100%"}
+data("Fleiss1993bin")
+dataFleiss1993bin <- Fleiss1993bin
+output <- DoOSA(Fleiss1993bin, 
+                source = study,
+                time = year,
+                r1 = d.asp, 
+                n1 = n.asp, 
+                r2 = d.plac, 
+                n2 = n.plac, 
+                measure = "RR",
+                group = c("Aspirin", "Placebo"),
+                plot = TRUE)
+
+
+PlotPower(output)
 ```

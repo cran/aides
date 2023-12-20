@@ -3,7 +3,7 @@
 #' @author Enoch Kang
 #'
 #' @description
-#' **PlotOSA()** is a function for conducting observed sequential analysis.
+#' **PlotOSA()** is a function for plotting observed sequential analysis.
 #'
 #' @param object     OBJECT in **DoOSA** class that is an output of observed
 #'                   sequential analysis using function `DoOSA()`.
@@ -103,20 +103,21 @@
 #' https://www.ncss.com/wp-content/themes/ncss/pdf/Procedures/NCSS/Group-Sequential_Analysis_for_Two_Proportions.pdf
 #'
 #'
-#' @seealso \code{\link{DoSA}}, \code{\link{DoOSA}}
+#' @seealso \code{\link{DoSA}}, \code{\link{DoOSA}}, \code{\link{PlotPower}}
 #'
 #' @examples
 #' ## Not run:
 #' # 1. Import a dataset of study by Fleiss (1993)
 #' library(meta)
-#' data("Fleiss1993cont")
+#' data("Fleiss1993bin")
 #'
 #' # 2. Perform observed sequential analysis
-#'  output <- DoOSA(Fleiss1993cont, study, year,
-#'                  m1 = mean.psyc, sd1 = sd.psyc, n1 = n.psyc,
-#'                  m2 = mean.cont, sd2 = sd.cont, n2 = n.cont,
-#'                  measure = "SMD",
-#'                  group = c("Psychotherapy", "Control"), plot = TRUE)
+#'  output <- DoOSA(Fleiss1993bin, study, year,
+#'                  r1 = d.asp, n1 = n.asp,
+#'                  r2 = d.plac, n2 = n.plac,
+#'                  measure = "RR",
+#'                  group = c("Aspirin", "Control"),
+#'                  plot = TRUE)
 #'
 #' # 3. Illustrate plot of observed sequential analysis
 #'  PlotOSA(output)
@@ -134,7 +135,7 @@ PlotOSA <- function(object     = NULL,
                     lgcLblStdy = FALSE,
                     lgcInvert  = FALSE,
                     lgcSmooth  = TRUE,
-                    szFntTtl   = 2,
+                    szFntTtl   = 1.8,
                     szFntTtlX  = 1.2,
                     szFntTtlY  = NULL,
                     szFntAxsX  = 0.8,
@@ -169,7 +170,7 @@ PlotOSA <- function(object     = NULL,
                     clrLblOIS  = "black",
                     clrLblAIS  = "black",
                     clrPntStdy = "gray25",
-                    clrPntASB  = "gray75",
+                    clrPntASB  = "none",
                     clrLn0     = "gray25",
                     clrLnSig   = "gray",
                     clrLnZCum  = "blue4",
@@ -223,6 +224,7 @@ PlotOSA <- function(object     = NULL,
   infoRRR      <- objIn$RRR
   infoOV       <- objIn$variance
   infoDivers   <- objIn$diversity
+  infoAdjust   <- objIn$adjust
   infoAF       <- objIn$AF
   infoOISOrg   <- objIn$OIS.org
   infoOISAdj   <- objIn$OIS.adj
@@ -232,6 +234,9 @@ PlotOSA <- function(object     = NULL,
   infoPosLabel <- objIn$position.label
   dataOSA      <- objIn$data
   dataPlotOSA  <- objIn$data.bounds
+
+  dataPlotOSA$bsub <- ifelse(dataPlotOSA$bsub < 0, 0, dataPlotOSA$bsub)
+  dataPlotOSA$bslb <- ifelse(dataPlotOSA$bslb > 0, 0, dataPlotOSA$bslb)
 
   setPar <- par(no.readonly = TRUE)
   on.exit(par(setPar))
@@ -648,7 +653,7 @@ PlotOSA <- function(object     = NULL,
                           FALSE,
                           ifelse(base::isFALSE(length(clrPntASB) == 1 | length(clrPntASB) == infoNumStud),
                                  TRUE,
-                                 ifelse(FALSE %in% (clrPntASB %in% colors()),
+                                 ifelse(base::isFALSE(FALSE %in% (clrPntASB %in% colors()) | "none" %in% clrPntASB), #FALSE %in% (clrPntASB %in% colors()),
                                         TRUE, FALSE))
   )
 
@@ -995,16 +1000,22 @@ PlotOSA <- function(object     = NULL,
   }
 
   if (is.null(typPntASB)) {
-    typPntASB          <- 22
+    typPntASB          <- 21
     dataOSA$typPntASB  <- typPntASB
   } else {
     typPntASB          <- typPntASB + 20
     dataOSA$typPntASB  <- typPntASB + 20
   }
 
-  if (base::isFALSE(is.null(clrPntASB))) {
-    infoColorASB <- clrPntASB
+
+  if (base::isFALSE(is.null(clrLnASB))) {
+    infoColorASB <- clrLnASB
   }
+
+  if (clrPntASB == "none") {
+    clrPntASB <- rgb(1, 1, 1, 1)
+  }
+
 
   infoBSB      <- BSB
 
@@ -1013,8 +1024,8 @@ PlotOSA <- function(object     = NULL,
 
   # 07. ILLUSTRATE proportion of alpha-spending monitoring plot -----
 
-  plot(dataOSA$nCum * 1.1, dataOSA$asub,
-       type = "l", frame = F,
+  plot(dataOSA$nCum * 1.2, dataOSA$asub,
+       type = "l", frame = FALSE,
        xlim = c(0, max(dataOSA$nCum) * 1.2),
        ylim = c(ceiling(min(dataOSA$aslb)) * (-10) / ceiling(min(dataOSA$aslb)),
                 ceiling(max(dataOSA$asub)) * 10 / ceiling(max(dataOSA$asub)) + 1),
@@ -1036,17 +1047,42 @@ PlotOSA <- function(object     = NULL,
         cex = szFntTtl)
 
 
-  axis(side = 1,
-       at   = c(0,
-                max(dataOSA$nCum) * 0.25,
-                max(dataOSA$nCum) * 0.5,
-                max(dataOSA$nCum) * 0.75,
-                max(dataOSA$nCum),
-                max(dataOSA$nCum) * 1.2),
-       labels = c(0, 0.25, 0.50, 0.75, 1, 1.2),
-       col = clrAxsX,
-       cex.axis = szFntAxsX,
-       padj = 0, hadj = 1, las = 1)
+  if (sclAxsX == "sample") {
+    axis(side = 1,
+         at   = c(0,
+                  infoOIS * 0.2,
+                  infoOIS * 0.4,
+                  infoOIS * 0.6,
+                  infoOIS * 0.8,
+                  infoOIS,
+                  max(dataOSA$nCum) * 1.2),
+         labels = c(0,
+                    ceiling(infoOIS * 0.2),
+                    ceiling(infoOIS * 0.4),
+                    ceiling(infoOIS * 0.6),
+                    ceiling(infoOIS * 0.8),
+                    ceiling(infoOIS),
+                    max(dataOSA$nCum) * 1.2),
+         col = clrAxsX,
+         cex.axis = szFntAxsX,
+         padj = 0, hadj = 1, las = 1)
+  } else {
+    axis(side = 1,
+         at   = c(0,
+                  infoOIS * 0.2,
+                  infoOIS * 0.4,
+                  infoOIS * 0.6,
+                  infoOIS * 0.8,
+                  infoOIS,
+                  max(dataOSA$nCum) * 1.2),
+         labels = c(0, 0.2, 0.4, 0.6, 0.8, 1,
+                    round(max(dataOSA$nCum) * 1.2 / infoOIS, 1)
+                    ),
+         col = clrAxsX,
+         cex.axis = szFntAxsX,
+         padj = 0, hadj = 1, las = 1)
+  }
+
   mtext(ifelse(sclAxsX == "sample",
                "Information size",
                ifelse(sclAxsX == "fraction", "Information fraction",
@@ -1226,7 +1262,7 @@ PlotOSA <- function(object     = NULL,
   #     c(round(dataOSA$zCum, 2)),
   #     col = c("gray20"))
 
-  rect(0, -10, infoOIS * 0.8, -7.5,
+  rect(0, 10, infoOIS * 0.8, 8,
        lty = 0, col = rgb(1, 1, 1, 0.5))
   #points(dataOSA[which(!is.na(dataOSA[, "source"])), ]$nCum,
   #       dataOSA[which(!is.na(dataOSA[, "source"])), ]$aslb,
@@ -1234,26 +1270,27 @@ PlotOSA <- function(object     = NULL,
   #       col = infoColorASB,
   #       bg  = infoColorASB,
   #       cex = szPntASB)
-  segments(c(0.05), c(-8), c(infoOIS / 20), c(-8),
+  segments(c(0.05), c(10), c(infoOIS / 20), c(10),
            lty = typLnZCum,
            col = clrLnZCum,
            lwd = szLnZCum)
-  text(infoOIS / 15, -8,
+  text(infoOIS / 15, 10,
        paste("Cumulative z score", sep = ""),
        pos = 4,
        col = clrLgnd,
        cex = szFntLgnd)
-  segments(c(0.05), c(-9), c(infoOIS / 20), c(-9),
+  segments(c(0.05), c(9), c(infoOIS / 20), c(9),
            lty = typLnASB,
            col = clrLnASB,
            lwd = szLnASB)
-  text(infoOIS / 15, -9,
-       paste("Parameters for alpha-spending boundary:"),
+  text(infoOIS / 15, 9,
+       paste("Alpha-spending boundary"),
        pos = 4,
        col = clrLgnd,
        cex = szFntLgnd)
-  text(infoOIS / 15, -9.7,
-       paste(ifelse(infoMeasure %in% c("MD", "SMD"),
+  text(infoOIS / 15, 8.3,
+       paste("(",
+             ifelse(infoMeasure %in% c("MD", "SMD"),
                     infoMeasure,
                     "Observed effect"),
              ifelse(abs(infoOES) < 0.001,
@@ -1271,6 +1308,20 @@ PlotOSA <- function(object     = NULL,
                     ),
              "; alpha: ", infoAlpha,
              "; power: ", round(1 - infoBeta, 2),
+             ifelse(infoAdjust == "none",
+                    "; no adjustment factor)",
+                    paste("; ",
+                          ifelse(infoAdjust == "D2",
+                                 "diversity-based AF: ",
+                                 ifelse(infoAdjust == "I2",
+                                        "I-squared-based AF: ",
+                                        paste(infoAdjust, "-based AF: ",
+                                              sep = "")
+                                        )
+                                 ),
+                          round(infoAF, 3), ")",
+                          sep = "")
+                    ),
              sep = ""),
        pos = 4,
        col = clrLgnd,

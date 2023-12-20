@@ -29,10 +29,10 @@ Extra imported packages are as follows:
 }
 }
 \details{
-Current version consists of seven functions, including seven functions for
+Current version consists of eight functions, including seven functions for
 examining fundamental assumptions before test of small-study effects (i.e.
 function \code{\link{PlotDistrSS}}, \code{\link{TestDisparity}}, \code{\link{PlotDisparity}}, and \code{\link{TestDiscordance}})
 and three functions for performing sequential analysis (i.e. \code{\link{DoSA}}, \code{\link{DoOSA}},
-and \code{\link{PlotOSA}}).
+\code{\link{PlotOSA}}, and \code{\link{PlotPower}}).
 }
 \keyword{package}

@@ -10,6 +10,8 @@
 #'                year, and sample size.
 #' @param study   CHARACTER for study labels.
 #' @param time    NUMERIC values of time sequence.
+#' @param method  CHARACTER for indicating which method should be used for testing
+#'                normality.
 #'
 #'
 #' @return
@@ -36,7 +38,8 @@
 PlotDistrSS <- function(n,
                         data  = NULL,
                         study = NULL,
-                        time  = NULL) {
+                        time  = NULL,
+                        method = "default") {
 
   # 01. DEFINE core data -----
   if (is.null(data)) {
@@ -119,31 +122,44 @@ PlotDistrSS <- function(n,
                         TRUE
   )
 
+  lgcMethod   <- ifelse(length(method) != 1,
+                        TRUE,
+                        ifelse(method %in% c("default",
+                                             "shapiro",
+                                             "ks"),
+                               FALSE, TRUE)
+  )
+
 
   if (lgcData) {
-    infoStopData  <- 'Argument "data" must be a data frame consisting of three columns for study label, study year, and sample size.'
+    infoStopData  <- 'Argument of parameter "data" must be a data frame consisting of three columns for study label, study year, and sample size.'
   }
 
   if (lgcN) {
-    infoStopN     <- 'Argument "n" must be a integer vector for sample size of each study.'
+    infoStopN     <- 'Argument of parameter "n" must be a integer vector for sample size of each study.'
   }
 
   if (lgcStudy) {
-    infoStopStudy <- 'Argument "study" must be a vector for study label of each study, and length of the vector should be the same with length of the vector for sample size.'
+    infoStopStudy <- 'Argument of parameter "study" must be a vector for study label of each study, and length of the vector should be the same with length of the vector for sample size.'
   }
 
   if (lgcTime) {
-    infoStopTime <- 'Argument "time" must be a vector for time of each study, and length of the vector should be the same with length of the vector for sample size.'
+    infoStopTime  <- 'Argument of parameter "time" must be a vector for time of each study, and length of the vector should be the same with length of the vector for sample size.'
+  }
+
+  if (lgcMethod) {
+    infoStopMethod <- 'Argument of parameter "method" must be a string for indicating which method should be used for testing normality.'
   }
 
   # 03. RETURN results of argument checking  -----
 
-  if (lgcData | lgcN | lgcStudy | lgcTime)
+  if (lgcData | lgcN | lgcStudy | lgcTime | lgcMethod)
 
     stop(paste(ifelse(lgcData, paste(infoStopData, "\n", sep = ""), ""),
                ifelse(lgcN, paste(infoStopN, "\n", sep = ""), ""),
                ifelse(lgcStudy, paste(infoStopStudy, "\n", sep = ""), ""),
                ifelse(lgcTime, paste(infoStopTime, "\n", sep = ""), ""),
+               ifelse(lgcMethod, paste(infoStopMethod, "\n", sep = ""), ""),
                sep = "")
     )
 
@@ -161,7 +177,26 @@ PlotDistrSS <- function(n,
   vctVlnPltYAll  <- c(vctVlnPltY, vctVlnPltY[c(length(vctVlnPltY):1)])
   vctVlnPltXAll  <- c(vctVlnPltXRght, vctVlnPltXLft[c(length(vctVlnPltXLft):1)])
 
-  infoPvalNrml   <- shapiro.test(dataDistr$n)$p
+  infoMethodOrg  <- method
+  if (infoMethodOrg == "default") {
+    if (infoNmbrStdy >= 50) {
+      infoMethod <- "ks"
+    } else {
+      infoMethod <- "shapiro"
+    }
+  } else {
+    infoMethod   <- infoMethodOrg
+  }
+
+  infoPvalShpr   <- shapiro.test(dataDistr$n)$p
+  infoPvalKS     <- ks.test(dataDistr$n, 'pnorm')$p
+
+  if (infoMethod == "shapiro") {
+    infoPvalNrml <- infoPvalShpr
+  } else if (infoMethod == "ks") {
+    infoPvalNrml <- infoPvalKS
+  }
+
   plotBox        <- boxplot(dataDistr$n, plot = FALSE)
 
   infoMCase    <- mean(dataDistr$n)

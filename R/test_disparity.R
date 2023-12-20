@@ -10,10 +10,6 @@
 #'                year, and sample size.
 #' @param study   CHARACTER for study labels.
 #' @param time    NUMERIC values of time sequence.
-#' @param ctfLwr  NUMERIC value of cutoff value for lower boundary of variability
-#'                that should be larger than 0.
-#' @param ctfUpr  NUMERIC value of cutoff value for upper boundary of variability
-#'                that should be larger than `ctfLwr`.
 #' @param outlier CHARACTER for method of outlier detection. Current version
 #'                consists of four methods, and three of them can be used for
 #'                normal distribution. The rest one method can be used for data
@@ -25,6 +21,9 @@
 #'                absolute deviation method ("MAD"). Parameter `outlier` with
 #'                argument "Default" automatically takes "GESD" or "MAD" based on
 #'                data distribution.
+#' @param ctf     NUMERIC value of cutoff value for proportion of excessive cases
+#'                in outlier-based disparity test, and the value should be larger
+#'                than 0.
 #' @param vrblty  CHARACTER for method of variability detection. Current version
 #'                consists of two methods in terms of coefficient of variation
 #'                (CV) and robust CV (RCV) using MAD. For normal distribution data,
@@ -32,6 +31,13 @@
 #'                MAD based RCV could be used for data with non-normal distribution.
 #'                Default argument for parameter `vrblty` is "CV" in order to
 #'                detect variability.
+#' @param ctfLwr  NUMERIC value of cutoff value for lower boundary of variability
+#'                that should be larger than 0.
+#' @param ctfUpr  NUMERIC value of cutoff value for upper boundary of variability
+#'                that should be larger than `ctfLwr`.
+#' @param rplctns INTEGER value of bootstrap replications for obtaining probability
+#'                of variability-based disparity test, and the integer must be equal
+#'                or larger than 1,000.
 #' @param plot    LOGIC value for indicating whether to illustrate proportion of
 #'                excessive cases plot.
 #' @param sort    CHARACTER of data sorting reference for disparity plot. Current
@@ -117,10 +123,12 @@ TestDisparity <- function(n,
                           data    = NULL,
                           study   = NULL,
                           time    = NULL,
+                          outlier = NULL,
+                          ctf     = 0.20,
+                          vrblty  = NULL,
                           ctfLwr  = 0.10,
                           ctfUpr  = 0.30,
-                          outlier = NULL,
-                          vrblty  = NULL,
+                          rplctns = 1000,
                           plot    = FALSE,
                           sort    = NULL,
                           color   = "firebrick3") {
@@ -207,6 +215,23 @@ TestDisparity <- function(n,
                         TRUE
   )
 
+  lgcOtlr     <- ifelse(is.null(outlier), FALSE,
+                        ifelse(outlier %in% c("Default", "IQR", "Z", "GESD", "MAD"),
+                               FALSE, TRUE)
+  )
+
+  lgcCutoff   <- ifelse(is.null(ctf), FALSE,
+                        ifelse(is.numeric(ctf),
+                               ifelse((ctf > 0) == TRUE,
+                                      FALSE, TRUE),
+                               TRUE)
+  )
+
+  lgcVrblty     <- ifelse(is.null(vrblty), FALSE,
+                          ifelse(vrblty %in% c("CV", "MAD"),
+                                 FALSE, TRUE)
+  )
+
   lgcCutoffL  <- ifelse(is.null(ctfLwr), FALSE,
                         ifelse(is.numeric(ctfLwr),
                                ifelse((ctfLwr > 0) == TRUE,
@@ -221,14 +246,11 @@ TestDisparity <- function(n,
                                TRUE)
   )
 
-  lgcOtlr     <- ifelse(is.null(outlier), FALSE,
-                        ifelse(outlier %in% c("Default", "IQR", "Z", "GESD", "MAD"),
-                               FALSE, TRUE)
-  )
-
-  lgcVrblty     <- ifelse(is.null(vrblty), FALSE,
-                        ifelse(vrblty %in% c("CV", "MAD"),
-                               FALSE, TRUE)
+  lgcReplicate  <- ifelse(is.null(rplctns), FALSE,
+                        ifelse(is.numeric(rplctns),
+                               ifelse(rplctns >= 1000,
+                                      FALSE, TRUE),
+                               TRUE)
   )
 
   lgcPlot     <- ifelse(is.null(plot), FALSE,
@@ -261,23 +283,31 @@ TestDisparity <- function(n,
     }
 
   if (lgcTime) {
-    infoStopTime <- 'Argument "time" must be a vector for time of each study, and length of the vector should be the same with length of the vector for sample size.'
-  }
-
-  if (lgcCutoffL) {
-    infoStopCutoffL <- 'Argument "ctfLwr" must be a numeric value larger than 0 in order to determining a cutoff value for low variability.'
-    }
-
-  if (lgcCutoffH) {
-    infoStopCutoffH <- 'Argument "ctfUpr" must be a numeric value larger than `ctfLwr` in order to determining a cutoff value for high variability.'
+    infoStopTime  <- 'Argument "time" must be a vector for time of each study, and length of the vector should be the same with length of the vector for sample size.'
   }
 
   if (lgcOtlr) {
     infoStopOtlr  <- 'Argument "outlier" must be characters ("Default", "IQR", "Z", "GESD", or "MAD") for indicating the method of outlier detection.'
   }
 
+  if (lgcCutoff) {
+    infoStopCutoff  <- 'Argument "ctf" must be a numeric value larger than 0 in order to determine a cutoff value of proportion of excessive cases in outlier-based disparity test.'
+  }
+
   if (lgcVrblty) {
     infoStopVrblty <- 'Argument "vrblty" must be characters ("CV" or "MAD") for indicating the method of variability detection.'
+  }
+
+  if (lgcCutoffL) {
+    infoStopCutoffL <- 'Argument "ctfLwr" must be a numeric value larger than 0 in order to determine a cutoff value for low variability.'
+    }
+
+  if (lgcCutoffH) {
+    infoStopCutoffH <- 'Argument "ctfUpr" must be a numeric value larger than `ctfLwr` in order to determine a cutoff value for high variability.'
+  }
+
+  if (lgcReplicate) {
+    infoStopReplicate <- 'Argument "rplctns" must be an integer (equal or larger than 1,000) for bootstrap replications for obtaining probability of variability-based disparity test.'
   }
 
   if (lgcPlot) {
@@ -295,16 +325,19 @@ TestDisparity <- function(n,
 
   # 03. RETURN results of argument checking  -----
   if (lgcData | lgcN | lgcStudy | lgcTime |
-      lgcCutoffL | lgcCutoffH | lgcOtlr | lgcVrblty |
+      lgcOtlr | lgcCutoff |
+      lgcVrblty | lgcCutoffL | lgcCutoffH | lgcReplicate |
       lgcPlot | lgcSort | lgcColor)
     stop(paste(ifelse(lgcData, paste(infoStopData, "\n", sep = ""), ""),
                ifelse(lgcN, paste(infoStopN, "\n", sep = ""), ""),
                ifelse(lgcStudy, paste(infoStopStudy, "\n", sep = ""), ""),
                ifelse(lgcTime, paste(infoStopTime, "\n", sep = ""), ""),
+               ifelse(lgcOtlr, paste(infoStopOtlr, "\n", sep = ""), ""),
+               ifelse(lgcCutoff, paste(infoStopCutoff, "\n", sep = ""), ""),
+               ifelse(lgcVrblty, paste(infoStopVrblty, "\n", sep = ""), ""),
                ifelse(lgcCutoffL, paste(infoStopCutoffL, "\n", sep = ""), ""),
                ifelse(lgcCutoffH, paste(infoStopCutoffH, "\n", sep = ""), ""),
-               ifelse(lgcOtlr, paste(infoStopOtlr, "\n", sep = ""), ""),
-               ifelse(lgcVrblty, paste(infoStopVrblty, "\n", sep = ""), ""),
+               ifelse(lgcReplicate, paste(infoStopReplicate, "\n", sep = ""), ""),
                ifelse(lgcPlot, paste(infoStopPlot, "\n", sep = ""), ""),
                ifelse(lgcSort, paste(infoStopSort, "\n", sep = ""), ""),
                ifelse(lgcColor, paste(infoStopColor, "\n", sep = ""), ""),
@@ -349,6 +382,7 @@ TestDisparity <- function(n,
   #infoPSDOrg           <- infoCasesMSD3CV0.1 / infoSDCases
   #infoMSDCV0.3         <- -infoCasesMSD3CV0.1 / infoCV0.3 #(infoMCases - infoCV0.3)
   #infoPSDCV0.3         <- infoCasesMSD3CV0.1 / infoCV0.3 #(infoMCases - infoCV0.3)
+  infoCutoff           <- ctf
   infoCutoffL          <- ctfLwr
   infoCutoffH          <- ctfUpr
   infoCVL              <- infoMCases * infoCutoffL
@@ -366,6 +400,7 @@ TestDisparity <- function(n,
   infoMSDCVH           <- -infoCasesMSD3CVL / infoCVH #(infoMCases - infoCV0.3)
   infoPSDCVH           <- infoCasesMSD3CVL / infoCVH #(infoMCases - infoCV0.3)
 
+  infoReplicate        <- round(rplctns, 0)
   infoPlot             <- plot
   infoSort             <- ifelse(is.null(sort), "excessive", sort)
   vctSeq               <- c(1:infoNumStdy)
@@ -684,7 +719,7 @@ TestDisparity <- function(n,
 
   rsltOtlrProp <- binom.test(x = infoCasesExcssv, # infoCasesOutlierIQR,
                              n = infoCases,
-                             p = 0.1, # infoPropExpctIQR
+                             p = infoCutoff, # infoPropExpctIQR
                              alternative = "greater"
                              )
 
@@ -1044,7 +1079,7 @@ TestDisparity <- function(n,
          xpd = TRUE, pos = 1, srt = 45)
     mtext("Disparity plot (outlier)", side = 3, cex = 2)
     mtext("Study", side = 1, cex = 1.2, line = 4)
-    mtext("Proportion of outliers", side = 2, cex = 1.2, line = 3)
+    mtext("Proportion of excessive cases", side = 2, cex = 1.2, line = 3)
 
 
     ### Disparity plot (variability)
