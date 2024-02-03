@@ -10,14 +10,15 @@ PlotOSA(
   txtTtl = NULL,
   group = NULL,
   lgcLblStdy = FALSE,
+  lgcSAP = FALSE,
   lgcInvert = FALSE,
-  lgcSmooth = TRUE,
+  lgcSmooth = FALSE,
   szFntTtl = 1.8,
   szFntTtlX = 1.2,
   szFntTtlY = NULL,
   szFntAxsX = 0.8,
   szFntAxsY = 0.8,
-  szFntLgnd = 0.8,
+  szFntLgnd = 0.7,
   szFntLblY = 1.2,
   szFntStdy = 0.8,
   szFntOIS = 0.8,
@@ -69,6 +70,9 @@ analysis plot.}
 \item{group}{CHARACTER for labeling two groups.}
 
 \item{lgcLblStdy}{LOGIC value for indicating whether to label each data source.}
+
+\item{lgcSAP}{LOGIC value for indicating whether to show sequential-adjusted
+power.}
 
 \item{lgcInvert}{LOGIC value for indicating whether to invert plot.}
 

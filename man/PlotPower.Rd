@@ -36,11 +36,11 @@ PlotPower(
   clrLgnd = "gray25",
   clrLblStdy = "gray25",
   clrPntPwrO = "gray75",
-  clrPntPwrS = "red4",
+  clrPntPwrS = "green4",
   clrLnPwrCtf = "gray75",
   clrLnPwrO = "gray75",
-  clrLnPwrP = c("lightblue", "blue4"),
-  clrLnPwrS = "red4",
+  clrLnPwrP = c("firebrick", "blue4"),
+  clrLnPwrS = "green4",
   anglStdy = 90
 )
 }

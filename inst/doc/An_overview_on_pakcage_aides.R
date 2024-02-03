@@ -4,7 +4,7 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
-## ----echo = FALSE, fig.align = "left", out.width = "30%"----------------------
+## ----echo = FALSE, fig.align = "left", out.width = 100------------------------
 knitr::include_graphics("aides_logo.png")
 
 ## -----------------------------------------------------------------------------
@@ -175,6 +175,7 @@ TestDiscordance(n = n,
 #       n2 = n.plac,
 #       measure = "RR",
 #       PES = 0.1,
+#       RRR = 0.2,
 #       group = c("Aspirin", "Placebo"))
 
 ## ----result-DoSA, eval = TRUE, echo = FALSE, warning = FALSE, message = FALSE----
@@ -189,6 +190,7 @@ DoSA(Fleiss1993bin,
      n2 = n.plac, 
      measure = "RR",
      PES = 0.1,
+     RRR = 0.2,
      group = c("Aspirin", "Placebo"))
 
 ## ----eval = FALSE-------------------------------------------------------------
@@ -201,6 +203,7 @@ DoSA(Fleiss1993bin,
 #       n2 = n.plac,
 #       measure = "RR",
 #       PES = 0.1,
+#       RRR = 0.2,
 #       group = c("Aspirin", "Placebo"),
 #       plot = TRUE)
 
@@ -216,6 +219,7 @@ DoSA(Fleiss1993bin,
      n2 = n.plac, 
      measure = "RR",
      PES = 0.1,
+     RRR = 0.2,
      group = c("Aspirin", "Placebo"),
      plot = TRUE)
 
@@ -253,7 +257,22 @@ DoOSA(Fleiss1993bin,
 #                  n2 = n.plac,
 #                  measure = "RR",
 #                  group = c("Aspirin", "Placebo"),
-#                  plot = TRUE)
+#                  plot = TRUE,
+#                  SAP = TRUE)
+
+## ----plot-OSA, fig.cap = "An example for illustrating observed sequential analysis", eval = TRUE, echo = FALSE, warning = FALSE, message = FALSE, results = "hide", fig.height = 6, fig.width = 8, fig.align = "center", out.width = "100%"----
+data("Fleiss1993bin")
+dataFleiss1993bin <- Fleiss1993bin
+output <- DoOSA(Fleiss1993bin, 
+                source = study,
+                time = year,
+                r1 = d.asp, 
+                n1 = n.asp, 
+                r2 = d.plac, 
+                n2 = n.plac, 
+                measure = "RR",
+                group = c("Aspirin", "Placebo"),
+                plot = TRUE)
 
 ## ----eval = FALSE-------------------------------------------------------------
 #  PlotPower(output)
@@ -270,8 +289,8 @@ output <- DoOSA(Fleiss1993bin,
                 n2 = n.plac, 
                 measure = "RR",
                 group = c("Aspirin", "Placebo"),
-                plot = TRUE)
-
+                plot = FALSE,
+                SAP = TRUE)
 
 PlotPower(output)
 

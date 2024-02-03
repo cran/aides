@@ -40,6 +40,9 @@
 #' @param beta    NUMERIC value between 0 to 1 for indicating the assumed type II
 #'                error.
 #' @param PES     NUMERIC value for indicating the presumed meaningful effect size.
+#' @param RRR     NUMERIC value between 0 and 1 for indicating the presumed relative
+#'                risk reduction. This parameter only works for dichotomous outcome
+#'                by replacing parameter `PES`.
 #' @param PV      NUMERIC value for indicating the presumed variance of the
 #'                meaningful effect size. Current version allows a numeric value,
 #'                "post-hoc", and "PES" based on different considerations.
@@ -107,7 +110,10 @@
 #'
 #'
 #' @return
-#' **DoSA()** returns a summary on the result of sequential analysis.
+#' **DoSA()** returns a summary on the result of sequential analysis, and can be
+#' stored as an object in `DoSA` class. Explanations of returned information are
+#' listed as follows:
+#'
 #' \item{studies}{Numbers of studies included in the sequential analysis.}
 #' \item{AIS}{Acquired information size refers to the total sample size in the
 #'       sequential analysis.}
@@ -165,12 +171,14 @@
 #'                r2 = d.plac, n2 = n.plac,
 #'                measure = "RR",
 #'                PES = 0.05,
+#'                RRR = 0.2,
 #'                group = c("Aspirin", "Control"))
 #'
 #' ## End(Not run)
 #'
 #'
 #' @export DoSA
+
 
 
 
@@ -197,7 +205,8 @@ DoSA <- function(data    = NULL,
                  pooling = "IV",
                  alpha   = 0.05,
                  beta    = 0.2,
-                 PES     = "post-hoc",
+                 PES     = NULL,
+                 RRR     = NULL,
                  PV      = "post-hoc",
                  adjust  = "D2",
                  plot    = FALSE,
@@ -221,6 +230,7 @@ DoSA <- function(data    = NULL,
   lgcInSD2    <- ifelse(is.null(substitute(sd2)), FALSE, TRUE)
   lgcInN2     <- ifelse(is.null(substitute(n2)), FALSE, TRUE)
   lgcInPES    <- ifelse(is.null(substitute(PES)), FALSE, TRUE)
+  lgcInRRR    <- ifelse(is.null(substitute(RRR)), FALSE, TRUE)
   lgcInPV     <- ifelse(is.null(substitute(PV)), FALSE, TRUE)
 
   lgcReq1     <- ifelse(lgcInData == TRUE, TRUE, FALSE)
@@ -228,27 +238,28 @@ DoSA <- function(data    = NULL,
   lgcReq3     <- ifelse(FALSE %in% c(lgcInR1, lgcInN1, lgcInR2, lgcInN2), FALSE, TRUE)
   lgcReq4     <- ifelse(FALSE %in% c(lgcInM1, lgcInSD1, lgcInN1, lgcInM2, lgcInSD2, lgcInN2), FALSE, TRUE)
   lgcReq5     <- ifelse(FALSE %in% c(lgcInSource, lgcInTime, lgcInPES, lgcInPV), FALSE, TRUE)
+  lgcReq5     <- ifelse(FALSE %in% c(lgcInSource, lgcInTime, lgcInPES, lgcInPV), FALSE, TRUE)
 
   lgcStop1     <- ifelse(lgcReq1 == TRUE, FALSE, TRUE)
   infoLgcStop1 <- ifelse(lgcStop1 == TRUE,
-                        'Parameter "data" should be used for assigning a data set.',
-                        "")
+                         'Parameter "data" should be used for assigning a data set.',
+                         "")
   lgcStop2     <- ifelse(TRUE %in% c(lgcReq2, lgcReq3, lgcReq4), FALSE, TRUE)
   infoLgcStop2 <- ifelse(lgcStop2 == TRUE, 'Parameter "n", "es", and "se" should be defined for the analysis based on study-level data.
                         Parameter "n1" and "n2" should be defined with "r1" and "r2" for dichotomous outcome based on arm-level data.
                         Or parameter "n1" and "n2" should be defined with "m1", "sd1", "m2", "sd2" for continuous outcome based on arm-level data.',
-                        "")
+                         "")
   lgcStop3     <- ifelse(lgcReq5 == TRUE, FALSE, TRUE)
   infoLgcStop3 <- ifelse(lgcStop3 == FALSE,
-                        'Parameter "source", "time", "PES", and "PV" are required',
-                        "")
+                         'Parameter "source", "time", "PES", and "PV" are required',
+                         "")
 
   if (lgcStop1 | lgcStop2 | lgcStop3)
     stop(paste(ifelse(lgcStop1, paste(infoLgcStop1, "\n", "")),
                ifelse(lgcStop2, paste(infoLgcStop2, "\n", "")),
                ifelse(lgcStop3, paste(infoLgcStop3, "\n", "")),
                sep = "")
-         )
+    )
 
 
 
@@ -317,10 +328,11 @@ DoSA <- function(data    = NULL,
                                        "Inverse",
                                        pooling),
                                 "Inverse")
-                         )
+  )
   infoAlpha    <- alpha
   infoBeta     <- beta
   infoPES      <- PES
+  infoInRRR    <- ifelse(is.null(RRR), NA, RRR)
   infoPV       <- PV
   infoAdjust   <- adjust
   infoPlot     <- plot
@@ -429,6 +441,14 @@ DoSA <- function(data    = NULL,
     infoRRR   <- abs(infoProp2 - infoProp1) / infoProp1
     infoESMA  <- infoProp2 - infoProp1
     infoVarMA <- (infoProp2 + infoProp1) / 2 * (1 - (infoProp2 + infoProp1) / 2)
+
+    if (is.numeric(infoInRRR)) {
+      infoProp1byInRRR <- infoProp2 * 0.8
+      infoRRR          <- infoInRRR
+      infoPES          <- infoProp1byInRRR - infoProp2
+      infoVarMA        <- (infoProp2 + infoProp1byInRRR) / 2 * (1 - (infoProp2 + infoProp1byInRRR) / 2)
+    }
+
     #infoSEMA  <- ifelse(infoModel == "random", outMA$seTE.random, outMA$seTE.fixed)
   } else if (base::isFALSE(lgcReq3)) {
     infoRRR   <- NA
@@ -478,12 +498,14 @@ DoSA <- function(data    = NULL,
   dataIn$zCum   <- outCMA$statistic[c(1:infoNumStud)]
 
   ## 04.02 Calculate diversity (D-square, D2)
-  infoDivers   <- (((outMA$seTE.random * sqrt(infoCases - 2))^2) - ((outMA$seTE.fixed * sqrt(infoCases - 2))^2)) / ((outMA$seTE.random * sqrt(infoCases - 2))^2)
-    #infoDivers   <- 1 / sum(1 / (outMA$seTE)) / 1 / sum(1 / (outMA$seTE + outMA$tau2))
-    #infoDivers   <- (((outMA$seTE.random * sqrt(infoCases))^2) - ((outMA$seTE.fixed * sqrt(infoCases))^2)) / ((outMA$seTE.random * sqrt(infoCases))^2)
-    #1-(((MA.RE$seTE.fixed*sqrt(sum(DATA.TSA$n)-2))^2)/((MA.RE$seTE.random*sqrt(sum(DATA.TSA$n)-2))^2))
-    #1 - (sum(outMA$w.random) / sum(outMA$w.fixed))
-    #sum(((outMA$w.fixed^-1)+MA.RE$tau2)^-1)/sum(MA.RE$w.fixed)
+  infoDivers    <- 1 - (sum((outMA$seTE^2 + outMA$tau2)^(-1)) / sum(outMA$seTE^(-2)))
+  #infoDivers <- (outMA$seTE.random^2 - outMA$seTE.fixed^2) / outMA$seTE.random^2
+  #infoDivers   <- (((outMA$seTE.random * sqrt(infoCases - 2))^2) - ((outMA$seTE.fixed * sqrt(infoCases - 2))^2)) / ((outMA$seTE.random * sqrt(infoCases - 2))^2)
+  #infoDivers   <- 1 / sum(1 / (outMA$seTE)) / 1 / sum(1 / (outMA$seTE + outMA$tau2))
+  #infoDivers   <- (((outMA$seTE.random * sqrt(infoCases))^2) - ((outMA$seTE.fixed * sqrt(infoCases))^2)) / ((outMA$seTE.random * sqrt(infoCases))^2)
+  #1-(((MA.RE$seTE.fixed*sqrt(sum(DATA.TSA$n)-2))^2)/((MA.RE$seTE.random*sqrt(sum(DATA.TSA$n)-2))^2))
+  #1 - (sum(outMA$w.random) / sum(outMA$w.fixed))
+  #sum(((outMA$w.fixed^-1)+MA.RE$tau2)^-1)/sum(MA.RE$w.fixed)
 
   ## 04.03 Determinate adjustement factor
   if (infoAdjust == "D2") {
@@ -517,6 +539,7 @@ DoSA <- function(data    = NULL,
   # X infoRIS      <- 4 * ((qnorm(1 - (infoAlpha / 2)) + abs(qnorm(infoBeta)))^2) * infoSEMA / infoPES^2
   #infoRIS      <- (1 / (1 - infoDivers)) * 4 * ((qnorm(1 - (infoAlpha / 2)) + abs(qnorm(infoBeta)))^2) * ((infoSEMA * sqrt(infoCases))^2 / (infoPES^2))
   #infoRIS      <- 4 * ((qnorm(1 - (infoAlpha / 2)) + abs(qnorm(infoBeta)))^2) * infoPV / (infoPES^2)
+
   infoRISOrg <- 4 * ((qnorm(1 - (infoAlpha / 2)) + abs(qnorm(1 - infoBeta)))^2) * infoPV / infoPES^2
 
   if (infoAdjust == "none") {
@@ -528,12 +551,14 @@ DoSA <- function(data    = NULL,
 
   dataPlotSA <- as.data.frame(cbind(sample = c(ceiling(infoRIS/20):infoRIS),
                                     frctn  = c(ceiling(infoRIS/20):infoRIS) / infoRIS)
-                              )
+  )
   dataPlotSA$aslb <- -qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(dataPlotSA$frctn))) / 2); dataPlotSA$aslb <- ifelse(dataPlotSA$aslb == "-Inf", -10, dataPlotSA$aslb)
   dataPlotSA$asub <-  qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(dataPlotSA$frctn))) / 2); dataPlotSA$asub <- ifelse(dataPlotSA$asub == "Inf", 10, dataPlotSA$asub)
   dataPlotSA$bsub <-  (qnorm(pnorm(qnorm((infoBeta)) / dataPlotSA$frctn)) + (qnorm(pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(1))) - qnorm(pnorm(qnorm((infoBeta)) / sqrt(1))))); dataPlotSA$bsub <- ifelse(dataPlotSA$bsub < 0, 0, dataPlotSA$bsub)
   dataPlotSA$bslb <- -(qnorm(pnorm(qnorm((infoBeta)) / dataPlotSA$frctn)) + (qnorm(pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(1))) - qnorm(pnorm(qnorm((infoBeta)) / sqrt(1))))); dataPlotSA$bslb <- ifelse(dataPlotSA$bslb > 0, 0, dataPlotSA$bslb)
-  infoFrctnBSB     <- dataPlotSA[max(which(dataPlotSA$bsub == 0)), "frctn"]
+  dataPlotSA      <- dataPlotSA[dataPlotSA$aslb > -9, ]
+  dataPlotSA      <- dataPlotSA[dataPlotSA$asub < 9, ]
+  infoFrctnBSB    <- dataPlotSA[max(which(dataPlotSA$bsub == 0)), "frctn"]
 
 
   dataSA <- dataIn[, c("source", "time", "n", "weight", "esCum", "seCum", "zCum")]
@@ -569,8 +594,8 @@ DoSA <- function(data    = NULL,
   dataSA <- dataSA[order(dataSA$frctn), ]
 
   infoColorASB <- ifelse(dataSA$nCum > infoRIS,
-                            rgb(1, 1, 1, 1),
-                            "gray25")
+                         rgb(1, 1, 1, 1),
+                         "gray25")
   infoPosLabel <- ifelse(dataSA$zCum > 0, 4, 2)
 
   if (max(dataSA$frctn) < infoFrctnBSB) {
@@ -579,8 +604,8 @@ DoSA <- function(data    = NULL,
                                     qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(infoFrctnBSB))) / 2),
                                     -qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(infoFrctnBSB))) / 2),
                                     0, 0#,(1 - infoBeta) * infoFrctnBSB
-                                    )
-    }
+    )
+  }
 
   dataSA[nrow(dataSA) + 1, ] <- c(NA, NA, NA, NA, NA, NA, NA,
                                   round(infoRIS, 0), 1,
@@ -589,15 +614,15 @@ DoSA <- function(data    = NULL,
                                   qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(1))) / 2),
                                   -qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(1))) / 2)
                                   #,1 - infoBeta
-                                  )
+  )
 
 
 
   ## 04.05 Adjusted MA -----
   lgcMAAdj <- abs(dataSA$zCum[infoNumStud]) < abs(dataSA$asub[infoNumStud])
   infoLgcMAAdj  <- ifelse(lgcMAAdj,
-                         "Adjusted confidence interval is suggested to be performed.",
-                         "Adjusted confidence interval is not necessary to be performed.")
+                          "Adjusted confidence interval is suggested to be performed.",
+                          "Adjusted confidence interval is not necessary to be performed.")
   infoPValMAAdj <- pnorm(ifelse(dataSA$asub[infoNumStud] > 5.3,
                                 5.3,
                                 dataSA$asub[infoNumStud]))
@@ -668,11 +693,11 @@ DoSA <- function(data    = NULL,
                  RIS.adj   = ifelse(infoAdjust == "none",
                                     "No adjusted",
                                     ceiling(infoRISAdj))
-                 )
+  )
   class(lsDoSA)    <- c("aides", "DoSA")
   lsDoSA$frctn      <- paste(round(dataSA$frctn[infoNumStud], 4) * 100,
-                            "%",
-                            sep = "")
+                             "%",
+                             sep = "")
   lsDoSA$weight    <- paste(round(dataSA$weight[c(1:infoNumStud)], 4) * 100,
                             "%",
                             sep = "")
@@ -685,7 +710,7 @@ DoSA <- function(data    = NULL,
 
   if (infoPlot == TRUE) {
     lsDoSA$data    <- dataSA
-    }
+  }
   #lsDoSA$data.plot <- dataPlotSA
 
 
@@ -699,11 +724,11 @@ DoSA <- function(data    = NULL,
             ifelse(infoAdjust != "none",
                    " (heterogeneity adjusted): ",
                    " (without adjusted): "
-                   ),
+            ),
             ifelse(infoAdjust == "none",
                    ceiling(infoRISOrg),
                    ceiling(infoRISAdj)
-                   ),
+            ),
             "\n Cumulative z score: ",
             round(dataSA$zCum[infoNumStud], 3),
             "\n Alpha-spending boundary: ",
@@ -721,13 +746,13 @@ DoSA <- function(data    = NULL,
               ifelse(dataSA$asub[infoNumStud] > 5.3,
                      "< 0.000001",
                      1 - pnorm(dataSA$asub[infoNumStud])
-                     ),
+              ),
               ": \n",
               round(infoLCIMAAdj, 3),
               " to ",
               round(infoUCIMAAdj, 3),
               sep = ""),
-      fill = TRUE, sep = "")
+        fill = TRUE, sep = "")
   }
 
   cat(paste("\n",
@@ -743,8 +768,14 @@ DoSA <- function(data    = NULL,
             round(infoPES, 3),
             ifelse(lgcReq3,
                    paste("\n      (risks in group 1 and 2 were ",
-                         round(infoProp1, 10) * 100,
-                         "%, and ",
+                         ifelse(is.numeric(infoInRRR),
+                                paste(round(infoProp1byInRRR, 10) * 100,
+                                      "% (expected) and ",
+                                      sep = ""),
+                                paste(round(infoProp1, 10) * 100,
+                                      "% and ",
+                                      sep = "")
+                         ),
                          round(infoProp2, 10) * 100,
                          "% respectively; RRR ",
                          ifelse(infoRRR < 0.001, "< 0.001)",
@@ -752,7 +783,7 @@ DoSA <- function(data    = NULL,
                                       sep = "")),
                          sep = ""),
                    ""
-                   ),
+            ),
             "\n 1.5. Presumed variance: ",
             round(infoPV, 3),
 
@@ -766,8 +797,8 @@ DoSA <- function(data    = NULL,
                                 ifelse(infoPooling == "MH",
                                        "Mantel-Haensze",
                                        infoPooling
-                                       )
-                                ),
+                                )
+                         ),
                          " approach in ",
                          ifelse(infoModel == "random",
                                 paste("random-effects model with ",
@@ -782,31 +813,31 @@ DoSA <- function(data    = NULL,
                                       sep = ""),
                                 "fixed-effect model."),
                          sep = "")
-                   ),
+            ),
 
             "\n 2.2. Result of the meta-analysis \n ",
             paste(ifelse(infoMeasure %in% c("RR", "OR"),
                          paste("Log ", infoMeasure,
                                sep = ""),
                          infoMeasure
-                         ),
-                  ": ",
-                  ifelse(infoModel == "random",
-                         round(outMA$TE.random, 3),
-                         round(outMA$TE.fixed, 3)
-                         ),
-                  " (95% CI: ",
-                  ifelse(infoModel == "random",
-                         round(outMA$lower.random, 3),
-                         round(outMA$lower.fixed, 3)
-                         ),
-                  " to ",
-                  ifelse(infoModel == "random",
-                         round(outMA$upper.random, 3),
-                         round(outMA$upper.fixed, 3)
-                         ),
-                  ")",
-                  sep = ""),
+            ),
+            ": ",
+            ifelse(infoModel == "random",
+                   round(outMA$TE.random, 3),
+                   round(outMA$TE.fixed, 3)
+            ),
+            " (95% CI: ",
+            ifelse(infoModel == "random",
+                   round(outMA$lower.random, 3),
+                   round(outMA$lower.fixed, 3)
+            ),
+            " to ",
+            ifelse(infoModel == "random",
+                   round(outMA$upper.random, 3),
+                   round(outMA$upper.fixed, 3)
+            ),
+            ")",
+            sep = ""),
 
             "\n ",
             "\n 3. Adjustment factor \n ",
@@ -825,12 +856,12 @@ DoSA <- function(data    = NULL,
                                                            ifelse(infoAdjust == "CHH",
                                                                   "high conceptual heterogeneity (around 75%).",
                                                                   "?")
-                                                           )
                                                     )
                                              )
-                                      ),
+                                      )
+                               ),
                                sep = "")
-                         ),
+                  ),
                   " Relevant parameters are listed as follows.",
                   sep = ""),
             "\n 3.1. Heterogeneity (I-squared): ",
@@ -856,7 +887,7 @@ DoSA <- function(data    = NULL,
          type = "l", frame = F,
          xlim = c(0, max(dataSA$nCum) * 1.2),
          ylim = c(ceiling(min(dataSA$aslb)) * (-10) / ceiling(min(dataSA$aslb)),
-                ceiling(max(dataSA$asub)) * 10 / ceiling(max(dataSA$asub)) + 1),
+                  ceiling(max(dataSA$asub)) * 10 / ceiling(max(dataSA$asub)) + 1),
          col = rgb(1, 1, 1, 0),
          xlab = "Sample size",
          yaxt = "n", #xaxt="n", "darkred"
@@ -870,12 +901,12 @@ DoSA <- function(data    = NULL,
                              " method)",
                              sep = ""),
                        "fixed-effect model)"
-                       ),
+                ),
                 sep = ""),
           side = 1, line = 4, cex = 0.6)
 
     axis(side = 2, at = c(seq(ceiling(min(dataSA$aslb)) * (-10) / ceiling(min(dataSA$aslb)),
-                          ceiling(max(dataSA$asub)) * 10 / ceiling(max(dataSA$asub)), 2)),
+                              ceiling(max(dataSA$asub)) * 10 / ceiling(max(dataSA$asub)), 2)),
          padj = 0, hadj = 1, las = 1)
     mtext("Cumulative\n z score", side = 3, line = 0, at = -infoRIS * 0.05)
     mtext(paste("Favors\n", ifelse(infoPrefer == "small", infoGroup[2], infoGroup[1])),
@@ -890,8 +921,8 @@ DoSA <- function(data    = NULL,
     lines(dataPlotSA$sample,
           dataPlotSA$asub,
           lwd = 1, col = "darkred", lty = 1)
-    points(dataSA[which(!is.na(dataSA[, "source"])), ]$nCum,
-           dataSA[which(!is.na(dataSA[, "source"])), ]$asub,
+    points(dataSA[which(!is.na(dataSA[, "source"]) & dataSA[, "asub"] < 9), ]$nCum,
+           dataSA[which(!is.na(dataSA[, "source"]) & dataSA[, "asub"] < 9), ]$asub,
            col = infoColorASB, pch = 15, cex = 0.8)
     #lines(dataSA$nCum,
     #      dataSA$aslb,
@@ -899,8 +930,8 @@ DoSA <- function(data    = NULL,
     lines(dataPlotSA$sample,
           dataPlotSA$aslb,
           lwd = 1, col = "darkred", lty = 1)
-    points(dataSA[which(!is.na(dataSA[, "source"])), ]$nCum,
-           dataSA[which(!is.na(dataSA[, "source"])), ]$aslb,
+    points(dataSA[which(!is.na(dataSA[, "source"]) & dataSA[, "aslb"] > -9), ]$nCum,
+           dataSA[which(!is.na(dataSA[, "source"]) & dataSA[, "aslb"] > -9), ]$aslb,
            col = infoColorASB, pch = 15, cex = 0.8)
     #lines(dataSA$nCum,
     #      dataSA$bsub,
@@ -957,47 +988,52 @@ DoSA <- function(data    = NULL,
     #     c(round(dataSA$zCum, 2)),
     #     col = c("gray20"))
 
-    rect(0, -10, infoRIS * 0.8, -7.5,
+    rect(0, 10, infoRIS * 0.8, 8,
          lty = 0, col = rgb(1, 1, 1, 0.5))
-    points(dataSA[which(!is.na(dataSA[, "source"])), ]$nCum,
-           dataSA[which(!is.na(dataSA[, "source"])), ]$aslb,
-           col = infoColorASB, pch = 15, cex = 0.8)
-    segments(c(0.05), c(-8), c(infoRIS / 20), c(-8),
+    segments(c(0.05), c(10), c(infoRIS / 20), c(10),
              lty = c(1), lwd = 2, col = 'blue3')
     #text(0.1, -8.5,
-          #paste("Observed z score; observed power:",
-                #round(dataSA$power[length(dataSA$power) - 1], 2)),
-          #pos = 4, cex = 0.8)
-    text(infoRIS / 15, -8,
+    #paste("Observed z score; observed power:",
+    #round(dataSA$power[length(dataSA$power) - 1], 2)),
+    #pos = 4, cex = 0.8)
+    text(infoRIS / 15, 10,
          paste("Cumulative z score", sep = ""),
-         pos = 4, cex = 0.8)
-    segments(c(0.05), c(-9), c(infoRIS / 20), c(-9),
+         pos = 4,
+         cex = 0.7)
+    segments(c(0.05), c(9), c(infoRIS / 20), c(9),
              lty = c(1), lwd = 1.5, col = "darkred")
-    text(infoRIS / 15, -9,
+    text(infoRIS / 15, 9,
          paste("Parameters for alpha-spending boundary:"),
-         pos = 4, cex = 0.8)
-    text(infoRIS / 15, -9.7,
+         pos = 4, cex = 0.7)
+    text(infoRIS / 15, 8.5,
          paste(ifelse(infoMeasure %in% c("MD", "SMD"),
                       infoMeasure,
                       "Assumed effect: "
-                      ),
-               " = ",
-               round(infoPES, 3),
-               "; assumed power: ", round(1 - infoBeta, 2),
-               "; assumed alpha: ", infoAlpha, sep = ""
-               ),
-         pos = 4, cex = 0.8)
+         ),
+         " = ",
+         round(infoPES, 3),
+         "; assumed power: ", round(1 - infoBeta, 2),
+         "; assumed alpha: ", infoAlpha, sep = ""
+         ),
+         pos = 4, cex = 0.7)
     segments(c(infoRIS), c(-9), c(infoRIS), c(9),
              lty = c(2), col = "darkred")
-    text(infoRIS, 10,
+    text(infoRIS, -10,
          paste("Required sample size:", ceiling(infoRIS)),
-         pos = ifelse(infoRIS > infoCases, 2, 4),
-         cex = 0.8)
-    text(infoRIS, 9,
+         #pos = ifelse(infoRIS > infoCases, 2, 4),
+         cex = 0.7)
+
+    segments(dataSA$nCum[nrow(dataSA[!is.na(dataSA$source), ])],
+             dataSA$zCum[nrow(dataSA[!is.na(dataSA$source), ])],
+             dataSA$nCum[nrow(dataSA[!is.na(dataSA$source), ])],
+             c(-8.5),
+             lty = c(2), col = "blue3")
+    text(dataSA$nCum[nrow(dataSA[!is.na(dataSA$source), ])],
+         -9,
          paste("Acquired sample size:",
                ceiling(max(dataSA[which(!is.na(dataSA[, "source"])), ]$nCum))),
-         pos = ifelse(infoRIS > infoCases, 2, 4),
-         cex = 0.8)
+         #pos = ifelse(infoRIS > infoCases, 4, 2),
+         cex = 0.7)
   }
 
   output <- lsDoSA

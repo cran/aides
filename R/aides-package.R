@@ -26,10 +26,10 @@
 #'
 #'
 #' @details
-#' Current version consists of eight functions, including seven functions for
+#' Current version consists of eight functions, including four functions for
 #' examining fundamental assumptions before test of small-study effects (i.e.
 #' function \code{\link{PlotDistrSS}}, \code{\link{TestDisparity}}, \code{\link{PlotDisparity}}, and \code{\link{TestDiscordance}})
-#' and three functions for performing sequential analysis (i.e. \code{\link{DoSA}}, \code{\link{DoOSA}},
+#' and four functions for performing sequential analysis (i.e. \code{\link{DoSA}}, \code{\link{DoOSA}},
 #' \code{\link{PlotOSA}}, and \code{\link{PlotPower}}).
 #'
 #' @name aides-package

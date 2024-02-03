@@ -29,7 +29,8 @@ DoOSA(
   alpha = 0.05,
   beta = 0.2,
   adjust = "D2",
-  plot = FALSE
+  plot = FALSE,
+  SAP = FALSE
 )
 }
 \arguments{
@@ -95,9 +96,43 @@ Current version consists of "none", "D2", "I2", "CHL", "CHM", and
 "CHH" for the adjustment.}
 
 \item{plot}{LOGIC value for indicating whether to illustrate alpha-spending
-monitoring plot.
+monitoring plot.}
 
-#' @details
+\item{SAP}{LOGIC value for indicating whether to show sequential-adjusted
+power.}
+}
+\value{
+\strong{DoOSA()} returns a summary on the result of sequential analysis, and can be
+stored as an object in \code{DoOSA} class. Explanations of returned information are
+listed as follows:
+
+\item{studies}{Numbers of studies included in the sequential analysis.}
+\item{AIS}{Acquired information size refers to the total sample size in the
+sequential analysis.}
+\item{alpha}{A numeric value of type I error for the sequential analysis.}
+\item{beta}{A numeric value of type II error for the sequential analysis.}
+\item{OES}{A numeric value of observed effect size of meta-analysis.}
+\item{variance}{A numeric value of variance of meta-analysis.}
+\item{diversity}{A numeric value to show diversity in the pooled analysis.}
+\item{AF}{A numeric value of adjustment factor.}
+\item{OIS.org}{A numeric value for optimal information size without adjustment.}
+\item{OIS.adj}{A numeric value for optimal information size with adjustment.}
+\item{frctn}{A vector of fraction of each study included in the sequential
+analysis.}
+\item{weight}{A vector of weight of each study included in the sequential
+analysis.}
+\item{es.cum}{A vector of cumulative effect size in the sequential analysis.}
+\item{se.cum}{A vector of standard error for the cumulative effect size in the
+sequential analysis.}
+\item{zval.cum}{A vector of cumulative z-value in the sequential analysis.}
+\item{asb}{A data frame of alpha-spending values for each study.}
+\item{aslb}{A numeric value for lower alpha-spending boundary.}
+\item{asub}{A numeric value for upper alpha-spending boundary.}
+}
+\description{
+\strong{DoOSA()} is a function for conducting observed sequential analysis.
+}
+\details{
 \enumerate{
 \item Basic information for the function \strong{DoOSA()}:
 \strong{DoOSA()} supports observed sequential analysis of aggregate data synthesis
@@ -151,35 +186,7 @@ for the parameter are \code{"None"} for the OIS without adjustment, \code{"I2"} 
 OIS based on I-squared statistics, \code{"CHL"} for adjusted OIS based on low
 heterogeneity by multiplying 1.33, \code{"CHM"} for adjusted OIS by multiplying 2
 due to moderate heterogeneity, and \code{"CHL"} for adjusted OIS by multiplying 4
-due to high heterogeneity.}
-}
-\value{
-\strong{DoOSA()} returns a summary on the result of sequential analysis.
-\item{studies}{Numbers of studies included in the sequential analysis.}
-\item{AIS}{Acquired information size refers to the total sample size in the
-sequential analysis.}
-\item{alpha}{A numeric value of type I error for the sequential analysis.}
-\item{beta}{A numeric value of type II error for the sequential analysis.}
-\item{OES}{A numeric value of observed effect size of meta-analysis.}
-\item{variance}{A numeric value of variance of meta-analysis.}
-\item{diversity}{A numeric value to show diversity in the pooled analysis.}
-\item{AF}{A numeric value of adjustment factor.}
-\item{OIS.org}{A numeric value for optimal information size without adjustment.}
-\item{OIS.adj}{A numeric value for optimal information size with adjustment.}
-\item{frctn}{A vector of fraction of each study included in the sequential
-analysis.}
-\item{weight}{A vector of weight of each study included in the sequential
-analysis.}
-\item{es.cum}{A vector of cumulative effect size in the sequential analysis.}
-\item{se.cum}{A vector of standard error for the cumulative effect size in the
-sequential analysis.}
-\item{zval.cum}{A vector of cumulative z-value in the sequential analysis.}
-\item{asb}{A data frame of alpha-spending values for each study.}
-\item{aslb}{A numeric value for lower alpha-spending boundary.}
-\item{asub}{A numeric value for upper alpha-spending boundary.}
-}
-\description{
-\strong{DoOSA()} is a function for conducting observed sequential analysis.
+due to high heterogeneity.
 }
 \examples{
 ## Not run:

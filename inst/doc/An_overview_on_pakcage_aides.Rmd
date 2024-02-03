@@ -3,6 +3,7 @@ title: "An overview on pakcage aides"
 output: 
   bookdown::html_document2:
     base_format: rmarkdown::html_vignette
+    number_sections: true
 vignette: >
   %\VignetteIndexEntry{An overview on pakcage aides}
   %\VignetteEngine{knitr::rmarkdown}
@@ -16,18 +17,30 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r echo = FALSE, fig.align = "left", out.width = "30%"}
+<table border = "0" width = "100%" align = "left">
+  <tr>
+    <td>  
+```{r echo = FALSE, fig.align = "left", out.width = 100}
 knitr::include_graphics("aides_logo.png")
 ```
+    </td>
+    <td> 
+    <H3> Additive Information & Details of Evidence Synthesis 
+    </H3>
+    </td>
+    <td> 
+    [![CRAN](https://img.shields.io/cran/v/aides?color=blue&label=CRAN&logo=r)](https://cran.r-project.org/package=aides) \
+    [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg?color=grassgreen)](https://lifecycle.r-lib.org/articles/stages.html#stable) \
+    [![Licence](https://img.shields.io/badge/licence-GPL--3-brightgreen.svg?color=grassgreen)](https://www.gnu.org/licenses/gpl-3.0.en.html)
+    </td>
+  </tr>
+</table>
 
-
-[![CRAN](https://img.shields.io/cran/v/aides?color=blue&label=CRAN&logo=r)](https://cran.r-project.org/package=aides)
-[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg?color=grassgreen)](https://lifecycle.r-lib.org/articles/stages.html#stable)
-[![Licence](https://img.shields.io/badge/licence-GPL--3-brightgreen.svg?color=grassgreen)](https://www.gnu.org/licenses/gpl-3.0.en.html)
+Febrary 3, 2024
 
 \
 
-# Brief overview
+# Prologue {-}
 
 The *aides*, a R package, emerges as a valuable collection of functions designed to provide supplementary information and intricacies in the critical processes of data synthesis and evidence evaluation. In the realm of evidence-based decision-making, these processes are pivotal, shaping the foundation upon which informed conclusions are drawn. The *aides*, essentially a toolkit for pooled analysis of aggregated data, is meticulously crafted to enhance the inclusivity and depth of this decision-making approach.
 
@@ -48,9 +61,9 @@ library(meta)
 
 \
 
-# Features
+# Focuses & functions
 
-Briefly, *aides* currently consists of three tasks as follows:
+Briefly, *aides* currently consists of three focuses as follows:
 
 - **Disparity:** a newly proposed assumption regarding disparities in sample size analysis.
 
@@ -60,35 +73,92 @@ Briefly, *aides* currently consists of three tasks as follows:
 
 \
 
-# Functions and examples
-
 Users can import their data and do relevant tests or graphics using functions in package *aides*. The present package consists of eight functions listed as follows: 
 
-**Disparity:**  
 
-`PlotDistrSS()` [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg?color=grassgreen)](https://lifecycle.r-lib.org/articles/stages.html#stable), `TestDisparity()` [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg?color=grassgreen)](https://lifecycle.r-lib.org/articles/stages.html#stable), and `PlotDisparity()` [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg?color=grassgreen)](https://lifecycle.r-lib.org/articles/stages.html#stable).
-
-\
-
-**Discordance:** 
-
-`TestDiscordance()` [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-brightgreen.svg?color=orange)](https://lifecycle.r-lib.org/articles/stages.html#experimental).  
+<table border = "0" width = "100%" align = "left">
+  <tr>
+    <td> **Disparity test:** </td>
+    <td> </td>
+    <td> </td>
+  </tr>
+  <tr>
+    <td> `PlotDistrSS()` </td>
+    <td> [In the section of Disparity test](#disparityTest) [(Step 3) ](#PlotDistrSS) </td>
+    <td> [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg?color=grassgreen)](https://lifecycle.r-lib.org/articles/stages.html#stable) </td>
+  </tr>
+  <tr>
+    <td> `TestDisparity()` </td>
+    <td> [In the section of Disparity test](#disparityTest) [(Step 4)](#TestDisparity) </td>
+    <td> [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg?color=grassgreen)](https://lifecycle.r-lib.org/articles/stages.html#stable) </td>
+  </tr>
+  <tr>
+    <td> `PlotDisparity()` </td>
+    <td> [In the section of Disparity test](#disparityTest) [(Step 5)](#PlotDisparity) </td>
+    <td> [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg?color=grassgreen)](https://lifecycle.r-lib.org/articles/stages.html#stable) </td>
+  </tr>
   
-\
   
-**Sequential analysis:**  
-
-`DoSA()` [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg?color=grassgreen)](https://lifecycle.r-lib.org/articles/stages.html#stable), `DoOSA()` [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg?color=grassgreen)](https://lifecycle.r-lib.org/articles/stages.html#stable), `PlotOSA()` [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg?color=grassgreen)](https://lifecycle.r-lib.org/articles/stages.html#stable), and `PlotPower()` [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-brightgreen.svg?color=orange)](https://lifecycle.r-lib.org/articles/stages.html#experimental).
+  <tr>
+    <td> **Discordance test:** </td>
+    <td> </td>
+    <td> </td>
+  </tr>
+  <tr>
+    <td> `TestDiscordance()` </td>
+    <td> [In the section of Discordance test](#discordanceTest) [(Step 3)](#TestDiscordance) </td>
+    <td> [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-brightgreen.svg?color=orange)](https://lifecycle.r-lib.org/articles/stages.html#experimental) </td>
+  </tr>
+  
+  
+  <tr>
+    <td> **Sequential analysis:** </td>
+    <td> </td>
+    <td> </td>
+  </tr>
+  <tr>
+    <td> `DoSA()` </td>
+    <td> [In the section of Sequential analysis](#sequentialAnalysis) [(Step 2)](#DoSA) </td>
+    <td> [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg?color=grassgreen)](https://lifecycle.r-lib.org/articles/stages.html#stable) </td>
+  </tr>
+  <tr>
+    <td> `DoOSA()` </td>
+    <td> [In the section of Sequential analysis](#sequentialAnalysis) [(additional)](#DoOSA) </td>
+    <td> [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-brightgreen.svg?color=orange)](https://lifecycle.r-lib.org/articles/stages.html#experimental) </td>
+  </tr>
+  <tr>
+    <td> `PlotOSA()` </td>
+    <td> [In the section of Sequential analysis](#sequentialAnalysis) [(additional)](#PlotOSA) </td>
+    <td> [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-brightgreen.svg?color=orange)](https://lifecycle.r-lib.org/articles/stages.html#experimental) </td>
+  </tr>
+  <tr>
+    <td> `PlotPower()` </td>
+    <td> [In the section of Sequential analysis](#sequentialAnalysis) [(additional)](#PlotPower) </td>
+    <td> [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-brightgreen.svg?color=orange)](https://lifecycle.r-lib.org/articles/stages.html#experimental) </td>
+  </tr>
+  
+</table>
 
 \
 
-## Examples of functions:
+<table border = "0">
+  <tr>
+    <td> </td>
+    <td> </td>
+  </tr>
+</table>
 
-### Disparity:
+\
 
-The following steps and syntax demonstrate how user can carry out disparity test. Figure \@ref(fig:plot-disparity-outlier) visualizes the test based on the excessive cases of oulier(s).
+# Examples
 
-**Step 1.** Import data (Olkin 1995)
+## Disparity test: {#disparityTest}
+
+The following steps and syntax demonstrate how user can carry out disparity test. Users can test the distribution of sample size among studies with visualization (Figure  \@ref(fig:plot-distrSS)) for choosing appropriate method for disparity test. Figure \@ref(fig:plot-disparity-outlier) visualizes the test based on the excessive cases of oulier(s).
+
+\
+
+#### Step 1. Import data (example of the study by Olkin 1995) {-}
 
 ``` {r, eval = FALSE}
 library(meta)
@@ -98,7 +168,7 @@ dataOlkin1995 <- Olkin1995
 
 \
 
-**Step 2.** Process data
+#### Step 2. Process data {-}
 
 ``` {r, eval = FALSE}
 dataOlkin1995$n <- dataOlkin1995$n.exp + dataOlkin1995$n.cont
@@ -106,12 +176,15 @@ dataOlkin1995$n <- dataOlkin1995$n.exp + dataOlkin1995$n.cont
 
 \
 
-**Step 3.** Check distribution of study sizes. Using function `shapiro.test()` is a simple way to test whether sample sizes distribute normally, and further visualization with statistics can be carried out by function `PlotDistrSS()`. 
+#### Step 3. Check distribution of study sizes {-#PlotDistrSS}
+
+Using function `shapiro.test()` is a simple way to test whether sample sizes distribute normally, and further visualization with statistics can be carried out by function `PlotDistrSS()`.
 
 ``` {r, eval = FALSE}
 shapiro.test(dataOlkin1995$n)
 PlotDistrSS(dataOlkin1995$n)
 ```
+
 <a id="result-distrSS"></a>
 ``` {r result-distrSS, eval = TRUE, echo = FALSE, warning = FALSE, message = FALSE}
 data("Olkin1995")
@@ -130,6 +203,8 @@ PlotDistrSS(n = n,
             time = year)
 ```
 
+\
+
 If users would like to check normality using Kolmogorov-Smirnov test, they can set parameter `method` with argument `"ks"` in the function `PlotDistrSS()`. 
 
 ``` {r, eval = FALSE}
@@ -142,7 +217,7 @@ PlotDistrSS(n = n,
 
 \
 
-**Step 4.** Test assumption of disparity in study size
+#### Step 4. Test assumption of disparity in study size {-#TestDisparity}
 
 ``` {r, eval = FALSE}
 TestDisparity(n = n, 
@@ -163,7 +238,7 @@ TestDisparity(n = n,
 
 \
 
-**Step 5.** Illustrate disparity plot
+#### Step 5. Illustrate disparity plot {-#PlotDisparity}
 
 ``` {r, eval = FALSE}
 TestDisparity(n = n,
@@ -235,11 +310,13 @@ PlotDisparity(rsltDisparity,
 
 \
 
-### Discordance:
+## Discordance {#discordanceTest}
 
 The following steps and syntax demonstrate how user can carry out discordance test. Figure \@ref(fig:plot-discordance) visualizes the test.
 
-**Step 1.** Import data (example of the study by Fleiss 1993)
+\
+
+#### Step 1. Import data (example of the study by Fleiss 1993) {-}
 
 ``` {r, eval = FALSE}
 library(meta)
@@ -249,7 +326,7 @@ dataFleiss1993bin <- Fleiss1993bin
 
 \
 
-**Step 2.** Process data
+#### Step 2. Process data {-}
 
 ``` {r, eval = FALSE}
 dataFleiss1993bin$n  <- dataFleiss1993bin$n.asp + dataFleiss1993bin$n.plac
@@ -258,7 +335,7 @@ dataFleiss1993bin$se <- sqrt((1 / dataFleiss1993bin$d.asp) - (1 / dataFleiss1993
 
 \
 
-**Step 3.** Test assumption of discordance in study size
+#### Step 3. Test assumption of discordance in study size {-#TestDiscordance}
 
 ``` {r, eval = FALSE}
 TestDiscordance(n = n, 
@@ -280,7 +357,7 @@ TestDiscordance(n = n,
 
 \
 
-**Step 4.** Illustrate discordance plot
+#### Step 4. Illustrate discordance plot {-}
 
 ``` {r, eval = FALSE}
 TestDiscordance(n = n, 
@@ -304,11 +381,25 @@ TestDiscordance(n = n,
 
 \
 
-### Sequential analysis:
+## Sequential analysis {#sequentialAnalysis}
+
+Sequential analysis in evidence-based medicine is a statistical approach applied in clinical trials and meta-analyses to continually assess accumulating data, allowing for interim decisions on the effectiveness or safety of medical interventions ([Kang, 2021](#ref-Kang2021); [Jennison & Turnbull, 2005](#ref-Jennison2005); [Wetterslev et al., 2017](#ref-Wetterslev2017); [Wetterslev et al., 2008](#ref-Wetterslev2008)). In contrast to traditional methods that wait for all data to be collected, sequential analysis enables periodic assessments during a trial. This method is especially valuable when ongoing assessment is ethically or practically necessary. It seeks to balance the need for robust statistical inference with the ethical duty to ensure participant safety and prompt decision-making that can influence clinical practice. Proper planning and pre-specification in study protocols are crucial for maintaining the integrity of sequential analysis ([Thomas et al., 2019](#ref-Thomas2019)).
+
+This method has the capability to manage the overall Type I error in clinical trials and cumulative meta-analyses through the utilization of an alpha spending function, exemplified by the approach introduced by [O'Brien & Fleming (1979)](#ref-O'Brien1979). The alpha spending function allocates less significance level to early interim analyses, demanding more substantial evidence for declaring statistical significance. Critical boundaries for significance are determined by this function, becoming less stringent as more data accumulates. Sequential analyses use these boundaries to decide at each interim analysis, declaring statistical significance if the cumulative *Z*-score crosses them. This approach minimizes the risk of false positives in sequential analyses, where multiple interim analyses are conducted, while maintaining the ability to detect true effects. 
+
+Thus, essentials of sequential analysis of cumulative meta-analysis encompassing study time, sample size, cumulative *Z*-score, effects of intervention or exposure, variance of the effects, assumed probability of false positive (type I error; $\alpha$), assumed probability of false negative (type II error; $\beta$), required information size (*RIS*), alpha-spending monitoring boundaries. The basic formula for calculating the *RIS* is as follows:
+
+$$
+RIS = 2 \times (Z_{1-\alpha/2} + Z_{1 - \beta})^2 \times 2 \times \sigma^2 / \delta^2 
+$$
+
+where $\alpha$ and $\beta$  represent the assumed overall probabilities of false positive and false negative, respectively. Additionally, $\delta$ and $\sigma^2$ refer to the assumed effects, representing either the minimal or expected meaningful effects, and the associated variance.
 
 The following steps and syntax demonstrate how user can carry out sequential analysis. Figure \@ref(fig:plot-sequential) sequential analysis plot.
 
-**Step 1.** Import data (example of the study by Fleiss 1993)
+\
+
+#### Step 1. Import data (example of the study by Fleiss 1993) {-}
 
 ``` {r, eval = FALSE}
 library(meta)
@@ -318,7 +409,7 @@ dataFleiss1993bin <- Fleiss1993bin
 
 \
 
-**Step 2.** Do sequential analysis
+#### Step 2. Do sequential analysis {-#DoSA}
 
 ``` {r, eval = FALSE}
 DoSA(Fleiss1993bin, 
@@ -330,6 +421,7 @@ DoSA(Fleiss1993bin,
      n2 = n.plac, 
      measure = "RR",
      PES = 0.1,
+     RRR = 0.2,
      group = c("Aspirin", "Placebo"))
 ```
 
@@ -345,12 +437,13 @@ DoSA(Fleiss1993bin,
      n2 = n.plac, 
      measure = "RR",
      PES = 0.1,
+     RRR = 0.2,
      group = c("Aspirin", "Placebo"))
 ```
 
 \
 
-**Step 3.** Visualize sequential analysis
+#### Step 3. Visualize sequential analysis {-}
 
 ``` {r, eval = FALSE}
 DoSA(Fleiss1993bin, 
@@ -362,6 +455,7 @@ DoSA(Fleiss1993bin,
      n2 = n.plac, 
      measure = "RR",
      PES = 0.1,
+     RRR = 0.2,
      group = c("Aspirin", "Placebo"),
      plot = TRUE)
 ```
@@ -378,12 +472,14 @@ DoSA(Fleiss1993bin,
      n2 = n.plac, 
      measure = "RR",
      PES = 0.1,
+     RRR = 0.2,
      group = c("Aspirin", "Placebo"),
      plot = TRUE)
 ```
 
 \
 
+### Observed sequential analysis {-#DoOSA}
 Observed sequential analysis is recommended for those pooled analysis without pre-specified parameters for sequential analysis. In this situation, thus, Step 2 should use following syntax:
 
 ``` {r, eval = FALSE}
@@ -416,9 +512,27 @@ DoOSA(Fleiss1993bin,
 
 Observed sequential analysis is illustrated in using the same function (`DoOSA()`) with argument `TRUE` for the parameter `plot`, and plot of sequential-adjusted power could be an alternative graphic of observed sequential analysis. These analyses and graphics can be carried out by the following two steps with syntax.
 
-**Step 1.** Conduct observed sequential analysis (example of the study by Fleiss 1993).
+\
+
+#### Step 1. Conduct observed sequential analysis (example of the study by Fleiss 1993) {-#PlotOSA}
 
 ``` {r, eval = FALSE}
+output <- DoOSA(Fleiss1993bin, 
+                source = study,
+                time = year,
+                r1 = d.asp, 
+                n1 = n.asp, 
+                r2 = d.plac, 
+                n2 = n.plac, 
+                measure = "RR",
+                group = c("Aspirin", "Placebo"),
+                plot = TRUE,
+                SAP = TRUE)
+```
+
+``` {r plot-OSA, fig.cap = "An example for illustrating observed sequential analysis", eval = TRUE, echo = FALSE, warning = FALSE, message = FALSE, results = "hide", fig.height = 6, fig.width = 8, fig.align = "center", out.width = "100%"}
+data("Fleiss1993bin")
+dataFleiss1993bin <- Fleiss1993bin
 output <- DoOSA(Fleiss1993bin, 
                 source = study,
                 time = year,
@@ -431,7 +545,9 @@ output <- DoOSA(Fleiss1993bin,
                 plot = TRUE)
 ```
 
-**Step 2.** Visualize sequential-adjusted power
+\
+
+#### Step 2. Visualize sequential-adjusted power {-#PlotPower}
 
 ``` {r, eval = FALSE}
 PlotPower(output)
@@ -449,8 +565,42 @@ output <- DoOSA(Fleiss1993bin,
                 n2 = n.plac, 
                 measure = "RR",
                 group = c("Aspirin", "Placebo"),
-                plot = TRUE)
-
+                plot = FALSE,
+                SAP = TRUE)
 
 PlotPower(output)
 ```
+
+\
+
+## Reference
+
+<a id="ref-Jennison2005"></a>
+<p style="text-indent: -25px; margin-left: 25px;">
+Jennison, C., & Turnbull, B. W. (2005). Meta-analyses and adaptive group sequential designs in the clinical development process. *Journal of biopharmaceutical statistics, 15(4)*, 537–558. https://doi.org/10.1081/BIP-200062273
+</p>
+
+<a id="ref-Kang2021"></a>
+<p style="text-indent: -25px; margin-left: 25px;">
+Kang, H. (2021). Trial sequential analysis: novel approach for meta-analysis. *Anesthesia and Pain Medicine, 16(2)*, 138-150.  https://doi.org/10.17085/apm.21038
+</p>
+
+<a id="ref-O'Brien1979"></a>
+<p style="text-indent: -25px; margin-left: 25px;">
+O'Brien, P. C., & Fleming, T. R. (1979). A multiple testing procedure for clinical trials. *Biometrics, 35(3)*, 549-556. ftp://ftp.biostat.wisc.edu/pub/chappell/641/papers/paper34.pdf
+</p>
+
+<a id="ref-Thomas2019"></a>
+<p style="text-indent: -25px; margin-left: 25px;">
+Thomas, J., Askie, L. M., Berlin, J. A., Elliott, J. H., Ghersi, D., Simmonds, M., Takwoingi, Y., Tierney, J. F., Higgins, J. P. T. (2019). Prospective approaches to accumulating evidence. In Higgins J. P. T., & Green, S., (Eds.), *Cochrane Handbook for Systematic Reviews of Interventions*. Chichester (UK): John Wiley & Sons. https://training.cochrane.org/handbook/archive/v6/chapter-22
+</p>
+
+<a id="ref-Wetterslev2008"></a>
+<p style="text-indent: -25px; margin-left: 25px;">
+Wetterslev, J., Thorlund, K., Brok, J., & Gluud, C. (2008). Trial sequential analysis may establish when firm evidence is reached in cumulative meta-analysis. *Journal of clinical epidemiology, 61(1)*, 64-75. https://doi.org/10.1016/j.jclinepi.2007.03.013
+</p>
+
+<a id="ref-Wetterslev2017"></a>
+<p style="text-indent: -25px; margin-left: 25px;">
+Wetterslev, J., Jakobsen, J. C., & Gluud, C. (2017). Trial sequential analysis in systematic reviews with meta-analysis. *BMC medical research methodology, 17(1)*, 1-18. https://doi.org/10.1186/s12874-017-0315-7
+</p>

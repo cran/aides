@@ -29,9 +29,9 @@ size, and standard error.}
 \item{method}{CHARACTER of "rank" or "prop" for indicating which method should
 be used.}
 
-\item{coval}{NUMERIC value of cutting-off value ranged from 0 to 1 in order
-to detecting of discordance between theoretical and observed
-study scale.}
+\item{coval}{NUMERIC value of cutoff point ranged from 0 to 1 in order to
+detecting of discordance between theoretical and observed study
+scale.}
 
 \item{tot}{NUMERIC value of tolerate discordance in ranks between theoretical
 and observed study scale. The numeric value should be ranged

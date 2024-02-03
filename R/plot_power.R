@@ -143,11 +143,11 @@ PlotPower <- function(object      = NULL,
                       clrLgnd     = "gray25",
                       clrLblStdy  = "gray25",
                       clrPntPwrO  = "gray75",
-                      clrPntPwrS  = "red4",
+                      clrPntPwrS  = "green4",
                       clrLnPwrCtf = "gray75",
                       clrLnPwrO   = "gray75",
-                      clrLnPwrP   = c("lightblue", "blue4"),
-                      clrLnPwrS   = "red4",
+                      clrLnPwrP   = c("firebrick", "blue4"),
+                      clrLnPwrS   = "green4",
                       anglStdy    = 90) {
 
   # 01. CHECK object -----
@@ -210,6 +210,9 @@ PlotPower <- function(object      = NULL,
   dataOSA      <- dataOSA[!is.na(dataOSA$source), ]
   dataPlotPwr  <- dataPlotPwr[dataPlotPwr$sample %% floor(max(dataPlotPwr$sample) / 100) == 0, ]
   dataPwr      <- dataPlotPwr[dataPlotPwr$sample > infoCases, ]
+
+  rownames(dataPlotPwr) <- 1:nrow(dataPlotPwr)
+  rownames(dataPwr)     <- 1:nrow(dataPwr)
 
 
   setPar <- par(no.readonly = TRUE)
@@ -784,7 +787,7 @@ PlotPower <- function(object      = NULL,
 
   # 06. PROCESS additive setting -----
 
-  infoLgcPwrO    <- lgcLgcPwrO
+  infoLgcPwrO    <- lgcPwrO
   infoLgcLblStdy <- lgcLblStdy
 
   if (is.null(typPntPwrO)) {
@@ -814,11 +817,12 @@ PlotPower <- function(object      = NULL,
 
 
 
-  # 07. ILLUSTRATE proportion of alpha-spending monitoring plot -----
+  # 07. ILLUSTRATE Sequential-adjusted power plot -----
 
-  plot(dataPlotPwr$sample * 1.2, dataPlotPwr$pwrExpct,
+  plot(dataPlotPwr$frctn * 1.2, # sample
+       dataPlotPwr$pwrExpct,
        frame = FALSE,
-       xlim = c(0, max(dataPlotPwr$sample) * 1.2),
+       xlim = c(0, max(dataPlotPwr$frctn) * 1.2), # sample
        ylim = c(0, 1.2),
        pch = 16,
        col = rgb(1, 1, 1, 0),
@@ -841,12 +845,12 @@ PlotPower <- function(object      = NULL,
 
   axis(side = 1,
        at   = c(0,
-                ceiling(max(dataPlotPwr$sample) * 0.2),
-                ceiling(max(dataPlotPwr$sample) * 0.4),
-                ceiling(max(dataPlotPwr$sample) * 0.6),
-                ceiling(max(dataPlotPwr$sample) * 0.8),
-                ceiling(max(dataPlotPwr$sample)),
-                ceiling(max(dataPlotPwr$sample) * 1.2)
+                0.2,
+                0.4,
+                0.6,
+                0.8,
+                1,
+                ceiling(max(dataPlotPwr$frctn) * 1.2) # sample
                 ),
        labels = c(0,
                   ceiling(max(dataPlotPwr$sample) * 0.2),
@@ -857,8 +861,8 @@ PlotPower <- function(object      = NULL,
                   ceiling(max(dataPlotPwr$sample) * 1.2)
                   ),
        col = clrAxsX,
-       cex.axis = szFntAxsX,
-       padj = 0, hadj = 1, las = 1)
+       cex.axis = szFntAxsX)#,
+       #padj = 0, hadj = 0, las = 1)
   mtext("Information size",
         side = 1,
         line = 3,
@@ -880,18 +884,18 @@ PlotPower <- function(object      = NULL,
 
   segments(c(0),
            c(1 - infoBeta),
-           c(max(dataPlotPwr$sample)),
+           c(max(dataPlotPwr$frctn)), # sample
            c(1 - infoBeta),
            lty = typLnPwrCtf,
            col = clrLnPwrCtf,
            lwd = szLnPwrCtf)
 
-  segments(head(dataPlotPwr$sample, -1),
+  segments(head(dataPlotPwr$frctn, -1), # sample
            head(dataPlotPwr$pwrExpct, -1),
-           tail(dataPlotPwr$sample, -1),
+           tail(dataPlotPwr$frctn, -1), # sample
            tail(dataPlotPwr$pwrExpct, -1),
            lty = typLnPwrP,
-           col = colorRampPalette(clrLnPwrP)(nrow(dataPwr)), #colorRampPalette(c("red", "blue"))(nrow(dataPlotPwr))
+           col = colorRampPalette(clrLnPwrP)(100), #colorRampPalette(c("red", "blue"))(nrow(dataPlotPwr))
            lwd = szLnPwrP)
   #points(dataPwr$sample,
   #       dataPwr$pwrExpct,
@@ -899,36 +903,21 @@ PlotPower <- function(object      = NULL,
   #       col = colorRampPalette(clrLnPwrP)(nrow(dataPwr)), #colorRampPalette(c("red", "blue"))(nrow(dataPlotPwr))
   #       cex = szLnPwrP)
 
-
-  if (infoLgcPwrO) {
-    lines(dataOSA$nCum,
-          dataOSA$pwrCum,
-          lty = typLnPwrO,
-          col = clrPntPwrO,
-          lwd = szLnPwrO)
-    points(dataOSA$nCum,
-           dataOSA$pwrCum,
-           pch = typPntPwrO,
-           col = clrPntPwrO,
-           bg  = clrPntPwrO,
-           cex = szPntPwrO)
-  }
-
   #lines(dataOSA$nCum,
   #      dataOSA$pwrSqnt,
   #      lty = 1,
   #      col = clrPntPwrO,
   #      lwd = 1)
-  segments(head(dataOSA$nCum, -1),
+  segments(head(dataOSA$frctn, -1), # nCum
            head(dataOSA$pwrSqnt, -1),
-           tail(dataOSA$nCum, -1),
+           tail(dataOSA$frctn, -1), # nCum
            tail(dataOSA$pwrSqnt, -1),
            lty = typLnPwrS,
            col = clrLnPwrS,
            lwd = szLnPwrS)
-  segments(head(dataPwr$sample, -1),
+  segments(head(dataPwr$frctn, -1), # sample
            head(dataPwr$pwrPrdct, -1),
-           tail(dataPwr$sample, -1),
+           tail(dataPwr$frctn, -1), # sample
            tail(dataPwr$pwrPrdct, -1),
            lty = typLnPwrP,
            col = clrLnPwrS, #colorRampPalette(clrLnPwrP)(nrow(dataPwr))
@@ -938,27 +927,85 @@ PlotPower <- function(object      = NULL,
   #       pch = 16,
   #       col = colorRampPalette(clrLnPwrP)(nrow(dataPwr)), #colorRampPalette(c("red", "blue"))(nrow(dataPlotPwr))
   #       cex = szLnPwrP)
-  points(dataOSA$nCum,
+  points(dataOSA$frctn, # nCum
          dataOSA$pwrSqnt,
          pch = typPntPwrS,
          col = clrPntPwrS,
          bg  = clrPntPwrS,
          cex = szPntPwrS)
-  points(infoCases,
+  points(infoCases / infoOIS,
          infoPwrObs,
          pch = typPntPwrS,
          col = clrPntPwrS,
          bg  = clrPntPwrS,
          cex = szPntPwrS * 2)
 
-  segments(infoCases + infoOIS * 0.02,
+  segments(max(dataPlotPwr$frctn) * 0.03, # sample
+           c(1.14),
+           max(dataPlotPwr$frctn) * 0.05, # sample
+           c(1.14),
+           lty = typLnPwrS,
+           col = clrLnPwrS,
+           lwd = szLnPwrS)
+  points(max(dataPlotPwr$frctn) * 0.04,
+         1.14,
+         pch = typPntPwrS,
+         col = clrPntPwrS,
+         bg  = clrPntPwrS,
+         cex = szPntPwrS * 2)
+  text(max(dataPlotPwr$frctn) * 0.07, # sample
+       1.14,
+       paste("Observed power after sequential adjustment"),
+       pos = 4,
+       col = clrLgnd,
+       cex = szFntLgnd)
+
+  segments(max(dataPlotPwr$frctn) * 0.03, # sample
+           c(1.09),
+           max(dataPlotPwr$frctn) * 0.05, # sample
+           c(1.09),
+           lty = typLnPwrP,
+           col = colorRampPalette(clrLnPwrP)(5), # colorRampPalette(clrLnPwrP)(nrow(dataPlotPwr))
+           lwd = szLnPwrP)
+  #points(ceiling(max(dataPlotPwr$sample) * 0.03):ceiling(max(dataPlotPwr$sample) * 0.05),
+  #       rep(1.19, length(ceiling(max(dataPlotPwr$sample) * 0.03):ceiling(max(dataPlotPwr$sample) * 0.05))),
+  #       pch = 16,
+  #       col = colorRampPalette(clrLnPwrP)(length(ceiling(max(dataPlotPwr$sample) * 0.03):ceiling(max(dataPlotPwr$sample) * 0.05))),
+  #       cex = szLnPwrP)
+  text(max(dataPlotPwr$frctn) * 0.07, # sample
+       1.09,
+       paste("Expected power after sequential adjustment", sep = ""),
+       pos = 4,
+       col = clrLgnd,
+       cex = szFntLgnd)
+
+  segments(max(dataPlotPwr$frctn) * 0.03, # sample
+           c(1.04),
+           max(dataPlotPwr$frctn) * 0.05, # sample
+           c(1.04),
+           lty = typLnPwrP,
+           col = clrLnPwrS,
+           lwd = szLnPwrP)
+  #points(ceiling(max(dataPlotPwr$sample) * 0.03):ceiling(max(dataPlotPwr$sample) * 0.05),
+  #       rep(1.19, length(ceiling(max(dataPlotPwr$sample) * 0.03):ceiling(max(dataPlotPwr$sample) * 0.05))),
+  #       pch = 16,
+  #       col = colorRampPalette(clrLnPwrP)(length(ceiling(max(dataPlotPwr$sample) * 0.03):ceiling(max(dataPlotPwr$sample) * 0.05))),
+  #       cex = szLnPwrP)
+  text(max(dataPlotPwr$frctn) * 0.07, # sample
+       1.04,
+       paste("Predict power after sequential adjustment", sep = ""),
+       pos = 4,
+       col = clrLgnd,
+       cex = szFntLgnd)
+
+  segments(infoCases / infoOIS + 0.02, # infoCases + infoOIS * 0.02
            infoPwrObs - 0.02,
-           infoCases + infoOIS * 0.04,
+           infoCases / infoOIS + 0.04, # infoCases + infoOIS * 0.04
            infoPwrObs - 0.04,
            lty = 1,
            col = clrLblStdy,
            cex = 0.6)
-  text(infoCases + infoOIS * 0.045,
+  text(infoCases / infoOIS + 0.045, # infoCases + infoOIS * 0.045
        infoPwrObs - 0.05,
        paste("Observed power = ",
              round(infoPwrObs, 3),
@@ -971,88 +1018,7 @@ PlotPower <- function(object      = NULL,
        col = clrPntPwrS,
        cex = szPntPwrS)
 
-  if (infoLgcLblStdy) {
-    points(dataOSA$nCum,
-           rep(0, nrow(dataOSA)),
-           pch = "|",
-           col = clrLblStdy,
-           cex = 0.6)
-    text(dataOSA$nCum,
-         rep(0.05, nrow(dataOSA)),
-         dataOSA$source,
-         pos = rep(3, nrow(dataOSA)), #6 - infoPosLabel | infoPosLabel - (infoPosLabel - 3)
-         col = clrLblStdy,
-         cex = szFntStdy,
-         srt = anglStdy)
-  }
-
-  segments(max(dataPlotPwr$sample) * 0.03,
-           c(1.19),
-           max(dataPlotPwr$sample) * 0.05,
-           c(1.19),
-           lty = typLnPwrO,
-           col = clrPntPwrO,
-           lwd = szLnPwrO)
-  text(max(dataPlotPwr$sample) * 0.07,
-       1.19,
-       paste("Observed power without adjustment"),
-       pos = 4,
-       col = clrLgnd,
-       cex = szFntLgnd)
-
-  segments(max(dataPlotPwr$sample) * 0.03,
-           c(1.14),
-           max(dataPlotPwr$sample) * 0.05,
-           c(1.14),
-           lty = typLnPwrS,
-           col = clrLnPwrS,
-           lwd = szLnPwrS)
-  text(max(dataPlotPwr$sample) * 0.07,
-       1.14,
-       paste("Observed power after sequential adjustment"),
-       pos = 4,
-       col = clrLgnd,
-       cex = szFntLgnd)
-
-  segments(max(dataPlotPwr$sample) * 0.03,
-           c(1.09),
-           max(dataPlotPwr$sample) * 0.05,
-           c(1.09),
-           lty = typLnPwrP,
-           col = colorRampPalette(clrLnPwrP)(nrow(dataPlotPwr)),
-           lwd = szLnPwrP)
-  #points(ceiling(max(dataPlotPwr$sample) * 0.03):ceiling(max(dataPlotPwr$sample) * 0.05),
-  #       rep(1.19, length(ceiling(max(dataPlotPwr$sample) * 0.03):ceiling(max(dataPlotPwr$sample) * 0.05))),
-  #       pch = 16,
-  #       col = colorRampPalette(clrLnPwrP)(length(ceiling(max(dataPlotPwr$sample) * 0.03):ceiling(max(dataPlotPwr$sample) * 0.05))),
-  #       cex = szLnPwrP)
-  text(max(dataPlotPwr$sample) * 0.07,
-       1.09,
-       paste("Expected power after sequential adjustment", sep = ""),
-       pos = 4,
-       col = clrLgnd,
-       cex = szFntLgnd)
-
-  segments(max(dataPlotPwr$sample) * 0.03,
-           c(1.04),
-           max(dataPlotPwr$sample) * 0.05,
-           c(1.04),
-           lty = typLnPwrP,
-           col = clrLnPwrS,
-           lwd = szLnPwrP)
-  #points(ceiling(max(dataPlotPwr$sample) * 0.03):ceiling(max(dataPlotPwr$sample) * 0.05),
-  #       rep(1.19, length(ceiling(max(dataPlotPwr$sample) * 0.03):ceiling(max(dataPlotPwr$sample) * 0.05))),
-  #       pch = 16,
-  #       col = colorRampPalette(clrLnPwrP)(length(ceiling(max(dataPlotPwr$sample) * 0.03):ceiling(max(dataPlotPwr$sample) * 0.05))),
-  #       cex = szLnPwrP)
-  text(max(dataPlotPwr$sample) * 0.07,
-       1.04,
-       paste("Predict power after sequential adjustment", sep = ""),
-       pos = 4,
-       col = clrLgnd,
-       cex = szFntLgnd)
-
-  text(max(dataPlotPwr$sample) * 1.2,
+  text(max(dataPlotPwr$frctn) * 1.2, # sample
        1 - infoBeta,
        paste("Assumed power = ",
              1 - infoBeta,
@@ -1066,7 +1032,7 @@ PlotPower <- function(object      = NULL,
        cex = szFntLgnd)
 
 
-  text(max(dataPlotPwr$sample) * 1.2,
+  text(max(dataPlotPwr$frctn) * 1.2, # sample
        ifelse(dataOSA$frctn[infoNumStud] < 0.7,
               0.1,
               ifelse(infoLgcLblStdy == FALSE,
@@ -1085,7 +1051,7 @@ PlotPower <- function(object      = NULL,
        col = clrLgnd,
        cex = szFntLgnd)
 
-  text(max(dataPlotPwr$sample) * 1.2,
+  text(max(dataPlotPwr$frctn) * 1.2, # sample
        ifelse(dataOSA$frctn[infoNumStud] < 0.7,
               0.05,
               ifelse(infoLgcLblStdy == FALSE,
@@ -1105,9 +1071,9 @@ PlotPower <- function(object      = NULL,
                                  " < 0.001)",
                                  paste(" = ", round(infoRRR, 3), ")",
                                        sep = "")
-                                 ),
+                          ),
                           sep = "")
-                    ),
+             ),
              "; alpha: ", infoAlpha,
              ifelse(infoAdjust == "none",
                     "; no adjustment factor)",
@@ -1118,14 +1084,75 @@ PlotPower <- function(object      = NULL,
                                         "I-squared-based AF: ",
                                         paste(infoAdjust, "-based AF: ",
                                               sep = "")
-                                        )
-                                 ),
+                                 )
+                          ),
                           round(infoAF, 3),
                           sep = "")
-                    ),
+             ),
              sep = ""),
        pos = 2,
        col = clrLgnd,
        cex = szFntLgnd)
+
+  if (infoLgcPwrO) {
+    #lines(dataOSA$frctn, # nCum
+    #      dataOSA$pwrCum,
+    #      lty = typLnPwrO,
+    #      col = clrPntPwrO,
+    #      lwd = szLnPwrO)
+    segments(head(dataOSA$frctn, -1),
+             head(dataOSA$pwrCum, -1),
+             tail(dataOSA$frctn, -1),
+             tail(dataOSA$pwrCum, -1),
+             lty = typLnPwrO,
+             col = clrPntPwrO,
+             lwd = szLnPwrO)
+    points(dataOSA$frctn, # nCum
+           dataOSA$pwrCum,
+           pch = typPntPwrO,
+           col = clrPntPwrO,
+           bg  = clrPntPwrO,
+           cex = szPntPwrO)
+    segments(max(dataPlotPwr$frctn) * 0.03, # sample
+             c(1.19),
+             max(dataPlotPwr$frctn) * 0.05, # sample
+             c(1.19),
+             lty = typLnPwrO,
+             col = clrPntPwrO,
+             lwd = szLnPwrO)
+    points(max(dataPlotPwr$frctn) * 0.04,
+           1.19,
+           pch = typPntPwrO,
+           col = clrPntPwrO,
+           bg  = clrPntPwrO,
+           cex = szPntPwrO)
+    text(max(dataPlotPwr$frctn) * 0.07, # sample
+         1.19,
+         paste("Observed power without adjustment"),
+         pos = 4,
+         col = clrLgnd,
+         cex = szFntLgnd)
+  }
+
+  if (infoLgcLblStdy) {
+    points(dataOSA$frctn, # nCum
+           rep(-0.02, nrow(dataOSA)),
+           pch = "|",
+           col = clrLblStdy,
+           cex = 0.6)
+    #text(dataOSA$frctn, # nCum
+    #     rep(-0.02, nrow(dataOSA)),
+    #     "|",
+    #     pos = rep(4, nrow(dataOSA)), #6 - infoPosLabel | infoPosLabel - (infoPosLabel - 3)
+    #     col = clrLblStdy,
+    #     cex = 0.6)
+    text(dataOSA$frctn - 0.01, # nCum
+         rep(0, nrow(dataOSA)),
+         dataOSA$source,
+         pos = rep(4, nrow(dataOSA)), #6 - infoPosLabel | infoPosLabel - (infoPosLabel - 3)
+         col = clrLblStdy,
+         cex = szFntStdy,
+         srt = anglStdy)
+  }
 
 }

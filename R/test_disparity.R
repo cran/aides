@@ -21,7 +21,7 @@
 #'                absolute deviation method ("MAD"). Parameter `outlier` with
 #'                argument "Default" automatically takes "GESD" or "MAD" based on
 #'                data distribution.
-#' @param ctf     NUMERIC value of cutoff value for proportion of excessive cases
+#' @param ctf     NUMERIC value of cutoff point for proportion of excessive cases
 #'                in outlier-based disparity test, and the value should be larger
 #'                than 0.
 #' @param vrblty  CHARACTER for method of variability detection. Current version
@@ -48,7 +48,10 @@
 #'
 #'
 #' @return
-#' **TestDisparity()** returns a summary of result regarding disparities in sample size.
+#' **TestDisparity()** returns a summary of result regarding disparities in sample
+#' size, and can be stored as an object in `disparity` class. Explanations of returned
+#' information are listed as follows:
+#'
 #' \item{disparity}{String to return the overall judgement of disparity test.}
 #' \item{w.normality}{A numeric value of statistics of normality test to show whether
 #'       sample sizes among studies are distributed normally.}

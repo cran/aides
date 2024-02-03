@@ -12,9 +12,9 @@
 #' @param study  CHARACTER for study label of each study.
 #' @param method CHARACTER of "rank" or "prop" for indicating which method should
 #'               be used.
-#' @param coval  NUMERIC value of cutting-off value ranged from 0 to 1 in order
-#'               to detecting of discordance between theoretical and observed
-#'               study scale.
+#' @param coval  NUMERIC value of cutoff point ranged from 0 to 1 in order to
+#'               detecting of discordance between theoretical and observed study
+#'               scale.
 #' @param tot    NUMERIC value of tolerate discordance in ranks between theoretical
 #'               and observed study scale. The numeric value should be ranged
 #'               from 0 to 1 / 4 number of studies.

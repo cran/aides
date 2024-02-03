@@ -16,15 +16,26 @@
 <!-- title: end -->
 <!-- badges: start -->
 
-&nbsp; [![CRAN](https://img.shields.io/cran/v/aides?color=blue&label=CRAN&logo=r&logoColor=skyblue)](https://cran.r-project.org/package=aides)
-&nbsp; [![Update date](https://img.shields.io/badge/Update%20date-2023.20.12-blue.svg?logo=r&logoColor=skyblue)](https://github.com/EnochKang/RES/blob/main/aides/NEWS.md)
-&nbsp; [![Licence](https://img.shields.io/badge/licence-GPL--3-brightgreen.svg?color=blue&label=Licence&logo=gnu&logoColor=skyblue)](https://www.gnu.org/licenses/gpl-3.0.en.html)
+<table border = "0">
+  
+  <tr>
+    <td> [![CRAN](https://img.shields.io/cran/v/aides?color=blue&label=CRAN&logo=r&logoColor=skyblue)](https://cran.r-project.org/package=aides) </td>
+    <td> [![Date](https://img.shields.io/badge/Date-Dec.20.2023-blue.svg?logo=r&logoColor=skyblue)](https://github.com/EnochKang/RES/blob/main/aides/NEWS.md) </td>
+    <td> [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-blue.svg?color=blue&label=Lifecycle&logo=r&logoColor=skyblue)](https://lifecycle.r-lib.org/articles/stages.html#stable) </td>
+    <td> [![Licence](https://img.shields.io/badge/licence-GPL--3-blue.svg?color=blue&label=Licence&logo=gnu&logoColor=skyblue)](https://www.gnu.org/licenses/gpl-3.0.en.html) </td>
+  </tr>
+  <tr>
+    <td> [![Dependencis](https://tinyverse.netlify.com/badge/aides)](https://cran.r-project.org/package=aides) </td>
+    <td> [![Functions](https://img.shields.io/badge/Functions-8-green.svg?logo=r&logoColor=green)](https://drive.google.com/file/d/1gxw_mhdxThBs28MyEf8W5Oq6PcYfJYJW/view?usp=sharing) </td>
+    <td> [![Monthly Downloads](https://cranlogs.r-pkg.org:443/badges/aides?color=orange)](https://cranlogs.r-pkg.org:443/badges/aides) </td>
+    <td> [![metacran downloads](https://cranlogs.r-pkg.org/badges/grand-total/aides?color=orange)](https://cran.r-project.org/package=aides) </td>
+  </tr>
+  <tr>
+    <td> </td>
+    <td> </td>
+  </tr>
+</table>
 
-&nbsp; [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg?color=green&label=Lifecycle&logo=r&logoColor=green)](https://lifecycle.r-lib.org/articles/stages.html#stable)
-&nbsp; [![Functions](https://img.shields.io/badge/Functions-7-green.svg?logo=r&logoColor=green)](https://drive.google.com/file/d/1gxw_mhdxThBs28MyEf8W5Oq6PcYfJYJW/view?usp=sharing)
-&nbsp; [![Dependencis](https://tinyverse.netlify.com/badge/aides)](https://cran.r-project.org/package=aides)
-&nbsp; [![Monthly Downloads](https://cranlogs.r-pkg.org:443/badges/aides?color=orange)](https://cranlogs.r-pkg.org:443/badges/aides)
-&nbsp; [![metacran downloads](https://cranlogs.r-pkg.org/badges/grand-total/aides?color=orange)](https://cran.r-project.org/package=aides)
 
 <!-- badges: end -->
 <!-- content: start -->
@@ -180,7 +191,7 @@ TestDisparity(n = n,
               plot = TRUE)
 ```
 
-<p align = "center" width = "50%">
+<p align = "center" width = "25%">
 <img src = "https://github.com/EnochKang/RES/blob/main/aides/figure/Figure%20Disparity%20(outlier%20MAD).png?raw=true">
 </p>
 <br>
@@ -191,7 +202,7 @@ PlotDisparity(object = output,
               which = "CV")
 ```
 
-<p align = "center" width = "50%">
+<p align = "center" width = "25%">
 <img src = "https://github.com/EnochKang/RES/blob/main/aides/figure/Figure%20Disparity%20(variability%20robust).png?raw=true">
 </p>
 <br>
@@ -238,7 +249,7 @@ TestDiscordance(n = n,
                 plot = TRUE)
 ```
 
-<p align = "center" width = "50%">
+<p align = "center" width = "25%">
 <img src = "https://github.com/EnochKang/RES/blob/main/aides/figure/Figure%20Discordance%20(basic).png?raw=true">
 </p>
 <br>
@@ -268,7 +279,7 @@ DoSA(Fleiss1993cont, study, year,
      plot = TRUE)
 ```
 
-<p align = "center" width = "50%">
+<p align = "center" width = "25%">
 <img src = "https://github.com/EnochKang/RES/blob/main/aides/figure/Figure%20DoSA%20(basic).png?raw=true">
 </p>
 <br>

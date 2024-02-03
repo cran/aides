@@ -28,7 +28,8 @@ DoSA(
   pooling = "IV",
   alpha = 0.05,
   beta = 0.2,
-  PES = "post-hoc",
+  PES = NULL,
+  RRR = NULL,
   PV = "post-hoc",
   adjust = "D2",
   plot = FALSE,
@@ -97,6 +98,10 @@ error.}
 
 \item{PES}{NUMERIC value for indicating the presumed meaningful effect size.}
 
+\item{RRR}{NUMERIC value between 0 and 1 for indicating the presumed relative
+risk reduction. This parameter only works for dichotomous outcome
+by replacing parameter \code{PES}.}
+
 \item{PV}{NUMERIC value for indicating the presumed variance of the
 meaningful effect size. Current version allows a numeric value,
 "post-hoc", and "PES" based on different considerations.}
@@ -116,7 +121,10 @@ monitoring plot.}
 boundaries.}
 }
 \value{
-\strong{DoSA()} returns a summary on the result of sequential analysis.
+\strong{DoSA()} returns a summary on the result of sequential analysis, and can be
+stored as an object in \code{DoSA} class. Explanations of returned information are
+listed as follows:
+
 \item{studies}{Numbers of studies included in the sequential analysis.}
 \item{AIS}{Acquired information size refers to the total sample size in the
 sequential analysis.}
@@ -213,6 +221,7 @@ output <- DoSA(Fleiss1993bin, study, year,
                r2 = d.plac, n2 = n.plac,
                measure = "RR",
                PES = 0.05,
+               RRR = 0.2,
                group = c("Aspirin", "Control"))
 
 ## End(Not run)

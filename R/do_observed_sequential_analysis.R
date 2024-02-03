@@ -44,9 +44,11 @@
 #'                "CHH" for the adjustment.
 #' @param plot    LOGIC value for indicating whether to illustrate alpha-spending
 #'                monitoring plot.
+#' @param SAP     LOGIC value for indicating whether to show sequential-adjusted
+#'                power.
 #'
 #'
-#'#' @details
+#' @details
 #' 1. Basic information for the function **DoOSA()**:
 #' **DoOSA()** supports observed sequential analysis of aggregate data synthesis
 #' based on head-to-head comparison using either binary or continuous data in
@@ -101,7 +103,10 @@
 #'
 #'
 #' @return
-#' **DoOSA()** returns a summary on the result of sequential analysis.
+#' **DoOSA()** returns a summary on the result of sequential analysis, and can be
+#' stored as an object in `DoOSA` class. Explanations of returned information are
+#' listed as follows:
+#'
 #' \item{studies}{Numbers of studies included in the sequential analysis.}
 #' \item{AIS}{Acquired information size refers to the total sample size in the
 #'       sequential analysis.}
@@ -163,30 +168,31 @@
 
 
 DoOSA <- function(data   = NULL,
-                 source  = NULL,
-                 time    = NULL,
-                 n       = NULL,
-                 es      = NULL,
-                 se      = NULL,
-                 r1      = NULL,
-                 m1      = NULL,
-                 sd1     = NULL,
-                 n1      = NULL,
-                 r2      = NULL,
-                 m2      = NULL,
-                 sd2     = NULL,
-                 n2      = NULL,
-                 group   = c("Group 1", "Group 2"),
-                 ref     = 2,
-                 prefer  = "small",
-                 measure = "ES",
-                 model   = "random",
-                 method  = "DL",
-                 pooling = "IV",
-                 alpha   = 0.05,
-                 beta    = 0.2,
-                 adjust  = "D2",
-                 plot    = FALSE) {
+                  source  = NULL,
+                  time    = NULL,
+                  n       = NULL,
+                  es      = NULL,
+                  se      = NULL,
+                  r1      = NULL,
+                  m1      = NULL,
+                  sd1     = NULL,
+                  n1      = NULL,
+                  r2      = NULL,
+                  m2      = NULL,
+                  sd2     = NULL,
+                  n2      = NULL,
+                  group   = c("Group 1", "Group 2"),
+                  ref     = 2,
+                  prefer  = "small",
+                  measure = "ES",
+                  model   = "random",
+                  method  = "DL",
+                  pooling = "IV",
+                  alpha   = 0.05,
+                  beta    = 0.2,
+                  adjust  = "D2",
+                  plot    = FALSE,
+                  SAP     = FALSE) {
 
   # 01. CHECK arguments -----
   lgcInData   <- ifelse(is.null(data), FALSE, TRUE)
@@ -308,6 +314,7 @@ DoOSA <- function(data   = NULL,
   infoBeta     <- beta
   infoAdjust   <- adjust
   infoPlot     <- plot
+  infoSAP      <- SAP
 
   if (infoRef == 1) {
     infoGroup[c(1, 2)] <- infoGroup[c(2, 1)]
@@ -458,7 +465,9 @@ DoOSA <- function(data   = NULL,
   dataIn$zCum   <- outCMA$statistic[c(1:infoNumStud)]
 
   ## 04.02 Calculate diversity (D-square, D2)
-  infoDivers   <- (((outMA$seTE.random * sqrt(infoCases - 2))^2) - ((outMA$seTE.fixed * sqrt(infoCases - 2))^2)) / ((outMA$seTE.random * sqrt(infoCases - 2))^2)
+  infoDivers    <- 1 - (sum((outMA$seTE^2 + outMA$tau2)^(-1)) / sum(outMA$seTE^(-2)))
+    #infoDivers <- (outMA$seTE.random^2 - outMA$seTE.fixed^2) / outMA$seTE.random^2
+    #infoDivers <- (((outMA$seTE.random * sqrt(infoCases - 2))^2) - ((outMA$seTE.fixed * sqrt(infoCases - 2))^2)) / ((outMA$seTE.random * sqrt(infoCases - 2))^2)
     #infoDivers   <- 1 / sum(1 / (outMA$seTE)) / 1 / sum(1 / (outMA$seTE + outMA$tau2))
     #infoDivers   <- (((outMA$seTE.random * sqrt(infoCases))^2) - ((outMA$seTE.fixed * sqrt(infoCases))^2)) / ((outMA$seTE.random * sqrt(infoCases))^2)
     #1-(((MA.RE$seTE.fixed*sqrt(sum(DATA.TSA$n)-2))^2)/((MA.RE$seTE.random*sqrt(sum(DATA.TSA$n)-2))^2))
@@ -526,6 +535,10 @@ DoOSA <- function(data   = NULL,
   dataPlotOSA          <- dataPlotOSA[dataPlotOSA$asub < 9, ]
   dataPlotOSA$pwrPrdct <- 1 - pnorm(qnorm(1 - infoAlpha / 2 * dataPlotOSA$frctn) - infoZOrg) + pnorm(-qnorm(1 - infoAlpha / 2 * dataPlotOSA$frctn) - infoZOrg)
   infoFrctnBSB         <- dataPlotOSA[max(which(dataPlotOSA$bsub < 0)), "frctn"]
+
+  if (infoOIS < infoCases) {
+    dataPlotOSA <- dataPlotOSA[dataPlotOSA$sample < infoOIS, ]
+  }
 
 
   dataOSA <- dataIn[, c("source", "time", "n", "weight", "esCum", "seCum", "zCum")]
@@ -691,6 +704,13 @@ DoOSA <- function(data   = NULL,
     lsDoOSA$data.bounds    <- dataPlotOSA
     lsDoOSA$lsOutMA        <- outMA
     }
+  if (infoSAP == TRUE) {
+    lsDoOSA$color.ASB      <- infoColorASB
+    lsDoOSA$position.label <- infoPosLabel
+    lsDoOSA$data           <- dataOSA
+    lsDoOSA$data.bounds    <- dataPlotOSA
+    lsDoOSA$lsOutMA        <- outMA
+  }
   #lsDoOSA$data.plot <- dataPlotOSA
 
 
@@ -717,6 +737,11 @@ DoOSA <- function(data   = NULL,
             round(dataOSA$aslb[infoNumStud], 3),
             "\n ",
             infoLgcMAAdj,
+            ifelse(infoSAP == TRUE,
+                   paste("\n Observed power (sequential-adjusted):",
+                         round(infoPwrObs, 3),
+                         sep = ""),
+                   ""),
             sep = ""),
       fill = TRUE, sep = "")
 
@@ -749,7 +774,7 @@ DoOSA <- function(data   = NULL,
             ifelse(lgcReq3,
                    paste("\n      (risks in group 1 and 2 were ",
                          round(infoProp1, 10) * 100,
-                         "%, and ",
+                         "% and ",
                          round(infoProp2, 10) * 100,
                          "% respectively; RRR ",
                          ifelse(infoRRR < 0.001, "< 0.001)",
@@ -857,14 +882,15 @@ DoOSA <- function(data   = NULL,
 
   if (plot == TRUE) {
 
-    plot(dataOSA$nCum * 1.2, dataOSA$asub,
+    plot(dataOSA$frctn * 1.2, # nCum
+         dataOSA$asub,
          type = "l", frame = F,
-         xlim = c(0, max(dataOSA$nCum) * 1.2),
+         xlim = c(0, max(dataOSA$frctn) * 1.2), # nCum
          ylim = c(ceiling(min(dataOSA$aslb)) * (-10) / ceiling(min(dataOSA$aslb)),
                 ceiling(max(dataOSA$asub)) * 10 / ceiling(max(dataOSA$asub)) + 1),
          col = rgb(1, 1, 1, 0),
          xlab = "Information size",
-         yaxt = "n", #xaxt="n", "darkred"
+         yaxt = "n", xaxt="n", #"darkred"
          #ylab=paste("Favors", Txs[1], "   (Z score)   Favors",Txs[2]),
          ylab = "",
          main = "Observed sequential analysis")
@@ -879,10 +905,19 @@ DoOSA <- function(data   = NULL,
                 sep = ""),
           side = 1, line = 4, cex = 0.6)
 
+    axis(side = 1,
+         at = c(0, 0.25, 0.5, 0.75, 1, max(dataOSA$frctn) * 1.2),
+         labels = c(0,
+                    ceiling(max(dataOSA$nCum) * 0.25),
+                    ceiling(max(dataOSA$nCum) * 0.5),
+                    ceiling(max(dataOSA$nCum) * 0.75),
+                    ceiling(max(dataOSA$nCum)),
+                    ceiling(max(dataOSA$nCum) * 1.2)),
+         cex.axis = 1)
     axis(side = 2, at = c(seq(ceiling(min(dataOSA$aslb)) * (-10) / ceiling(min(dataOSA$aslb)),
                           ceiling(max(dataOSA$asub)) * 10 / ceiling(max(dataOSA$asub)), 2)),
          padj = 0, hadj = 1, las = 1)
-    mtext("Cumulative\n z score", side = 3, line = 0, at = -infoOIS * 0.05)
+    mtext("Cumulative\n z score", side = 3, line = 0, at = -0.05) # -infoOIS * 0.05
     mtext(paste("Favors\n", ifelse(infoPrefer == "small", infoGroup[2], infoGroup[1])),
           side = 2, line = 2, at = 5,
           cex = ifelse(max(nchar(infoGroup[2]), nchar(infoGroup[1])) > 10, (1 / sqrt(max(nchar(infoGroup[2]), nchar(infoGroup[1]))))^2 * 10, 1)) #(1/sqrt(seq(11,100,by=1)))^2*10
@@ -892,22 +927,24 @@ DoOSA <- function(data   = NULL,
     #lines(dataOSA$nCum,
     #      dataOSA$asub,
     #      lwd = 1, col = "darkred", lty = 1)
-    lines(dataPlotOSA$sample,
+    lines(dataPlotOSA$frctn, # sample
           dataPlotOSA$asub,
-          lwd = 1, col = "darkred", lty = 1)
-    points(dataOSA[which(!is.na(dataOSA[, "source"])), ]$nCum,
-           dataOSA[which(!is.na(dataOSA[, "source"])), ]$asub,
+          lwd = 1, col = "darkred", lty = 2)
+
+
+    points(dataOSA[which(!is.na(dataOSA[, "source"]) & dataOSA[, "nCum"] < infoOIS & dataOSA[, "asub"] < 9), ]$frctn, # nCum
+           dataOSA[which(!is.na(dataOSA[, "source"]) & dataOSA[, "nCum"] < infoOIS & dataOSA[, "asub"] < 9), ]$asub,
            col = infoColorASB,
            pch = 21, bg = rgb(1, 1, 1, 1),
            cex = 0.8)
     #lines(dataOSA$nCum,
     #      dataOSA$aslb,
     #      lwd = 1, col = "darkred", lty = 1)
-    lines(dataPlotOSA$sample,
+    lines(dataPlotOSA$frctn, # sample
           dataPlotOSA$aslb,
-          lwd = 1, col = "darkred", lty = 1)
-    points(dataOSA[which(!is.na(dataOSA[, "source"])), ]$nCum,
-           dataOSA[which(!is.na(dataOSA[, "source"])), ]$aslb,
+          lwd = 1, col = "darkred", lty = 2)
+    points(dataOSA[which(!is.na(dataOSA[, "source"]) & dataOSA[, "nCum"] < infoOIS & dataOSA[, "aslb"] > -9), ]$frctn, # nCum
+           dataOSA[which(!is.na(dataOSA[, "source"]) & dataOSA[, "nCum"] < infoOIS & dataOSA[, "aslb"] > -9), ]$aslb,
            col = infoColorASB,
            pch = 21, bg = rgb(1, 1, 1, 1),
            cex = 0.8)
@@ -920,48 +957,65 @@ DoOSA <- function(data   = NULL,
 
     segments(c(0),
              c(-2, 0, 2),
-             c(max(dataOSA$nCum) * 1.1),
+             c(max(dataOSA$frctn) * 1.1), # nCum
              c(-2, 0, 2),
              lty = c(2, 1, 2), lwd = 1, col = "gray25")
-    lines(dataOSA$nCum,
+    lines(dataOSA$frctn, # nCum
           dataOSA$zCum,
           col = "blue3", lwd = 2)
-    segments(c(0), c(0), dataOSA[1, "nCum"], dataOSA[1, "zCum"],
+    segments(c(0),
+             c(0),
+             dataOSA[1, "frctn"], # nCum
+             dataOSA[1, "zCum"],
              lty = c(1), lwd = 2, col = 'blue3')
-    points(dataOSA$nCum,
+    points(dataOSA$frctn, # nCum
            dataOSA$zCum,
            col = "gray25", cex = 1 + dataOSA$weight^2, pch = 15)
 
-    arrows(max(dataOSA$nCum), 0,
-           max(dataOSA$nCum) * 1.1, 0,
+    arrows(max(dataOSA$frctn), # nCum
+           0,
+           max(dataOSA$frctn) * 1.1, # nCum
+           0,
            lty = 1, length = 0.1)
 
     #text(dataOSA$time, dataOSA$zCum - 0.5,
     #     c(round(dataOSA$zCum, 2)),
     #     col = c("gray20"))
 
-    rect(0, 10, infoOIS * 0.8, 8,
+    rect(0,
+         10,
+         max(dataOSA$frctn) * 0.8, # infoOIS * 0.8,
+         8,
          lty = 0, col = rgb(1, 1, 1, 0.5))
     #points(dataOSA[which(!is.na(dataOSA[, "source"])), ]$nCum,
     #       dataOSA[which(!is.na(dataOSA[, "source"])), ]$aslb,
     #       col = infoColorASB,
     #       pch = 21, bg = rgb(1, 1, 1, 1),
     #       cex = 0.8)
-    segments(c(0.05), c(10), c(infoOIS / 20), c(10),
-             lty = c(1), lwd = 2, col = 'blue3')
+    segments(c(0.03),
+             c(10),
+             0.05, # c(infoOIS / 20),
+             c(10),
+             lty = c(1), lwd = 1, col = 'blue3')
     #text(0.1, -8.5,
           #paste("Observed z score; observed power:",
                 #round(dataOSA$power[length(dataOSA$power) - 1], 2)),
           #pos = 4, cex = 0.8)
-    text(infoOIS / 15, 10,
+    text(0.08, # infoOIS / 15,
+         10,
          paste("Cumulative z score", sep = ""),
-         pos = 4, cex = 0.8)
-    segments(c(0.05), c(9), c(infoOIS / 20), c(9),
-             lty = c(1), lwd = 1.5, col = "darkred")
-    text(infoOIS / 15, 9,
+         pos = 4, cex = 0.7)
+    segments(0.03,
+             c(9),
+             0.05, # c(infoOIS / 20),
+             c(9),
+             lty = c(2), lwd = 1, col = "darkred")
+    text(0.08, # infoOIS / 15,
+         9,
          paste("Alpha-spending boundary"),
-         pos = 4, cex = 0.8)
-    text(infoOIS / 15, 8.3,
+         pos = 4, cex = 0.7)
+    text(0.08, # infoOIS
+         8.3,
          paste("(",
                ifelse(infoMeasure %in% c("MD", "SMD"),
                       infoMeasure,
@@ -996,18 +1050,36 @@ DoOSA <- function(data   = NULL,
                             sep = "")
                       ),
                sep = ""),
-         pos = 4, cex = 0.8)
-    segments(c(infoOIS), c(-9), c(infoOIS), c(9),
-             lty = c(2), col = "darkred")
-    text(infoOIS, 10,
-         paste("Optimal information size:", ceiling(infoOIS)),
-         pos = ifelse(infoOIS > infoCases, 2, 4),
-         cex = 0.8)
-    text(infoOIS, 9,
-         paste("Acquired information size:",
-               ceiling(max(dataOSA[which(!is.na(dataOSA[, "source"])), ]$nCum))),
-         pos = ifelse(infoOIS > infoCases, 2, 4),
-         cex = 0.8)
+         pos = 4, cex = 0.7)
+    segments(1, # c(infoOIS),
+             c(-9),
+             1, # c(infoOIS),
+             c(9),
+             lty = c(3), col = "darkred")
+    text(1, # infoOIS
+         -10,
+         paste("OIS = ", ceiling(infoOIS), sep = ""),
+         #pos = ifelse(infoOIS > infoCases, 2, 4),
+         cex = 0.7)
+    segments(dataOSA$frctn[nrow(dataOSA[!is.na(dataOSA$source), ])],
+             dataOSA$zCum[nrow(dataOSA[!is.na(dataOSA$source), ])],
+             dataOSA$frctn[nrow(dataOSA[!is.na(dataOSA$source), ])],
+             c(-8.5),
+             lty = c(3), col = "blue3")
+    text(dataOSA$frctn[nrow(dataOSA[!is.na(dataOSA$source), ])], # infoOIS nCum
+         -9, # 9,
+         paste("AIS = ",
+               ceiling(max(dataOSA[which(!is.na(dataOSA[, "source"])), ]$nCum)),
+               ifelse(infoSAP == TRUE,
+                      paste("\n",
+                            "(SAP = ",
+                            round(infoPwrObs, 3),
+                            ")",
+                            sep = ""),
+                      ""),
+               sep = ""),
+         #pos = ifelse(infoOIS > infoCases, 4, 2),
+         cex = 0.7)
   }
 
   output <- lsDoOSA

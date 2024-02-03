@@ -12,6 +12,8 @@
 #'                   analysis plot.
 #' @param group      CHARACTER for labeling two groups.
 #' @param lgcLblStdy LOGIC value for indicating whether to label each data source.
+#' @param lgcSAP     LOGIC value for indicating whether to show sequential-adjusted
+#'                   power.
 #' @param lgcInvert  LOGIC value for indicating whether to invert plot.
 #' @param lgcSmooth  LOGIC value for indicating whether to smooth error boundaries.
 #' @param szFntTtl   NUMERIC value for indicating font size of main title.
@@ -133,14 +135,15 @@ PlotOSA <- function(object     = NULL,
                     txtTtl     = NULL,
                     group      = NULL,
                     lgcLblStdy = FALSE,
+                    lgcSAP     = FALSE,
                     lgcInvert  = FALSE,
-                    lgcSmooth  = TRUE,
+                    lgcSmooth  = FALSE,
                     szFntTtl   = 1.8,
                     szFntTtlX  = 1.2,
                     szFntTtlY  = NULL,
                     szFntAxsX  = 0.8,
                     szFntAxsY  = 0.8,
-                    szFntLgnd  = 0.8,
+                    szFntLgnd  = 0.7,
                     szFntLblY  = 1.2,
                     szFntStdy  = 0.8,
                     szFntOIS   = 0.8,
@@ -228,6 +231,7 @@ PlotOSA <- function(object     = NULL,
   infoAF       <- objIn$AF
   infoOISOrg   <- objIn$OIS.org
   infoOISAdj   <- objIn$OIS.adj
+  infoPwrObs   <- objIn$power
   infoGroup    <- objIn$group
   infoRef      <- objIn$ref
   infoColorASB <- objIn$color.ASB
@@ -260,6 +264,9 @@ PlotOSA <- function(object     = NULL,
   )
 
   lgcLgcLblStdy <- ifelse(is.logical(lgcLblStdy),
+                          FALSE, TRUE)
+
+  lgcLgcSAP     <- ifelse(is.logical(lgcSAP),
                           FALSE, TRUE)
 
   lgcLgcInvert  <- ifelse(is.logical(lgcInvert),
@@ -726,6 +733,10 @@ PlotOSA <- function(object     = NULL,
     infoStopLgcLblStdy <- 'Argument for parameter `lgcLblStdy` must be a logic value for indicating whether to show names of observed studies on the plot.'
   }
 
+  if (lgcLgcSAP) {
+    infoStopLgcSAP     <- 'Argument for parameter `lgcSAP` must be a logic value for indicating whether to show sequential-adjusted power on the plot.'
+  }
+
   if (lgcLgcInvert) {
     infoStopLgcInvert  <- 'Argument for parameter `lgcInvert` must be a logic value for indicating whether to invert the plot.'
   }
@@ -910,7 +921,7 @@ PlotOSA <- function(object     = NULL,
   # 05. RETURN results of argument checking  -----
 
   if (lgcTxtTtl     | lgcSclAxsX    |
-      lgcLgcLblStdy | lgcLgcInvert  | lgcLgcSmooth |
+      lgcLgcLblStdy | lgcLgcSAP     | lgcLgcInvert | lgcLgcSmooth |
       lgcSzFntTtl   | lgcSzFntTtlX  | lgcSzFntTtlY |
       lgcSzFntAxsX  | lgcSzFntAxsY  | lgcSzFntLgnd |
       lgcSzFntLblY  | lgcSzFntStdy  | lgcSzFntOIS  | lgcSzFntAIS  |
@@ -929,6 +940,7 @@ PlotOSA <- function(object     = NULL,
   stop(paste(ifelse(lgcTxtTtl,     paste(infoStopTxtTtl, "\n", sep = ""), ""),
              ifelse(lgcSclAxsX,    paste(infoStopSclAxsX, "\n", sep = ""), ""),
              ifelse(lgcLgcLblStdy, paste(infoStopLgcLblStdy, "\n", sep = ""), ""),
+             ifelse(lgcLgcSAP,     paste(infoStopLgcSAP, "\n", sep = ""), ""),
              ifelse(lgcLgcInvert,  paste(infoStopLgcInvert, "\n", sep = ""), ""),
              ifelse(lgcLgcSmooth,  paste(infoStopLgcSmooth, "\n", sep = ""), ""),
              ifelse(lgcSzFntTtl,   paste(infoStopSzFntTtl, "\n", sep = ""), ""),
@@ -985,6 +997,7 @@ PlotOSA <- function(object     = NULL,
   }
 
   infoLgcLblStdy       <- lgcLblStdy
+  infoLgcSAP           <- lgcSAP
 
   if (lgcInvert) {
     dataOSA$zCum       <- dataOSA$zCum * -1
@@ -1024,9 +1037,10 @@ PlotOSA <- function(object     = NULL,
 
   # 07. ILLUSTRATE proportion of alpha-spending monitoring plot -----
 
-  plot(dataOSA$nCum * 1.2, dataOSA$asub,
+  plot(dataOSA$frctn * 1.1, # nCum
+       dataOSA$asub,
        type = "l", frame = FALSE,
-       xlim = c(0, max(dataOSA$nCum) * 1.2),
+       xlim = c(0, max(dataOSA$frctn) * 1.1), # nCum
        ylim = c(ceiling(min(dataOSA$aslb)) * (-10) / ceiling(min(dataOSA$aslb)),
                 ceiling(max(dataOSA$asub)) * 10 / ceiling(max(dataOSA$asub)) + 1),
        col = rgb(1, 1, 1, 0),
@@ -1050,33 +1064,33 @@ PlotOSA <- function(object     = NULL,
   if (sclAxsX == "sample") {
     axis(side = 1,
          at   = c(0,
-                  infoOIS * 0.2,
-                  infoOIS * 0.4,
-                  infoOIS * 0.6,
-                  infoOIS * 0.8,
-                  infoOIS,
-                  max(dataOSA$nCum) * 1.2),
+                  0.2,
+                  0.4,
+                  0.6,
+                  0.8,
+                  1,
+                  max(dataOSA$frctn) * 1.1), # nCum
          labels = c(0,
                     ceiling(infoOIS * 0.2),
                     ceiling(infoOIS * 0.4),
                     ceiling(infoOIS * 0.6),
                     ceiling(infoOIS * 0.8),
                     ceiling(infoOIS),
-                    max(dataOSA$nCum) * 1.2),
+                    ceiling(max(dataOSA$nCum) * 1.1)),
          col = clrAxsX,
          cex.axis = szFntAxsX,
          padj = 0, hadj = 1, las = 1)
   } else {
     axis(side = 1,
          at   = c(0,
-                  infoOIS * 0.2,
-                  infoOIS * 0.4,
-                  infoOIS * 0.6,
-                  infoOIS * 0.8,
+                  0.2,
+                  0.4,
+                  0.6,
+                  0.8,
                   infoOIS,
-                  max(dataOSA$nCum) * 1.2),
+                  max(dataOSA$frctn) * 1.1), # nCum
          labels = c(0, 0.2, 0.4, 0.6, 0.8, 1,
-                    round(max(dataOSA$nCum) * 1.2 / infoOIS, 1)
+                    round(max(dataOSA$nCum) * 1.1 / infoOIS, 1)
                     ),
          col = clrAxsX,
          cex.axis = szFntAxsX,
@@ -1113,58 +1127,58 @@ PlotOSA <- function(object     = NULL,
   mtext("Cumulative\n z score",
         side = 3,
         line = 0,
-        at = -infoOIS * 0.05,
-        col = clrLblY,
-        cex = szFntLblY)
+        at   = -0.05, # -infoOIS * 0.05
+        col  = clrLblY,
+        cex  = szFntLblY)
   mtext(paste("Favors\n", ifelse(infoPrefer == "small", infoGroup[2], infoGroup[1])),
         side = 2,
         line = 2,
-        at = 5,
-        col = clrTtlY,
-        cex = ifelse(max(nchar(infoGroup[2]), nchar(infoGroup[1])) > 10, (1 / sqrt(max(nchar(infoGroup[2]), nchar(infoGroup[1]))))^2 * 10, 1)
+        at   = 5,
+        col  = clrTtlY,
+        cex  = ifelse(max(nchar(infoGroup[2]), nchar(infoGroup[1])) > 10, (1 / sqrt(max(nchar(infoGroup[2]), nchar(infoGroup[1]))))^2 * 10, 1)
         ) #(1/sqrt(seq(11,100,by=1)))^2*10
   mtext(paste("Favors\n", ifelse(infoPrefer == "small", infoGroup[1], infoGroup[2])),
         side = 2,
         line = 2,
-        at = -5,
-        col = clrTtlY,
-        cex = ifelse(is.null(szFntTtlY),
+        at   = -5,
+        col  = clrTtlY,
+        cex  = ifelse(is.null(szFntTtlY),
                      ifelse(max(nchar(infoGroup[2]), nchar(infoGroup[1])) > 10, (1 / sqrt(max(nchar(infoGroup[2]), nchar(infoGroup[1]))))^2 * 10, 1), #(1/sqrt(seq(11,100,by=1)))^2*10
                      szFntTtlY)
         )
 
   if (lgcSmooth) {
-    lines(dataPlotOSA$sample,
+    lines(dataPlotOSA$frctn, # sample
           dataPlotOSA$asub,
           lty = typLnASB,
           col = clrLnASB,
           lwd = szLnASB)
-    lines(dataPlotOSA$sample,
+    lines(dataPlotOSA$frctn, # sample
           dataPlotOSA$aslb,
           lty = typLnASB,
           col = clrLnASB,
           lwd = szLnASB)
   } else {
-    lines(dataOSA$nCum,
+    lines(dataOSA$frctn, # nCum
           dataOSA$asub,
           lty = typLnASB,
           col = clrLnASB,
           lwd = szLnASB)
-    lines(dataOSA$nCum,
+    lines(dataOSA$frctn, # nCum
           dataOSA$aslb,
           lty = typLnASB,
           col = clrLnASB,
           lwd = szLnASB)
   }
 
-  points(dataOSA[which(!is.na(dataOSA[, "source"])), ]$nCum,
-         dataOSA[which(!is.na(dataOSA[, "source"])), ]$asub,
+  points(dataOSA[which(!is.na(dataOSA[, "source"]) & dataOSA[, "nCum"] < infoOIS), ]$frctn, # nCum
+         dataOSA[which(!is.na(dataOSA[, "source"]) & dataOSA[, "nCum"] < infoOIS), ]$asub,
          pch = typPntASB,
          col = infoColorASB,
          bg  = clrPntASB,
          cex = szPntASB)
-  points(dataOSA[which(!is.na(dataOSA[, "source"])), ]$nCum,
-         dataOSA[which(!is.na(dataOSA[, "source"])), ]$aslb,
+  points(dataOSA[which(!is.na(dataOSA[, "source"]) & dataOSA[, "nCum"] < infoOIS), ]$frctn, # nCum
+         dataOSA[which(!is.na(dataOSA[, "source"]) & dataOSA[, "nCum"] < infoOIS), ]$aslb,
          pch = typPntASB,
          col = infoColorASB,
          bg  = clrPntASB,
@@ -1172,24 +1186,24 @@ PlotOSA <- function(object     = NULL,
 
   if (infoBSB) {
     if (lgcSmooth) {
-      lines(dataPlotOSA$sample,
+      lines(dataPlotOSA$frctn, # sample
             dataPlotOSA$bsub,
             lty = typLnASB,
             col = clrLnASB,
             lwd = szLnASB)
 
-      lines(dataPlotOSA$sample,
+      lines(dataPlotOSA$frctn, # sample
             dataPlotOSA$bslb,
             lty = typLnASB,
             col = clrLnASB,
             lwd = szLnASB)
     } else {
-      lines(dataOSA$nCum,
+      lines(dataOSA$frctn, # nCum
             dataOSA$bsub,
             lty = typLnASB,
             col = clrLnASB,
             lwd = szLnASB)
-      lines(dataOSA$nCum,
+      lines(dataOSA$frctn, # nCum
             dataOSA$bslb,
             lty = typLnASB,
             col = clrLnASB,
@@ -1204,48 +1218,50 @@ PlotOSA <- function(object     = NULL,
   #         lty = c(2, 1, 2), lwd = 1, col = "gray25")
   segments(c(0),
            c(0),
-           c(max(dataOSA$nCum) * 1.1),
+           c(max(dataOSA$frctn) * 1.1), # nCum
            c(0),
            lty = typLn0,
            col = clrLn0,
            lwd = szLn0)
   segments(c(0),
            c(-2, 2),
-           c(max(dataOSA$nCum) * 1.1),
+           c(max(dataOSA$frctn) * 1.1), # nCum
            c(-2, 2),
            lty = typLnSig,
            col = clrLnSig,
            lwd = szLnSig)
-  lines(dataOSA$nCum,
+  lines(dataOSA$frctn, # nCum
         dataOSA$zCum,
         lty = typLnZCum,
         col = clrLnZCum,
         lwd = szLnZCum)
-  segments(c(0), c(0), dataOSA[1, "nCum"], dataOSA[1, "zCum"],
+  segments(c(0), c(0), dataOSA[1, "frctn"], dataOSA[1, "zCum"], # "nCum"
            col = clrLnZCum,
            lwd = szLnZCum,
            lty = typLnZCum)
-  points(dataOSA$nCum,
+  points(dataOSA$frctn, # nCum
          dataOSA$zCum,
          pch = typPntStdy,
          col = clrPntStdy,
          bg  = clrPntStdy,
          cex = szPntStdy) # szPntStdy + dataOSA$weight^2
 
-  arrows(max(dataOSA$nCum), 0,
-         max(dataOSA$nCum) * 1.1, 0,
+  arrows(max(dataOSA$frctn), # nCum
+         0,
+         max(dataOSA$frctn) * 1.1, # nCum
+         0,
          length = 0.1,
          lty = typLn0,
          col = clrLn0,
          lwd = szLn0)
 
   if (infoLgcLblStdy) {
-    points(dataOSA$nCum,
+    points(dataOSA$frctn, # nCum
            dataOSA$zCum - dataOSA$zCum,
            pch = "|",
            col = clrLblStdy,
            cex = 0.6)
-    text(dataOSA$nCum,
+    text(dataOSA$frctn, # nCum
          #ifelse(dataOSA$zCum > 0,
          #      dataOSA$zCum + 0.5,
          #      dataOSA$zCum - 0.5),
@@ -1262,7 +1278,10 @@ PlotOSA <- function(object     = NULL,
   #     c(round(dataOSA$zCum, 2)),
   #     col = c("gray20"))
 
-  rect(0, 10, infoOIS * 0.8, 8,
+  rect(0,
+       10,
+       max(dataOSA$frctn) * 0.8, # infoOIS * 0.8
+       8,
        lty = 0, col = rgb(1, 1, 1, 0.5))
   #points(dataOSA[which(!is.na(dataOSA[, "source"])), ]$nCum,
   #       dataOSA[which(!is.na(dataOSA[, "source"])), ]$aslb,
@@ -1270,25 +1289,34 @@ PlotOSA <- function(object     = NULL,
   #       col = infoColorASB,
   #       bg  = infoColorASB,
   #       cex = szPntASB)
-  segments(c(0.05), c(10), c(infoOIS / 20), c(10),
+  segments(c(max(dataOSA$frctn) * 0.01), #c(0.01),
+           c(10),
+           c(max(dataOSA$frctn) * 0.05), # infoOIS / 20
+           c(10),
            lty = typLnZCum,
            col = clrLnZCum,
            lwd = szLnZCum)
-  text(infoOIS / 15, 10,
+  text(max(dataOSA$frctn) * 0.07, # infoOIS / 15
+       10,
        paste("Cumulative z score", sep = ""),
        pos = 4,
        col = clrLgnd,
        cex = szFntLgnd)
-  segments(c(0.05), c(9), c(infoOIS / 20), c(9),
+  segments(c(max(dataOSA$frctn) * 0.01), # c(0.05),
+           c(9),
+           c(max(dataOSA$frctn) * 0.05), # c(infoOIS / 20)
+           c(9),
            lty = typLnASB,
            col = clrLnASB,
            lwd = szLnASB)
-  text(infoOIS / 15, 9,
+  text(max(dataOSA$frctn) * 0.07, # infoOIS / 15
+       9,
        paste("Alpha-spending boundary"),
        pos = 4,
        col = clrLgnd,
        cex = szFntLgnd)
-  text(infoOIS / 15, 8.3,
+  text(max(dataOSA$frctn) * 0.07, # infoOIS / 15
+       8.3,
        paste("(",
              ifelse(infoMeasure %in% c("MD", "SMD"),
                     infoMeasure,
@@ -1326,19 +1354,43 @@ PlotOSA <- function(object     = NULL,
        pos = 4,
        col = clrLgnd,
        cex = szFntLgnd)
-  segments(c(infoOIS), c(-9), c(infoOIS), c(9),
+
+  segments(c(1), # infoOIS
+           c(-9),
+           c(1), # infoOIS
+           c(9),
            lty = typLnOIS,
            col = clrLnOIS,
            lwd = szLnOIS)
-  text(infoOIS, 10,
-       paste("Optimal information size:", ceiling(infoOIS)),
-       pos = ifelse(infoOIS > infoCases, 2, 4),
+  text(1, # infoOIS
+       -10,
+       paste("OIS = ",
+             ceiling(infoOIS),
+             sep = ""),
+       #pos = ifelse(infoOIS > infoCases, 2, 4),
        col = clrLblOIS,
        cex = szFntOIS)
-  text(infoOIS, 9,
-       paste("Acquired information size:",
-             ceiling(max(dataOSA[which(!is.na(dataOSA[, "source"])), ]$nCum))),
-       pos = ifelse(infoOIS > infoCases, 2, 4),
+
+  segments(dataOSA$frctn[nrow(dataOSA[!is.na(dataOSA$source), ])],
+           dataOSA$zCum[nrow(dataOSA[!is.na(dataOSA$source), ])],
+           dataOSA$frctn[nrow(dataOSA[!is.na(dataOSA$source), ])],
+           c(-8.5),
+           lty = typLnOIS,
+           col = clrLnZCum,
+           lwd = szLnOIS)
+  text(dataOSA$frctn[nrow(dataOSA[!is.na(dataOSA$source), ])], # infoOIS,
+       -9, # 9,
+       paste("AIS = ",
+             ceiling(max(dataOSA[which(!is.na(dataOSA[, "source"])), ]$nCum)),
+             ifelse(infoLgcSAP == TRUE,
+                    paste("\n",
+                          "(SAP = ",
+                          round(infoPwrObs, 3),
+                          ")",
+                          sep = ""),
+                    ""),
+             sep = ""),
+       #pos = ifelse(infoOIS > infoCases, 2, 4),
        col = clrLblAIS,
        cex = szFntAIS)
 

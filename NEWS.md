@@ -2,14 +2,36 @@
 
 
 
+## aides 1.3.1. (release version)
+### Date: February 3, 2024
+
+**Modify function:** improve function `DOSA()`, `DoOSA()`, and `PlotOSA()` for avoiding the overlapping between OIS information and legend on the plot. 
+
+**Modify function:** improve function `DoSA()` by introducing a new parameter, `RRR`, enabling users to specify a pre-assumed relative risk reduction for estimation of required information size. This parameter is designed exclusively for dichotomous outcomes and replaces the argument of `PES` parameter.
+
+**Modify document:** improve Vignettes file of package *aides* with much more information.
+
+**Modify document:** improve README file of package *aides* with appropriate plot size.
+
+<br>
+
+
 ## aides 1.3.0. (release version)
 ### Date: December 21, 2023
 
 **Release:** *aides* 1.3.0 on the CRAN.
 
+**Modify document:** improve package *aides* vignette by illustrating an example for the function `PlotPower()`, and ensuring consistency by utilizing the same data set to illustrate examples for the functions `DoSA()`, `DoOSA()`, and `PlotOSA()`.
+
+**Modify document:** improve package *aides* manual by introducing a detailed section for the `PlotPower()` function, and ensuring consistency by utilizing the same data set to illustrate examples for the functions `DoSA()`, `DoOSA()`, and `PlotOSA()`.
+
+<br>
+
+
+## aides 1.2.4. (development version)
 ### Date: December 15, 2023
 
-**Add function:** `PlotPower()` has been added in the *aides* package to visualize sequential-adjusted power.
+**Add function:** `PlotPower()` has been added in the package *aides* to visualize sequential-adjusted power.
 
 <br>
 
@@ -17,7 +39,9 @@
 ## aides 1.2.3. (development version)
 ### Date: December 08, 2023
 
-**Modify document:** improve function `DoOSA()` for better sequential-adjusted power.
+**Modify function:** improve function `DoOSA()` by setting argument `"D2"` as default for parameter `adjust` and calculating sequential-adjusted power. 
+
+**Modify function:** improve function `DoSA()` by setting argument `"D2"` as default for parameter `adjust`.
 
 **Modify function:** improve function `PlotOSA()` for better visualization.
 
@@ -50,13 +74,15 @@
 
 **Release:** *aides* 1.2.0 on the CRAN.
 
+<br>
+
 ### Date: October 24, 2023
 
-**Add function:** `PlotOSA()` has been added in the *aides* package to visualize observed sequential analysis.
+**Add function:** `PlotOSA()` has been added in the package *aides* to visualize observed sequential analysis.
 
-**Add function:** `DoOSA()` has been added in the *aides* package to facilitate sequential method employing observed data, thereby distinguishing it from information derived from prospective planning.
+**Add function:** `DoOSA()` has been added in the package *aides* to facilitate sequential method employing observed data, thereby distinguishing it from information derived from prospective planning.
 
-**Add function:** `PlotDistrSS()` has been added in the *aides* package to assist decision on the method selection for outlier detection and variability in disparity test.
+**Add function:** `PlotDistrSS()` has been added in the package *aides* to assist decision on the method selection for outlier detection and variability in disparity test.
 
 <br>
 
@@ -64,7 +90,7 @@
 ## aides 1.1.6. (development version)
 ### Date: October 05, 2023
 
-**Modify document:** improve *aides* package manual by adding details section for function `DoSA()`.
+**Modify document:** improve package *aides* manual by adding details section for function `DoSA()`.
 
 <br>
 
@@ -82,7 +108,7 @@
 
 **Modify function:** improve function `PlotDisparity()` for fixing bug of labeling proportion of excessive cases.
 
-**Modify document:** improve *aides* package vignette.
+**Modify document:** improve package *aides* vignette.
 
 <br>
 
@@ -92,7 +118,7 @@
 
 **Modify function:** improve function `TestDisparity()` with robust Coefficient of Variations.
 
-**Modify document:** improve *aides* package manual by detailing returned values from function `TestDisparity()`.
+**Modify document:** improve package *aides* manual by detailing returned values from function `TestDisparity()`.
 
 <br>
 
