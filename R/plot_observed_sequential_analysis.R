@@ -11,6 +11,7 @@
 #' @param txtTtl     CHARACTER for user-defined main title on the observed sequential
 #'                   analysis plot.
 #' @param group      CHARACTER for labeling two groups.
+#' @param lgcZone    LOGIC value for indicating whether to show zones.
 #' @param lgcLblStdy LOGIC value for indicating whether to label each data source.
 #' @param lgcSAP     LOGIC value for indicating whether to show sequential-adjusted
 #'                   power.
@@ -134,6 +135,7 @@ PlotOSA <- function(object     = NULL,
                     sclAxsX    = "sample",
                     txtTtl     = NULL,
                     group      = NULL,
+                    lgcZone    = FALSE,
                     lgcLblStdy = FALSE,
                     lgcSAP     = FALSE,
                     lgcInvert  = FALSE,
@@ -262,6 +264,9 @@ PlotOSA <- function(object     = NULL,
                           ifelse(is.character(sclAxsX),
                                  FALSE, TRUE)
   )
+
+  lgcLgcZone    <- ifelse(is.logical(lgcZone),
+                          FALSE, TRUE)
 
   lgcLgcLblStdy <- ifelse(is.logical(lgcLblStdy),
                           FALSE, TRUE)
@@ -729,6 +734,10 @@ PlotOSA <- function(object     = NULL,
     infoStopSclAxsX    <- 'Argument for parameter `sclAxsX` must be characters for indicating unit of scale on axis X.'
   }
 
+  if (lgcLgcZone) {
+    infoStopLgcZone    <- 'Argument for parameter `lgcZone` must be a logic value for indicating whether to show zones on the plot.'
+  }
+
   if (lgcLgcLblStdy) {
     infoStopLgcLblStdy <- 'Argument for parameter `lgcLblStdy` must be a logic value for indicating whether to show names of observed studies on the plot.'
   }
@@ -921,24 +930,25 @@ PlotOSA <- function(object     = NULL,
   # 05. RETURN results of argument checking  -----
 
   if (lgcTxtTtl     | lgcSclAxsX    |
-      lgcLgcLblStdy | lgcLgcSAP     | lgcLgcInvert | lgcLgcSmooth |
+      lgcLgcZone    | lgcLgcLblStdy | lgcLgcSAP    | lgcLgcInvert | lgcLgcSmooth |
       lgcSzFntTtl   | lgcSzFntTtlX  | lgcSzFntTtlY |
       lgcSzFntAxsX  | lgcSzFntAxsY  | lgcSzFntLgnd |
       lgcSzFntLblY  | lgcSzFntStdy  | lgcSzFntOIS  | lgcSzFntAIS  |
       lgcSzPntStdy  | lgcSzPntASB   |
-      lgcSzLn0      | lgcSzLnSig    | lgcSzLnZCum  | lgcSzLnASB   | lgcSzLnOIS  |
+      lgcSzLn0      | lgcSzLnSig    | lgcSzLnZCum  | lgcSzLnASB   | lgcSzLnOIS   |
       lgcTypPntStdy | lgcTypPntASB  |
-      lgcTypLn0     | lgcTypLnSig   | lgcTypLnZCum | lgcTypLnASB  | lgcTypLnOIS |
+      lgcTypLn0     | lgcTypLnSig   | lgcTypLnZCum | lgcTypLnASB  | lgcTypLnOIS  |
       lgcClrTtl     | lgcClrTtlX    | lgcClrTtlY   |
       lgcClrAxsX    | lgcClrAxsY    |  lgcClrLgnd  |
       lgcClrLblY    | lgcClrLblStdy | lgcClrLblOIS | lgcClrLblAIS |
       lgcClrPntStdy | lgcClrPntASB  |
-      lgcClrLn0     | lgcClrLnSig   | lgcClrLnZCum | lgcClrLnASB  | lgcClrLnOIS |
+      lgcClrLn0     | lgcClrLnSig   | lgcClrLnZCum | lgcClrLnASB  | lgcClrLnOIS  |
       lgcAnglStdy   | lgcGroup
       )
 
   stop(paste(ifelse(lgcTxtTtl,     paste(infoStopTxtTtl, "\n", sep = ""), ""),
              ifelse(lgcSclAxsX,    paste(infoStopSclAxsX, "\n", sep = ""), ""),
+             ifelse(lgcLgcZone,    paste(infoStopLgcZone, "\n", sep = ""), ""),
              ifelse(lgcLgcLblStdy, paste(infoStopLgcLblStdy, "\n", sep = ""), ""),
              ifelse(lgcLgcSAP,     paste(infoStopLgcSAP, "\n", sep = ""), ""),
              ifelse(lgcLgcInvert,  paste(infoStopLgcInvert, "\n", sep = ""), ""),
@@ -996,6 +1006,7 @@ PlotOSA <- function(object     = NULL,
     infoGroup <- group
   }
 
+  infoLgcZone          <- lgcZone
   infoLgcLblStdy       <- lgcLblStdy
   infoLgcSAP           <- lgcSAP
 
@@ -1049,6 +1060,7 @@ PlotOSA <- function(object     = NULL,
        yaxt = "n",
        ylab = "",
        main = "")
+
   mtext(ifelse(is.null(txtTtl),
                "Observed sequential analysis",
                paste("Observed sequential analysis of ",
@@ -1108,11 +1120,14 @@ PlotOSA <- function(object     = NULL,
   mtext(paste("(Note: the meta-analysis was conducted in ",
               ifelse(infoModel == "random",
                      paste("random-effects model based on ",
-                           infoMethod,
+                           infoPooling, " with ", infoMethod,
                            " method)",
                            sep = ""),
-                     "fixed-effect model)"
-              ),
+                     paste("fixed-effect model based on ",
+                           infoPooling,
+                           " method)",
+                           sep = "")
+                     ),
               sep = ""),
         col = clrLgnd,
         cex = szFntLgnd,
@@ -1146,6 +1161,77 @@ PlotOSA <- function(object     = NULL,
                      ifelse(max(nchar(infoGroup[2]), nchar(infoGroup[1])) > 10, (1 / sqrt(max(nchar(infoGroup[2]), nchar(infoGroup[1]))))^2 * 10, 1), #(1/sqrt(seq(11,100,by=1)))^2*10
                      szFntTtlY)
         )
+
+  if (infoLgcZone) {
+    asbStart <- max(which(dataPlotOSA$aslb == min(dataPlotOSA$aslb)))
+    asbStart <- max(which(dataPlotOSA$asub == max(dataPlotOSA$asub)))
+    bsbStart <- max(which(dataPlotOSA$bslb == min(dataPlotOSA$bslb)))
+    bsbEnd   <- max(which(dataPlotOSA$bslb == 0))
+
+    # inconclusive zone
+    polygon(c(0,
+              dataPlotOSA$frctn[asbStart],
+              dataPlotOSA$frctn,
+              dataPlotOSA$frctn[c(bsbStart:bsbEnd)],
+              dataPlotOSA$frctn[c(bsbEnd:bsbStart)],
+              rev(dataPlotOSA$frctn),
+              dataPlotOSA$frctn[asbStart],
+              0),
+            c(-10,
+              -10,
+              dataPlotOSA$aslb,
+              dataPlotOSA$bslb[c(bsbStart:bsbEnd)],
+              dataPlotOSA$bsub[c(bsbEnd:bsbStart)],
+              rev(dataPlotOSA$asub),
+              10,
+              10),
+            col = rgb(.4, .4, .4, .2),
+            border = NA)
+
+    # Benefit or harm zone
+    polygon(c(dataPlotOSA$frctn,
+              max(dataPlotOSA$frctn),
+              dataPlotOSA$frctn[asbStart]),
+            c(dataPlotOSA$aslb,
+              -10, #min(dataPlotOSA$aslb),
+              -10), #dataPlotOSA$aslb[aslbStart]),
+            col = rgb(.0, .2, .7, .2),
+            border = NA)
+
+    polygon(c(dataPlotOSA$frctn,
+              max(dataPlotOSA$frctn),
+              dataPlotOSA$frctn[asbStart]),
+            c(dataPlotOSA$asub,
+              10, #min(dataPlotOSA$aslb),
+              10), #dataPlotOSA$aslb[aslbStart]),
+            col = rgb(.7, .3, .3, .2),
+            border = NA)
+
+    # Futility zone
+    polygon(c(1.2,
+              dataPlotOSA$frctn[c(bsbStart:bsbEnd)],
+              dataPlotOSA$frctn[c(bsbEnd:bsbStart)],
+              1.2
+    ),
+    c(dataPlotOSA$bslb[bsbStart],
+      dataPlotOSA$bslb[c(bsbStart:bsbEnd)],
+      dataPlotOSA$bsub[c(bsbEnd:bsbStart)],
+      dataPlotOSA$bsub[bsbStart]
+    ),
+    col = rgb(.1, .1, .1, .3),
+    border = NA)
+
+    # Established zone
+    rect(1, -10,
+         1.2, -2,
+         col = rgb(.0, .1, .9, .4),
+         border = NA)
+
+    rect(1, 10,
+         1.2, 2,
+         col = rgb(.9, .2, .2, .4),
+         border = NA)
+  }
 
   if (lgcSmooth) {
     lines(dataPlotOSA$frctn, # sample
@@ -1278,11 +1364,14 @@ PlotOSA <- function(object     = NULL,
   #     c(round(dataOSA$zCum, 2)),
   #     col = c("gray20"))
 
-  rect(0,
-       10,
-       max(dataOSA$frctn) * 0.8, # infoOIS * 0.8
-       8,
-       lty = 0, col = rgb(1, 1, 1, 0.5))
+  if (!infoLgcZone) {
+    rect(0,
+         10,
+         max(dataOSA$frctn) * 0.99, # infoOIS * 0.8
+         8,
+         lty = 0, col = rgb(1, 1, 1, 0.5))
+  }
+
   #points(dataOSA[which(!is.na(dataOSA[, "source"])), ]$nCum,
   #       dataOSA[which(!is.na(dataOSA[, "source"])), ]$aslb,
   #       pch = typPntASB,
@@ -1326,12 +1415,20 @@ PlotOSA <- function(object     = NULL,
                     paste(" = ", round(infoOES, 3), sep = "")),
              ifelse(infoMeasure %in% c("MD", "SMD"),
                     "",
-                    paste(" (RRR",
+                    paste("; RRR",
                           ifelse(infoRRR < 0.001,
-                                 " < 0.001)",
-                                 paste(" = ", round(infoRRR, 3), ")",
+                                 ifelse(infoRRR > 0,
+                                        " < 0.1%",
+                                        paste(" = ",
+                                              -floor(infoRRR * 100),
+                                              "%",
+                                              sep = "")
+                                        ),
+                                 paste(" = ",
+                                       floor(infoRRR * 100),
+                                       "%",
                                        sep = "")
-                                 ),
+                          ),
                           sep = "")
                     ),
              "; alpha: ", infoAlpha,
@@ -1362,12 +1459,14 @@ PlotOSA <- function(object     = NULL,
            lty = typLnOIS,
            col = clrLnOIS,
            lwd = szLnOIS)
-  text(1, # infoOIS
+  text(ifelse((infoCases / infoOIS) < 1,
+              1.05,
+              0.95), # 1, infoOIS
        -10,
        paste("OIS = ",
              ceiling(infoOIS),
              sep = ""),
-       #pos = ifelse(infoOIS > infoCases, 2, 4),
+       pos = ifelse((infoCases / infoOIS) < 1, 2, 4),
        col = clrLblOIS,
        cex = szFntOIS)
 
@@ -1378,7 +1477,9 @@ PlotOSA <- function(object     = NULL,
            lty = typLnOIS,
            col = clrLnZCum,
            lwd = szLnOIS)
-  text(dataOSA$frctn[nrow(dataOSA[!is.na(dataOSA$source), ])], # infoOIS,
+  text(ifelse((infoCases / infoOIS) < 0.5,
+              dataOSA$frctn[nrow(dataOSA[!is.na(dataOSA$source), ])] * 0.95,
+              dataOSA$frctn[nrow(dataOSA[!is.na(dataOSA$source), ])] * 1.05), # dataOSA$frctn[nrow(dataOSA[!is.na(dataOSA$source), ])], # infoOIS,
        -9, # 9,
        paste("AIS = ",
              ceiling(max(dataOSA[which(!is.na(dataOSA[, "source"])), ]$nCum)),
@@ -1390,7 +1491,7 @@ PlotOSA <- function(object     = NULL,
                           sep = ""),
                     ""),
              sep = ""),
-       #pos = ifelse(infoOIS > infoCases, 2, 4),
+       pos = ifelse((infoCases / infoOIS) < 0.5, 4, 2),
        col = clrLblAIS,
        cex = szFntAIS)
 

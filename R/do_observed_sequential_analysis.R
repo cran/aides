@@ -39,6 +39,8 @@
 #'                error.
 #' @param beta    NUMERIC value between 0 to 1 for indicating the assumed type II
 #'                error.
+#' @param anchor  NUMERIC value for indicating the presumed meaningful effect based
+#'                on anchor-based approach.
 #' @param adjust  CHARACTER for indicating how to adjust optimal information size.
 #'                Current version consists of "none", "D2", "I2", "CHL", "CHM", and
 #'                "CHH" for the adjustment.
@@ -137,6 +139,12 @@
 #' **Journal of biopharmaceutical statistics**, *15(4)*, 537–558.
 #' https://doi.org/10.1081/BIP-200062273.
 #'
+#' Revicki, D., Hays, R. D., Cella, D., & Sloan, J. (2008). Recommended methods
+#' for determining responsiveness and minimally important differences for
+#' patient-reported outcomes. **Journal of clinical epidemiology**, *61(2)*,
+#' 102-109.
+#' https://doi.org/10.1016/j.jclinepi.2007.03.012.
+#'
 #' Wetterslev, J., Jakobsen, J. C., & Gluud, C. (2017). Trial sequential analysis
 #' in systematic reviews with meta-analysis. **BMC medical research methodology**,
 #' *17(1)*, 1-18.
@@ -190,6 +198,7 @@ DoOSA <- function(data   = NULL,
                   pooling = "IV",
                   alpha   = 0.05,
                   beta    = 0.2,
+                  anchor  = NULL,
                   adjust  = "D2",
                   plot    = FALSE,
                   SAP     = FALSE) {
@@ -209,6 +218,7 @@ DoOSA <- function(data   = NULL,
   lgcInM2     <- ifelse(is.null(substitute(m2)), FALSE, TRUE)
   lgcInSD2    <- ifelse(is.null(substitute(sd2)), FALSE, TRUE)
   lgcInN2     <- ifelse(is.null(substitute(n2)), FALSE, TRUE)
+  lgcInAnchor <- ifelse(is.null(substitute(anchor)), FALSE, TRUE)
 
   lgcReq1     <- ifelse(lgcInData == TRUE, TRUE, FALSE)
   lgcReq2     <- ifelse(FALSE %in% c(lgcInN, lgcInES, lgcInSE), FALSE, TRUE)
@@ -312,6 +322,7 @@ DoOSA <- function(data   = NULL,
                          )
   infoAlpha    <- alpha
   infoBeta     <- beta
+  infoAnchor   <- anchor
   infoAdjust   <- adjust
   infoPlot     <- plot
   infoSAP      <- SAP
@@ -425,7 +436,7 @@ DoOSA <- function(data   = NULL,
       }
     }
 
-    infoRRR    <- abs(infoProp2 - infoProp1) / infoProp1
+    infoRRR    <- (infoProp2 - infoProp1) / infoProp2
     infoESMA   <- infoProp2 - infoProp1
     infoVarMA  <- (infoProp2 + infoProp1) / 2 * (1 - (infoProp2 + infoProp1) / 2)
     infoSEMA   <- infoVarMA
@@ -445,6 +456,9 @@ DoOSA <- function(data   = NULL,
   #infoESMA  <- ifelse(infoModel == "random", outMA$TE.random, outMA$TE.fixed)
   #infoSEMA  <- ifelse(infoModel == "random", outMA$seTE.random, outMA$seTE.fixed)
   #infoVarMA <- (infoSEMA * sqrt(infoCases - 2))^2
+
+  # Revicki, D., Hays, R. D., Cella, D., & Sloan, J. (2008). Recommended methods for determining responsiveness and minimally important differences for patient-reported outcomes. Journal of clinical epidemiology, 61(2), 102-109. https://doi.org/10.1016/j.jclinepi.2007.03.012.
+  infoES    <- ifelse(infoESMA < infoAnchor, infoESMA, infoAnchor)
   infoOES   <- infoESMA
   infoOV    <- infoVarMA
   infoI2    <- outMA$I2
@@ -533,7 +547,8 @@ DoOSA <- function(data   = NULL,
   dataPlotOSA$pwrExpct <- 1 - pnorm(dataPlotOSA$bslb - (min(dataPlotOSA$bslb) - qnorm(infoBeta)))
   dataPlotOSA          <- dataPlotOSA[dataPlotOSA$aslb > -9, ]
   dataPlotOSA          <- dataPlotOSA[dataPlotOSA$asub < 9, ]
-  dataPlotOSA$pwrPrdct <- 1 - pnorm(qnorm(1 - infoAlpha / 2 * dataPlotOSA$frctn) - infoZOrg) + pnorm(-qnorm(1 - infoAlpha / 2 * dataPlotOSA$frctn) - infoZOrg)
+  #dataPlotOSA$pwrPrdct <- 1 - pnorm(qnorm(1 - infoAlpha / 2 * dataPlotOSA$frctn) - infoZOrg) + pnorm(-qnorm(1 - infoAlpha / 2 * dataPlotOSA$frctn) - infoZOrg)
+  dataPlotOSA$pwrPrdct <- 1 - pnorm(dataPlotOSA$asub - infoZOrg) + pnorm(-dataPlotOSA$asub - infoZOrg)
   infoFrctnBSB         <- dataPlotOSA[max(which(dataPlotOSA$bsub < 0)), "frctn"]
 
   if (infoOIS < infoCases) {
@@ -559,8 +574,17 @@ DoOSA <- function(data   = NULL,
   dataOSA$aslb    <- -qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(dataOSA$frctn))) / 2); dataOSA$aslb <- ifelse(dataOSA$aslb == "-Inf", -10, dataOSA$aslb)
   dataOSA$bsub    <-  (qnorm(pnorm(qnorm((infoBeta)) / dataOSA$frctn)) + (qnorm(pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(1))) - qnorm(pnorm(qnorm((infoBeta)) / sqrt(1))))); dataOSA$bsub <- ifelse(dataOSA$bsub < 0, 0, dataOSA$bsub)
   dataOSA$bslb    <- -(qnorm(pnorm(qnorm((infoBeta)) / dataOSA$frctn)) + (qnorm(pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(1))) - qnorm(pnorm(qnorm((infoBeta)) / sqrt(1))))); dataOSA$bslb <- ifelse(dataOSA$bslb > 0, 0, dataOSA$bslb)
-  dataOSA$pwrCum  <- 1 - pnorm(qnorm(1-infoAlpha / 2) - dataOSA$zCum) + pnorm(-qnorm(1 - infoAlpha / 2) - dataOSA$zCum)
-  dataOSA$pwrSqnt <- 1 - pnorm(qnorm(1-infoAlpha / 2 * dataOSA$frctn) - dataOSA$zCum) + pnorm(-qnorm(1 - infoAlpha / 2 * dataOSA$frctn) - dataOSA$zCum)
+
+  if (infoSAP == TRUE) {
+    dataOSA$pwrCum  <- 1 - pnorm(qnorm(1-infoAlpha / 2) - dataOSA$zCum) + pnorm(-qnorm(1 - infoAlpha / 2) - dataOSA$zCum)
+    #dataOSA$pwrSqnt <- 1 - pnorm(qnorm(1-infoAlpha / 2 * dataOSA$frctn) - dataOSA$zCum) + pnorm(-qnorm(1 - infoAlpha / 2 * dataOSA$frctn) - dataOSA$zCum)
+    dataOSA$pwrSqnt <- 1 - pnorm(dataOSA$asub - dataOSA$zCum) + pnorm(-dataOSA$asub - dataOSA$zCum)
+    dataOSA$pwrCum  <- ifelse(dataOSA$pwrCum > 1, 1, dataOSA$pwrCum)
+    dataOSA$pwrSqnt <- ifelse(dataOSA$pwrSqnt > 1, 1, dataOSA$pwrSqnt)
+  } else {
+    dataOSA$pwrCum  <- NA
+    dataOSA$pwrSqnt <- NA
+  }
   #dataOSA$pwrCum <- 1 - pnorm(qnorm(1 - infoAlpha / 2) - dataOSA$zCum) + pnorm(-qnorm(1 - infoAlpha / 2) - dataOSA$zCum)
   #dataOSA$pwrCum <- 1 - pnorm(qnorm(1 - infoAlpha / 2) / sqrt(dataOSA$frctn)/2-dataOSA$zCum)+pnorm(-qnorm(1-alpha/2)/sqrt(dataOSA$frctn)/2-dataOSA$zCum);dataOSA$power
 
@@ -581,9 +605,12 @@ DoOSA <- function(data   = NULL,
                                     round(infoOIS * infoFrctnBSB, 0), infoFrctnBSB,
                                     qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(infoFrctnBSB))) / 2),
                                     -qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(infoFrctnBSB))) / 2),
-                                    0, 0, (1 - infoBeta) * infoFrctnBSB,
-                                    NA, NA
+                                    0, 0,
+                                    (1 - infoBeta) * infoFrctnBSB,
+                                    NA
                                     )
+    } else {
+    dataOSA <- dataOSA
     }
 
   dataOSA[nrow(dataOSA) + 1, ] <- c(NA, NA, NA, NA, NA, NA, NA,
@@ -593,7 +620,7 @@ DoOSA <- function(data   = NULL,
                                   qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(1))) / 2),
                                   -qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(1))) / 2),
                                   1 - infoBeta,
-                                  NA, NA
+                                  NA
                                   )
 
 
@@ -664,10 +691,10 @@ DoOSA <- function(data   = NULL,
                   measure   = infoMeasure,
                   model     = infoModel,
                   method    = infoMethod,
-                  pooling   = infoPooling,
+                  pooling   = pooling,
                   prefer    = infoPrefer,
                   OES       = infoOES,
-                  RRR       = ifelse(infoRRR < 0.001, "< 0.001", round(infoRRR, 3)),
+                  RRR       = ifelse(infoRRR < 0.001, "< 0.001", infoRRR),
                   variance  = infoOV,
                   zExpect   = infoZScrTrgt,
                   diversity = infoDivers,
@@ -695,7 +722,7 @@ DoOSA <- function(data   = NULL,
   lsDoOSA$aslb      <- round(dataOSA$aslb[infoNumStud], 3)
   lsDoOSA$asub      <- round(dataOSA$asub[infoNumStud], 3)
 
-  if (infoPlot == TRUE) {
+  if (infoPlot == TRUE | infoSAP == TRUE) {
     lsDoOSA$group          <- infoGroup
     lsDoOSA$ref            <- infoRef
     lsDoOSA$color.ASB      <- infoColorASB
@@ -704,14 +731,6 @@ DoOSA <- function(data   = NULL,
     lsDoOSA$data.bounds    <- dataPlotOSA
     lsDoOSA$lsOutMA        <- outMA
     }
-  if (infoSAP == TRUE) {
-    lsDoOSA$color.ASB      <- infoColorASB
-    lsDoOSA$position.label <- infoPosLabel
-    lsDoOSA$data           <- dataOSA
-    lsDoOSA$data.bounds    <- dataPlotOSA
-    lsDoOSA$lsOutMA        <- outMA
-  }
-  #lsDoOSA$data.plot <- dataPlotOSA
 
 
 
@@ -738,7 +757,7 @@ DoOSA <- function(data   = NULL,
             "\n ",
             infoLgcMAAdj,
             ifelse(infoSAP == TRUE,
-                   paste("\n Observed power (sequential-adjusted):",
+                   paste("\n Observed power (sequential-adjusted): ",
                          round(infoPwrObs, 3),
                          sep = ""),
                    ""),
@@ -880,7 +899,7 @@ DoOSA <- function(data   = NULL,
 
   # 07. ILLUSTRATE proportion of alpha-spending monitoring plot -----
 
-  if (plot == TRUE) {
+  if (infoPlot == TRUE) {
 
     plot(dataOSA$frctn * 1.2, # nCum
          dataOSA$asub,
@@ -897,10 +916,13 @@ DoOSA <- function(data   = NULL,
     mtext(paste("(Note: the meta-analysis was conducted in ",
                 ifelse(infoModel == "random",
                        paste("random-effects model based on ",
-                             infoMethod,
+                             pooling, " with ", infoMethod,
                              " method)",
                              sep = ""),
-                       "fixed-effect model)"
+                       paste("fixed-effect model based on ",
+                             pooling,
+                             " method)",
+                             sep = "")
                        ),
                 sep = ""),
           side = 1, line = 4, cex = 0.6)
@@ -924,6 +946,7 @@ DoOSA <- function(data   = NULL,
     mtext(paste("Favors\n", ifelse(infoPrefer == "small", infoGroup[1], infoGroup[2])),
           side = 2, line = 2, at = -5,
           cex = ifelse(max(nchar(infoGroup[2]), nchar(infoGroup[1])) > 10, (1 / sqrt(max(nchar(infoGroup[2]), nchar(infoGroup[1]))))^2 * 10, 1)) #(1/sqrt(seq(11,100,by=1)))^2*10
+
     #lines(dataOSA$nCum,
     #      dataOSA$asub,
     #      lwd = 1, col = "darkred", lty = 1)
@@ -984,7 +1007,7 @@ DoOSA <- function(data   = NULL,
 
     rect(0,
          10,
-         max(dataOSA$frctn) * 0.8, # infoOIS * 0.8,
+         max(dataOSA$frctn) * 0.99, # infoOIS * 0.8,
          8,
          lty = 0, col = rgb(1, 1, 1, 0.5))
     #points(dataOSA[which(!is.na(dataOSA[, "source"])), ]$nCum,
@@ -1025,14 +1048,22 @@ DoOSA <- function(data   = NULL,
                       paste(" = ", round(infoOES, 3), sep = "")),
                ifelse(infoMeasure %in% c("MD", "SMD"),
                       "",
-                      paste(" (RRR",
+                      paste("; RRR",
                             ifelse(infoRRR < 0.001,
-                                   " < 0.001)",
-                                   paste(" = ", round(infoRRR, 3), ")",
+                                   ifelse(infoRRR > 0,
+                                          " < 0.1%",
+                                          paste(" = ",
+                                                -floor(infoRRR * 100),
+                                                "%",
+                                                sep = "")
+                                          ),
+                                   paste(" = ",
+                                         floor(infoRRR * 100),
+                                         "%",
                                          sep = "")
-                            ),
+                                   ),
                             sep = "")
-               ),
+                      ),
                "; alpha: ", infoAlpha,
                "; power: ", round(1 - infoBeta, 2),
                ifelse(infoAdjust == "none",
@@ -1051,22 +1082,28 @@ DoOSA <- function(data   = NULL,
                       ),
                sep = ""),
          pos = 4, cex = 0.7)
+
     segments(1, # c(infoOIS),
              c(-9),
              1, # c(infoOIS),
              c(9),
              lty = c(3), col = "darkred")
-    text(1, # infoOIS
+    text(ifelse((infoCases / infoOIS) < 1,
+                1.05,
+                0.95), # 1,  infoOIS
          -10,
          paste("OIS = ", ceiling(infoOIS), sep = ""),
-         #pos = ifelse(infoOIS > infoCases, 2, 4),
+         pos = ifelse((infoCases / infoOIS) < 1, 2, 4),
          cex = 0.7)
+
     segments(dataOSA$frctn[nrow(dataOSA[!is.na(dataOSA$source), ])],
              dataOSA$zCum[nrow(dataOSA[!is.na(dataOSA$source), ])],
              dataOSA$frctn[nrow(dataOSA[!is.na(dataOSA$source), ])],
              c(-8.5),
              lty = c(3), col = "blue3")
-    text(dataOSA$frctn[nrow(dataOSA[!is.na(dataOSA$source), ])], # infoOIS nCum
+    text(ifelse((infoCases / infoOIS) < 0.5,
+                dataOSA$frctn[nrow(dataOSA[!is.na(dataOSA$source), ])] * 0.95,
+                dataOSA$frctn[nrow(dataOSA[!is.na(dataOSA$source), ])] * 1.05), #dataOSA$frctn[nrow(dataOSA[!is.na(dataOSA$source), ])], # infoOIS nCum
          -9, # 9,
          paste("AIS = ",
                ceiling(max(dataOSA[which(!is.na(dataOSA[, "source"])), ]$nCum)),
@@ -1078,7 +1115,7 @@ DoOSA <- function(data   = NULL,
                             sep = ""),
                       ""),
                sep = ""),
-         #pos = ifelse(infoOIS > infoCases, 4, 2),
+         pos = ifelse((infoCases / infoOIS) < 0.5, 4, 2),
          cex = 0.7)
   }
 

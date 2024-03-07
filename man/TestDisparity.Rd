@@ -23,7 +23,7 @@ TestDisparity(
 \arguments{
 \item{n}{NUMERIC values for sample size (n) of each study.}
 
-\item{data}{DATA FRAME consists of three columns for study label, study
+\item{data}{DATA FRAME consists of columns for study label, study
 year, and sample size.}
 
 \item{study}{CHARACTER for study labels.}

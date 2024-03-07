@@ -1,17 +1,37 @@
-# Change of package `aides`
+# Changes of package aides
 
+
+
+## aides 1.3.2. (release version)
+### Date: March 07, 2024
+
+**Modify document:** improve Vignettes file of package *aides* with much more information regarding sequential analysis.
+
+<br>
+
+### Date: February 27, 2024
+
+**Modify function:** improve function `DoSA()` by introducing two new parameters, including `smooth` and `SAP`. Parameter `smooth` is added for allowing users to generate sequential plot with smooth boundaries, and parameter `SAP` enables users to calculate sequential-adjusted power. Pooling method was added on the plot during this modification. Besides, scale on the x axis scale was limited for reducing plot size.
+
+**Modify function:** improve function `DoOSA()` by introducing a new parameter, `anchor`, enabling users to specify anchor-based minimal important difference in order to estimate required information size. Pooling method was added on the plot during this modification.
+
+**Modify function:** improve function `PlotOSA()` by introducing a new parameter, `lgcZone`, enabling users to show six zones of finding. Pooling method was also added on the plot during this modification.
+
+<br>
 
 
 ## aides 1.3.1. (release version)
 ### Date: February 3, 2024
 
-**Modify function:** improve function `DOSA()`, `DoOSA()`, and `PlotOSA()` for avoiding the overlapping between OIS information and legend on the plot. 
+**Modify function:** improve function `DOSA()`, `DoOSA()`, and `PlotOSA()` for avoiding the overlapping between OIS information and legend on the plot.
 
 **Modify function:** improve function `DoSA()` by introducing a new parameter, `RRR`, enabling users to specify a pre-assumed relative risk reduction for estimation of required information size. This parameter is designed exclusively for dichotomous outcomes and replaces the argument of `PES` parameter.
 
-**Modify document:** improve Vignettes file of package *aides* with much more information.
+**Modify document:** improve Vignettes file of package *aides* with much more information regarding sequential analysis.
 
 **Modify document:** improve README file of package *aides* with appropriate plot size.
+
+**Release:** submit *aides* 1.3.1 to the CRAN.
 
 <br>
 
@@ -19,16 +39,15 @@
 ## aides 1.3.0. (release version)
 ### Date: December 21, 2023
 
-**Release:** *aides* 1.3.0 on the CRAN.
-
 **Modify document:** improve package *aides* vignette by illustrating an example for the function `PlotPower()`, and ensuring consistency by utilizing the same data set to illustrate examples for the functions `DoSA()`, `DoOSA()`, and `PlotOSA()`.
 
 **Modify document:** improve package *aides* manual by introducing a detailed section for the `PlotPower()` function, and ensuring consistency by utilizing the same data set to illustrate examples for the functions `DoSA()`, `DoOSA()`, and `PlotOSA()`.
 
+**Release:** submit *aides* 1.3.0 to the CRAN.
+
 <br>
 
 
-## aides 1.2.4. (development version)
 ### Date: December 15, 2023
 
 **Add function:** `PlotPower()` has been added in the package *aides* to visualize sequential-adjusted power.
@@ -72,7 +91,7 @@
 ## aides 1.2.0. (release version)
 ### Date: October 26, 2023
 
-**Release:** *aides* 1.2.0 on the CRAN.
+**Release:** submit *aides* 1.2.0 to the CRAN.
 
 <br>
 
@@ -163,9 +182,9 @@
 ## aides 1.1.0. (release version)
 ### Date: August 11, 2023
 
-**Release:** *aides* 1.0.0 on the CRAN.
-
 **Add function:** `PlotDisparity()` to illustrate disparity plot.
+
+**Release:** submit *aides* 1.1.0 to the CRAN.
 
 <br>
 
@@ -305,7 +324,7 @@
 ## aides 1.0.0 (release version)
 ### Date: June 20, 2023
 
-**Release:** *aides* 1.0.0 on the CRAN.
+**Release:** submit *aides* 1.0.0 to the CRAN.
 <br>
 
 ### Date: June 15, 2023

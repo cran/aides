@@ -28,6 +28,7 @@ DoOSA(
   pooling = "IV",
   alpha = 0.05,
   beta = 0.2,
+  anchor = NULL,
   adjust = "D2",
   plot = FALSE,
   SAP = FALSE
@@ -90,6 +91,9 @@ error.}
 
 \item{beta}{NUMERIC value between 0 to 1 for indicating the assumed type II
 error.}
+
+\item{anchor}{NUMERIC value for indicating the presumed meaningful effect based
+on anchor-based approach.}
 
 \item{adjust}{CHARACTER for indicating how to adjust optimal information size.
 Current version consists of "none", "D2", "I2", "CHL", "CHM", and
@@ -209,6 +213,12 @@ Jennison, C., & Turnbull, B. W. (2005). Meta-analyses and adaptive group
 sequential designs in the clinical development process.
 \strong{Journal of biopharmaceutical statistics}, \emph{15(4)}, 537–558.
 https://doi.org/10.1081/BIP-200062273.
+
+Revicki, D., Hays, R. D., Cella, D., & Sloan, J. (2008). Recommended methods
+for determining responsiveness and minimally important differences for
+patient-reported outcomes. \strong{Journal of clinical epidemiology}, \emph{61(2)},
+102-109.
+https://doi.org/10.1016/j.jclinepi.2007.03.012.
 
 Wetterslev, J., Jakobsen, J. C., & Gluud, C. (2017). Trial sequential analysis
 in systematic reviews with meta-analysis. \strong{BMC medical research methodology},

@@ -24,13 +24,27 @@ library(meta)
 
 ## ----eval = FALSE-------------------------------------------------------------
 #  shapiro.test(dataOlkin1995$n)
-#  PlotDistrSS(dataOlkin1995$n)
+#  ks.test(dataOlkin1995$n, "pnorm")
 
 ## ----result-distrSS, eval = TRUE, echo = FALSE, warning = FALSE, message = FALSE----
 data("Olkin1995")
 dataOlkin1995 <- Olkin1995
 dataOlkin1995$n <- dataOlkin1995$n.exp + dataOlkin1995$n.cont
 shapiro.test(dataOlkin1995$n)
+ks.test(dataOlkin1995$n, "pnorm")
+
+## ----eval = FALSE-------------------------------------------------------------
+#  PlotDistrSS(n = n,
+#              data = dataOlkin1995,
+#              study = author,
+#              time = year)
+
+## ----eval = FALSE-------------------------------------------------------------
+#  PlotDistrSS(n = n,
+#              data = dataOlkin1995,
+#              study = author,
+#              time = year,
+#              method = "ks")
 
 ## ----plot-distrSS, fig.cap = "An example for visualization of distribution of study sizes", eval = TRUE, echo = FALSE, warning = FALSE, message = FALSE, results = "hide", fig.height = 5, fig.width = 8, fig.align = "center", out.width = "100%"----
 data("Olkin1995")
@@ -39,14 +53,8 @@ dataOlkin1995$n <- dataOlkin1995$n.exp + dataOlkin1995$n.cont
 PlotDistrSS(n = n,
             data = dataOlkin1995, 
             study = author, 
-            time = year)
-
-## ----eval = FALSE-------------------------------------------------------------
-#  PlotDistrSS(n = n,
-#              data = dataOlkin1995,
-#              study = author,
-#              time = year,
-#              method = "ks")
+            time = year,
+            method = "ks")
 
 ## ----eval = FALSE-------------------------------------------------------------
 #  TestDisparity(n = n,
@@ -248,6 +256,32 @@ DoOSA(Fleiss1993bin,
       group = c("Aspirin", "Placebo"))
 
 ## ----eval = FALSE-------------------------------------------------------------
+#  DoOSA(Fleiss1993bin,
+#        source = study,
+#        time = year,
+#        r1 = d.asp,
+#        n1 = n.asp,
+#        r2 = d.plac,
+#        n2 = n.plac,
+#        measure = "RR",
+#        group = c("Aspirin", "Placebo"),
+#        plot = TRUE)
+
+## ----plot-OSA, fig.cap = "An example for illustrating observed sequential analysis", eval = TRUE, echo = FALSE, warning = FALSE, message = FALSE, results = "hide", fig.height = 6, fig.width = 8, fig.align = "center", out.width = "100%"----
+data("Fleiss1993bin")
+dataFleiss1993bin <- Fleiss1993bin
+DoOSA(Fleiss1993bin,
+      source = study,
+      time = year,
+      r1 = d.asp,
+      n1 = n.asp,
+      r2 = d.plac,
+      n2 = n.plac,
+      measure = "RR",
+      group = c("Aspirin", "Placebo"),
+      plot = TRUE)
+
+## ----eval = FALSE-------------------------------------------------------------
 #  output <- DoOSA(Fleiss1993bin,
 #                  source = study,
 #                  time = year,
@@ -257,10 +291,13 @@ DoOSA(Fleiss1993bin,
 #                  n2 = n.plac,
 #                  measure = "RR",
 #                  group = c("Aspirin", "Placebo"),
-#                  plot = TRUE,
 #                  SAP = TRUE)
 
-## ----plot-OSA, fig.cap = "An example for illustrating observed sequential analysis", eval = TRUE, echo = FALSE, warning = FALSE, message = FALSE, results = "hide", fig.height = 6, fig.width = 8, fig.align = "center", out.width = "100%"----
+## ----eval = FALSE-------------------------------------------------------------
+#  PlotOSA(output,
+#          lgcZone = TRUE)
+
+## ----plot-OSA-zone, fig.cap = "An example for illustrating colorful zones on observed sequential analysis", eval = TRUE, echo = FALSE, warning = FALSE, message = FALSE, results = "hide", fig.height = 8, fig.width = 8, fig.align = "center", out.width = "100%"----
 data("Fleiss1993bin")
 dataFleiss1993bin <- Fleiss1993bin
 output <- DoOSA(Fleiss1993bin, 
@@ -272,12 +309,28 @@ output <- DoOSA(Fleiss1993bin,
                 n2 = n.plac, 
                 measure = "RR",
                 group = c("Aspirin", "Placebo"),
-                plot = TRUE)
+                plot = FALSE,
+                SAP = TRUE)
+
+PlotOSA(output,
+        lgcZone = TRUE)
+
+## ----eval = FALSE-------------------------------------------------------------
+#  output <- DoOSA(Fleiss1993bin,
+#                  source = study,
+#                  time = year,
+#                  r1 = d.asp,
+#                  n1 = n.asp,
+#                  r2 = d.plac,
+#                  n2 = n.plac,
+#                  measure = "RR",
+#                  group = c("Aspirin", "Placebo"),
+#                  SAP = TRUE)
 
 ## ----eval = FALSE-------------------------------------------------------------
 #  PlotPower(output)
 
-## ----plot-power, fig.cap = "An example for illustrating sequential-adjusted power", eval = TRUE, echo = FALSE, warning = FALSE, message = FALSE, results = "hide", fig.height = 6, fig.width = 8, fig.align = "center", out.width = "100%"----
+## ----plot-power, fig.cap = "An example for illustrating plot curve of observed sequential analysis", eval = TRUE, echo = FALSE, warning = FALSE, message = FALSE, results = "hide", fig.height = 6, fig.width = 8, fig.align = "center", out.width = "100%"----
 data("Fleiss1993bin")
 dataFleiss1993bin <- Fleiss1993bin
 output <- DoOSA(Fleiss1993bin, 

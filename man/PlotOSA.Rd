@@ -9,6 +9,7 @@ PlotOSA(
   sclAxsX = "sample",
   txtTtl = NULL,
   group = NULL,
+  lgcZone = FALSE,
   lgcLblStdy = FALSE,
   lgcSAP = FALSE,
   lgcInvert = FALSE,
@@ -68,6 +69,8 @@ sequential analysis using function \code{DoOSA()}.}
 analysis plot.}
 
 \item{group}{CHARACTER for labeling two groups.}
+
+\item{lgcZone}{LOGIC value for indicating whether to show zones.}
 
 \item{lgcLblStdy}{LOGIC value for indicating whether to label each data source.}
 

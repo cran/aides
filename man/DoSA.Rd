@@ -35,6 +35,8 @@ DoSA(
   plot = FALSE,
   id = FALSE,
   invert = FALSE,
+  smooth = FALSE,
+  SAP = FALSE,
   BSB = FALSE
 )
 }
@@ -117,6 +119,11 @@ monitoring plot.}
 
 \item{invert}{LOGIC value for indicating whether to invert plot.}
 
+\item{smooth}{LOGIC value for indicating whether to smooth error boundaries.}
+
+\item{SAP}{LOGIC value for indicating whether to show sequential-adjusted
+power.}
+
 \item{BSB}{LOGIC value for indicating whether to illustrate beta-spending
 boundaries.}
 }
@@ -153,7 +160,6 @@ sequential analysis.}
 }
 \description{
 \strong{DoSA()} is a function for conducting sequential analysis.
-#'
 }
 \details{
 \enumerate{

@@ -6,7 +6,7 @@
 #' **TestDisparity()** is a function for disparities in sample size analysis.
 #'
 #' @param n       NUMERIC values for sample size (n) of each study.
-#' @param data    DATA FRAME consists of three columns for study label, study
+#' @param data    DATA FRAME consists of columns for study label, study
 #'                year, and sample size.
 #' @param study   CHARACTER for study labels.
 #' @param time    NUMERIC values of time sequence.

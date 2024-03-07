@@ -24,15 +24,15 @@ Extra imported packages are as follows:
 
 \itemize{
 \item \href{https://cran.r-project.org/src/contrib/Archive/boot/boot_1.3-28.tar.gz}{\emph{boot} (version 1.3-28)}
-\item \href{https://cran.r-project.org/src/contrib/Archive/metafor/metafor_3.8-1.tar.gz}{\emph{metafor} (version 3.8-1)}
-\item \href{https://cran.r-project.org/src/contrib/Archive/meta/meta_6.2-1.tar.gz}{\emph{meta} (version 6.2-1)}
+\item \href{https://cran.r-project.org/src/contrib/metafor_4.4-0.tar.gz}{\emph{metafor} (version 4.4-0)}
+\item \href{https://cran.r-project.org/src/contrib/meta_7.0-0.tar.gz}{\emph{meta} (version 7.0-0)}
 }
 }
 \details{
 Current version consists of eight functions, including four functions for
 examining fundamental assumptions before test of small-study effects (i.e.
 function \code{\link{PlotDistrSS}}, \code{\link{TestDisparity}}, \code{\link{PlotDisparity}}, and \code{\link{TestDiscordance}})
-and four functions for performing sequential analysis (i.e. \code{\link{DoSA}}, \code{\link{DoOSA}},
+and four functions for performing sequential-method-related analyses (i.e. \code{\link{DoSA}}, \code{\link{DoOSA}},
 \code{\link{PlotOSA}}, and \code{\link{PlotPower}}).
 }
 \keyword{package}
