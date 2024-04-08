@@ -20,8 +20,8 @@
 #'
 #' \itemize{
 #'  \item \href{https://cran.r-project.org/src/contrib/Archive/boot/boot_1.3-28.tar.gz}{\emph{boot} (version 1.3-28)}
-#'  \item \href{https://cran.r-project.org/src/contrib/metafor_4.4-0.tar.gz}{\emph{metafor} (version 4.4-0)}
-#'  \item \href{https://cran.r-project.org/src/contrib/meta_7.0-0.tar.gz}{\emph{meta} (version 7.0-0)}
+#'  \item \href{https://cran.r-project.org/package=metafor}{\emph{metafor} (version 4.4-0)}
+#'  \item \href{https://cran.r-project.org/package=meta}{\emph{meta} (version 7.0-0)}
 #' }
 #'
 #'

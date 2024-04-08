@@ -9,18 +9,18 @@
     <img src = "https://github.com/EnochKang/RES/blob/main/aides/aides_logo.png?raw=true" align = "left" width = "120" />
     </td>
     <td> 
-    $\color{darkblue}{\text{A}}$dditive <br>
-    $\color{darkblue}{\text{I}}$nformation & <br>
-    $\color{darkblue}{\text{D}}$etails of <br>
-    $\color{darkblue}{\text{E}}$vidence <br>
-    $\color{darkblue}{\text{S}}$ynthesis
+    <span style="color:darkblue">A</span>dditive <br>
+    <span style="color:darkblue">I</span>nformation & <br>
+    <span style="color:darkblue">D</span>etails of <br>
+    <span style="color:darkblue">E</span>vidence <br>
+    <span style="color:darkblue">S</span>ynthesis
     </td>
     <td>
     <H1> R-pckage aides </H1>
     </td>
     <td>
     [![CRAN](https://img.shields.io/cran/v/aides?color=blue&label=CRAN&logo=r&logoColor=skyblue)](https://cran.r-project.org/package=aides) <br>
-    [![Date](https://img.shields.io/badge/Date-Mar.07.2023-blue.svg?logo=r&logoColor=skyblue)](https://github.com/EnochKang/RES/blob/main/aides/NEWS.md) <br>
+    [![Date](https://img.shields.io/badge/Date-Apr.08.2024-blue.svg?logo=r&logoColor=skyblue)](https://github.com/EnochKang/RES/blob/main/aides/NEWS.md) <br>
     [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-blue.svg?color=blue&label=Lifecycle&logo=r&logoColor=skyblue)](https://lifecycle.r-lib.org/articles/stages.html#stable) <br>
     [![Licence](https://img.shields.io/badge/licence-GPL--3-blue.svg?color=blue&label=Licence&logo=gnu&logoColor=skyblue)](https://www.gnu.org/licenses/gpl-3.0.en.html) <br>
     [![Monthly Downloads](https://cranlogs.r-pkg.org:443/badges/aides?color=orange)](https://cranlogs.r-pkg.org:443/badges/aides) <br>
@@ -29,15 +29,11 @@
   </tr>
 </table>
 
-$\color{white}{\text{.}}$
+<span style="color:white">.</span>
 
 <!-- title: end -->
-<!-- badges: start -->
-<br>
-
-
-<!-- badges: end -->
 <!-- content: start -->
+
 <br>
 
 ## Table of content:
@@ -49,11 +45,10 @@ $\color{white}{\text{.}}$
  - [License](#license)
  - [To do list](#to-do-list)
 
-
 <!-- content: end -->
 <!-- about: start -->
-<br>
 
+<br>
 
 ## About *aides*
 
@@ -63,8 +58,8 @@ The initial goals of package *aides* are to simplify analysis process for both p
 
 <!-- content: end -->
 <!-- features: start -->
-<br>
 
+<br>
 
 ## Features
 
@@ -78,8 +73,8 @@ Briefly, *aides* currently consists of three tasks as follows:
 
 <!-- features: end -->
 <!-- dependencies and installation: start -->
-<br>
 
+<br>
 
 ## Dependencies and installation
 
@@ -89,10 +84,10 @@ Package *aides* depends on various packages, and is developed using [**R (versio
 
 -  [*boot*](https://cran.r-project.org/package=boot) (**note:** package *aides* is developed using [*boot* **version 1.3-28**](https://cran.r-project.org/src/contrib/Archive/boot/boot_1.3-28.tar.gz))
 
-- [*metafor*](https://cran.r-project.org/package=metafor) (**note:** package *aides* is developed using [*metafor* **version 4.4-0**](https://cran.r-project.org/src/contrib/metafor_4.4-0.tar.gz))
+- [*metafor*](https://cran.r-project.org/package=metafor) (**note:** package *aides* is developed using [*metafor* **version 4.4-0**](https://cran.r-project.org/package=metafor))
 
-- [*meta*](https://cran.r-project.org/package=meta) (**note:** package *aides* is developed using [*meta* **version 7.0-0**](https://cran.r-project.org/src/contrib/meta_7.0-0.tar.gz))
-<br>
+- [*meta*](https://cran.r-project.org/package=meta) (**note:** package *aides* is developed using [*meta* **version 7.0-0**](https://cran.r-project.org/package=meta))
+
 <br>
 
 Formal released package *aides* can be installed from [CRAN](https://cran.r-project.org/package=aides) via R with following syntax:
@@ -103,8 +98,8 @@ install.packages("aides")
 
 <!-- dependencies and installation: end -->
 <!-- flow and functions: start -->
-<br>
 
+<br>
 
 ## Flow and functions
 
@@ -117,6 +112,7 @@ Users can import their data and do relevant tests or graphics using functions in
 - **Discordance:** `TestDiscordance()`.  
   
 - **Sequential analysis:**  `DoSA()`. `DoOSA()`, `PlotOSA()`, and `PlotPower()`.
+
 <br>
 
 #### Disparity:
@@ -127,6 +123,7 @@ Users can import their data and do relevant tests or graphics using functions in
 
 - **Optional** Illustrate user-defined disparity plot using function `PlotDisparity()`.
 
+<br>
 
 #### Discordance:
 
@@ -134,6 +131,7 @@ Users can import their data and do relevant tests or graphics using functions in
 
 - **Step 2.** Do discordance test using function `TestDiscordance()`.
 
+<br>
 
 #### Sequential analysis:
 
@@ -143,11 +141,10 @@ Users can import their data and do relevant tests or graphics using functions in
 
 - **Step 3.** Illustrate user-defined observed sequential analysis plot using function `PlotOSA()`.
 
-
 <!-- flow and functions: end -->
 <!-- examples: start -->
-<br>
 
+<br>
 
 ## Examples
 
@@ -176,8 +173,8 @@ Then, the returns are listed as follows:
 ```
 
 Users could simply visualize disparity using argument `TRUE` for parameter `plot` in the function `TestDisparity()`. If users would like to modify the figure more, they can further put output of the function `TestDisparity()` into function `PlotDisparity()`. The default of the function `PlotDisparity()` is to illustrate outlier-based disparity. Variability-based disparity could be generated with argument `CV` for parameter `which` in the function `PlotDisparity()`.
-<br>
 
+<br>
 
 #### 2. Discordance test
 
@@ -202,8 +199,8 @@ Then, the returns are listed as follows:
 ```
 
 Users could simply visualize discordance using argument `TRUE` for parameter `plot` in the function `TestDiscordance()`.
-<br>
 
+<br>
 
 #### 3. Sequential analysis
 
@@ -222,7 +219,6 @@ DoSA(Fleiss1993bin,
      RRR = 0.2,
      group = c("Aspirin", "Placebo"))
 ```
-
 
 Then, the returns are listed as follows:
 
@@ -258,13 +254,10 @@ Then, the returns are listed as follows:
 
 Users could simply visualize the result of sequential analysis using argument `TRUE` for parameter `plot` in the function `DoSA()`.
 
-<br>
-
-
 <!-- examples: end -->
 <!-- coding conventions: start -->
-<br>
 
+<br>
 
 ## Coding conventions
 
@@ -312,24 +305,22 @@ Common-used prefix in package *aides* are listed as follows:
 
 <!-- coding conventions: end -->
 <!-- license: start -->
-<br>
 
+<br>
 
 ## License
 
 This package is licensed under the [GPL-3 License](https://cran.r-project.org/web/licenses/GPL-3).
-<br>
 
 This package is developing by [Enoch Kang](https://orcid.org/0000-0002-4903-942X).
 
 <!-- license: end -->
 <!-- to do list: start -->
-<br>
 
+<br>
 
 ## To do list
 
 Task force will keep update package *aides* for relevant issues.
-
 
 <!-- to do list: end -->

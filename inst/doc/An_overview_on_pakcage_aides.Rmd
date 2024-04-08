@@ -5,7 +5,7 @@ output:
     base_format: rmarkdown::html_vignette
     number_sections: true
 vignette: >
-  %\VignetteIndexEntry{An overview on pakcage aides}
+  %\VignetteIndexEntry{An overview on R-pakcage aides}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -30,10 +30,11 @@ knitr::include_graphics("aides_logo.png")
     </H3>
     </td>
     <td> 
-    [![CRAN](https://img.shields.io/badge/CRAN-v1.3.2-blue.svg?logo=r&logoColor=skyblue)](https://CRAN.R-project.org/package=aides)\
-    [![Date](https://img.shields.io/badge/Date-Mar.07.2024-blue.svg?Color=skyblue)](https://cran.r-project.org/package=aides/news/news.html)\
+    [![CRAN](https://img.shields.io/badge/CRAN-v1.3.3-blue.svg?logo=r&logoColor=skyblue)](https://CRAN.R-project.org/package=aides)\
+    [![Date](https://img.shields.io/badge/Date-Apr.08.2024-blue.svg?Color=skyblue)](https://cran.r-project.org/package=aides/news/news.html)\
     [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-blue.svg?color=blue&label=Lifecycle&logo=r&logoColor=skyblue)](https://lifecycle.r-lib.org/articles/stages.html#stable)\
-    [![Licence](https://img.shields.io/badge/Licence-GPL--3-blue.svg?logo=gnu&logoColor=skyblue)](https://www.gnu.org/licenses/gpl-3.0.en.html)    </td>
+    [![Licence](https://img.shields.io/badge/Licence-GPL--3-blue.svg?logo=gnu&logoColor=skyblue)](https://www.gnu.org/licenses/gpl-3.0.en.html)
+    </td>
   </tr>
 </table>
 

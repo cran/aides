@@ -35,6 +35,12 @@
 #' @param pooling CHARACTER for indicating which method has to be used for pooling
 #'                binary data. Current version consists of "IV" and "MH" for
 #'                binary data pooling.
+#' @param trnsfrm  CHARACTER for indicating which method for transforming pooled
+#'                 proportion. Current version supports "none", "logit", "log",
+#'                 "arcsine", and "DAT" for the transformation.
+#' @param poolProp CHARACTER for indicating which method has to be used for pooling
+#'                 proportion. Current version supports "IV" and "GLMM" for the
+#'                 data pooling.
 #' @param alpha   NUMERIC value between 0 to 1 for indicating the assumed type I
 #'                error.
 #' @param beta    NUMERIC value between 0 to 1 for indicating the assumed type II
@@ -175,33 +181,35 @@
 
 
 
-DoOSA <- function(data   = NULL,
-                  source  = NULL,
-                  time    = NULL,
-                  n       = NULL,
-                  es      = NULL,
-                  se      = NULL,
-                  r1      = NULL,
-                  m1      = NULL,
-                  sd1     = NULL,
-                  n1      = NULL,
-                  r2      = NULL,
-                  m2      = NULL,
-                  sd2     = NULL,
-                  n2      = NULL,
-                  group   = c("Group 1", "Group 2"),
-                  ref     = 2,
-                  prefer  = "small",
-                  measure = "ES",
-                  model   = "random",
-                  method  = "DL",
-                  pooling = "IV",
-                  alpha   = 0.05,
-                  beta    = 0.2,
-                  anchor  = NULL,
-                  adjust  = "D2",
-                  plot    = FALSE,
-                  SAP     = FALSE) {
+DoOSA <- function(data     = NULL,
+                  source   = NULL,
+                  time     = NULL,
+                  n        = NULL,
+                  es       = NULL,
+                  se       = NULL,
+                  r1       = NULL,
+                  m1       = NULL,
+                  sd1      = NULL,
+                  n1       = NULL,
+                  r2       = NULL,
+                  m2       = NULL,
+                  sd2      = NULL,
+                  n2       = NULL,
+                  group    = c("Group 1", "Group 2"),
+                  ref      = 2,
+                  prefer   = "small",
+                  measure  = "ES",
+                  model    = "random",
+                  method   = "DL",
+                  pooling  = "IV",
+                  trnsfrm  = "logit",
+                  poolProp = "IV",
+                  alpha    = 0.05,
+                  beta     = 0.2,
+                  anchor   = NULL,
+                  adjust   = "D2",
+                  plot     = FALSE,
+                  SAP      = FALSE) {
 
   # 01. CHECK arguments -----
   lgcInData   <- ifelse(is.null(data), FALSE, TRUE)
@@ -320,6 +328,27 @@ DoOSA <- function(data   = NULL,
                                        pooling),
                                 "Inverse")
                          )
+  infoTrnsfrm  <- ifelse(base::isFALSE(trnsfrm %in% c("none", "logit", "log", "arcsine", "DAT")),
+                         "PRAW",
+                         ifelse(trnsfrm == "none",
+                                "PRAW",
+                                ifelse(trnsfrm == "logit",
+                                       "PLOGIT",
+                                       ifelse(trnsfrm == "log",
+                                              "PLN",
+                                              ifelse(trnsfrm == "arcsine",
+                                                     "PAS",
+                                                     "PRAW"))))
+                         )
+  infoPoolProp <- ifelse(trnsfrm != "logit",
+                         "Inverse",
+                         ifelse(base::isFALSE(poolProp %in% c("IV", "GLMM")),
+                                "Inverse",
+                                ifelse(poolProp == "IV",
+                                       "Inverse",
+                                       "GLMM"))
+                         )
+
   infoAlpha    <- alpha
   infoBeta     <- beta
   infoAnchor   <- anchor
@@ -411,8 +440,25 @@ DoOSA <- function(data   = NULL,
 
   if (lgcReq3) {
     if (infoModel == "random") {
-      infoProp1 <- boot::inv.logit(meta::metaprop(event = r1, n = n1, method = "GLMM", data = dataIn)$TE.random)
-      infoProp2 <- boot::inv.logit(meta::metaprop(event = r2, n = n2, method = "GLMM", data = dataIn)$TE.random)
+      infoProp1 <- meta::metaprop(event = r1,
+                                  n = n1,
+                                  method = infoPoolProp,
+                                  sm = infoTrnsfrm,
+                                  data = dataIn)$TE.random
+      infoProp2 <- meta::metaprop(event = r2,
+                                  n = n2,
+                                  method = infoPoolProp,
+                                  sm = infoTrnsfrm,
+                                  data = dataIn)$TE.random
+
+      if (trnsfrm == "logit") {
+        infoProp1 <- boot::inv.logit(infoProp1)
+        infoProp2 <- boot::inv.logit(infoProp2)
+      }
+      if (trnsfrm == "log") {
+        infoProp1 <- exp(infoProp1)
+        infoProp2 <- exp(infoProp2)
+      }
 
       # Hajian-Tilaki K. Sample size estimation in epidemiologic studies. Caspian J Intern Med. 2011 Fall;2(4):289-98. PMID: 24551434; PMCID: PMC3895825.
       if (infoProp2 < 0.001) {
@@ -424,8 +470,25 @@ DoOSA <- function(data   = NULL,
       }
 
     } else {
-      infoProp1 <- boot::inv.logit(meta::metaprop(event = r1, n = n1, method = "GLMM", data = dataIn)$TE.fixed)
-      infoProp2 <- boot::inv.logit(meta::metaprop(event = r2, n = n2, method = "GLMM", data = dataIn)$TE.fixed)
+      infoProp1 <- meta::metaprop(event = r1,
+                                  n = n1,
+                                  method = infoPoolProp,
+                                  sm = infoTrnsfrm,
+                                  data = dataIn)$TE.fixed
+      infoProp2 <- meta::metaprop(event = r2,
+                                  n = n2,
+                                  method = infoPoolProp,
+                                  sm = infoTrnsfrm,
+                                  data = dataIn)$TE.fixed
+
+      if (trnsfrm == "logit") {
+        infoProp1 <- boot::inv.logit(infoProp1)
+        infoProp2 <- boot::inv.logit(infoProp2)
+      }
+      if (trnsfrm == "log") {
+        infoProp1 <- exp(infoProp1)
+        infoProp2 <- exp(infoProp2)
+      }
 
       if (infoProp2 < 0.001) {
         if (infoProp2 < 0.000001) {
@@ -544,6 +607,8 @@ DoOSA <- function(data   = NULL,
   dataPlotOSA$asub     <-  qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(dataPlotOSA$frctn))) / 2); dataPlotOSA$asub <- ifelse(dataPlotOSA$asub == "Inf", 10, dataPlotOSA$asub)
   dataPlotOSA$bsub     <-  (qnorm(pnorm(qnorm(infoBeta) / dataPlotOSA$frctn)) + (qnorm(pnorm(qnorm(1 - infoAlpha / 2) / sqrt(1))) - qnorm(pnorm(qnorm(infoBeta) / sqrt(1)))))#; dataPlotOSA$bsub <- ifelse(dataPlotOSA$bsub < 0, 0, dataPlotOSA$bsub)
   dataPlotOSA$bslb     <- -(qnorm(pnorm(qnorm(infoBeta) / dataPlotOSA$frctn)) + (qnorm(pnorm(qnorm(1 - infoAlpha / 2) / sqrt(1))) - qnorm(pnorm(qnorm(infoBeta) / sqrt(1)))))#; dataPlotOSA$bslb <- ifelse(dataPlotOSA$bslb > 0, 0, dataPlotOSA$bslb)
+  #dataPlotOSA$bsub     <-  (qnorm(pnorm(qnorm(infoBeta) / dataPlotOSA$frctn)) + (qnorm(pnorm(qnorm(1 - infoBeta) / sqrt(1))) - qnorm(pnorm(qnorm(infoBeta) / sqrt(1)))))#; dataPlotOSA$bsub <- ifelse(dataPlotOSA$bsub < 0, 0, dataPlotOSA$bsub)
+  #dataPlotOSA$bslb     <- -(qnorm(pnorm(qnorm(infoBeta) / dataPlotOSA$frctn)) + (qnorm(pnorm(qnorm(1 - infoBeta) / sqrt(1))) - qnorm(pnorm(qnorm(infoBeta) / sqrt(1)))))#; dataPlotOSA$bslb <- ifelse(dataPlotOSA$bslb > 0, 0, dataPlotOSA$bslb)
   dataPlotOSA$pwrExpct <- 1 - pnorm(dataPlotOSA$bslb - (min(dataPlotOSA$bslb) - qnorm(infoBeta)))
   dataPlotOSA          <- dataPlotOSA[dataPlotOSA$aslb > -9, ]
   dataPlotOSA          <- dataPlotOSA[dataPlotOSA$asub < 9, ]
@@ -574,6 +639,8 @@ DoOSA <- function(data   = NULL,
   dataOSA$aslb    <- -qnorm(1 - (2 - 2 * pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(dataOSA$frctn))) / 2); dataOSA$aslb <- ifelse(dataOSA$aslb == "-Inf", -10, dataOSA$aslb)
   dataOSA$bsub    <-  (qnorm(pnorm(qnorm((infoBeta)) / dataOSA$frctn)) + (qnorm(pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(1))) - qnorm(pnorm(qnorm((infoBeta)) / sqrt(1))))); dataOSA$bsub <- ifelse(dataOSA$bsub < 0, 0, dataOSA$bsub)
   dataOSA$bslb    <- -(qnorm(pnorm(qnorm((infoBeta)) / dataOSA$frctn)) + (qnorm(pnorm(qnorm((1 - infoAlpha / 2)) / sqrt(1))) - qnorm(pnorm(qnorm((infoBeta)) / sqrt(1))))); dataOSA$bslb <- ifelse(dataOSA$bslb > 0, 0, dataOSA$bslb)
+  #dataOSA$bsub    <-  (qnorm(pnorm(qnorm((infoBeta)) / dataOSA$frctn)) + (qnorm(pnorm(qnorm((1 - infoBeta)) / sqrt(1))) - qnorm(pnorm(qnorm((infoBeta)) / sqrt(1))))); dataOSA$bsub <- ifelse(dataOSA$bsub < 0, 0, dataOSA$bsub)
+  #dataOSA$bslb    <- -(qnorm(pnorm(qnorm((infoBeta)) / dataOSA$frctn)) + (qnorm(pnorm(qnorm((1 - infoBeta)) / sqrt(1))) - qnorm(pnorm(qnorm((infoBeta)) / sqrt(1))))); dataOSA$bslb <- ifelse(dataOSA$bslb > 0, 0, dataOSA$bslb)
 
   if (infoSAP == TRUE) {
     dataOSA$pwrCum  <- 1 - pnorm(qnorm(1-infoAlpha / 2) - dataOSA$zCum) + pnorm(-qnorm(1 - infoAlpha / 2) - dataOSA$zCum)
@@ -795,7 +862,9 @@ DoOSA <- function(data   = NULL,
                          round(infoProp1, 10) * 100,
                          "% and ",
                          round(infoProp2, 10) * 100,
-                         "% respectively; RRR ",
+                         "% respectively; ",
+                         trnsfrm, " transformation with ", infoPoolProp,
+                         " method for pooling the proportion; RRR ",
                          ifelse(infoRRR < 0.001, "< 0.001)",
                                 paste("= ", round(infoRRR, 3), ")",
                                       sep = "")),

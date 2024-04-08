@@ -26,6 +26,8 @@ DoSA(
   model = "random",
   method = "DL",
   pooling = "IV",
+  trnsfrm = "logit",
+  poolProp = "IV",
   alpha = 0.05,
   beta = 0.2,
   PES = NULL,
@@ -91,6 +93,14 @@ calculating heterogeneity estimator.}
 \item{pooling}{CHARACTER for indicating which method has to be used for pooling
 binary data. Besides, current version also supports "MH" and
 "Peto" for binary data pooling.}
+
+\item{trnsfrm}{CHARACTER for indicating which method for transforming pooled
+proportion. Current version supports "none", "logit", "log",
+"arcsine", and "DAT" for the transformation.}
+
+\item{poolProp}{CHARACTER for indicating which method has to be used for pooling
+proportion. Current version supports "IV" and "GLMM" for the
+data pooling.}
 
 \item{alpha}{NUMERIC value between 0 to 1 for indicating the assumed type I
 error.}

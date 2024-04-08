@@ -5,59 +5,65 @@
 #' @description
 #' **DoSA()** is a function for conducting sequential analysis.
 #'
-#' @param data    DATAFRAME consists of relevant information.
-#' @param source  CHARACTER for labeling the included data sets.
-#' @param time    NUMERIC values of time sequence.
-#' @param n       INTEGER values of sample sizes.
-#' @param es      NUMERIC values of effect sizes.
-#' @param se      NUMERIC values of standard errors for the effect sizes.
-#' @param r1      INTEGER values of observed events in group 1 in the included data.
-#' @param m1      NUMERIC values of estimated means in group 1 in the included data.
-#' @param sd1     NUMERIC values of standard deviations in group 1 in the
-#'                included data.
-#' @param n1      INTEGER values of sample sizes in group 1 in the included data.
-#' @param r2      INTEGER values of observed events in group 2 in the included data.
-#' @param m2      NUMERIC values of estimated means in group 2 in the included data.
-#' @param sd2     NUMERIC values of standard deviations in group 2 in the
-#'                included data.
-#' @param n2      INTEGER values of sample sizes in group 2 in the included data.
-#' @param group   CHARACTER for labeling two groups.
-#' @param ref     NUMERIC values of 1 or 2 for indicating group 1 or 2 as reference.
-#' @param prefer  CHARACTER of "small" and "large" for indicating which direction
-#'                is beneficial effect in statistic test.
-#' @param measure CHARACTER for indicating which statistic measure should be used.
-#' @param model   CHARACTER of "random" and "fixed" for indicating whether
-#'                to use random-effects model or fixed-effect model.
-#' @param method  CHARACTER for indicating which estimator should be used in
-#'                random-effects model. In addition to the default "DL" method,
-#'                the current version also supports "REML" and "PM" methods for
-#'                calculating heterogeneity estimator.
-#' @param pooling CHARACTER for indicating which method has to be used for pooling
-#'                binary data. Besides, current version also supports "MH" and
-#'                "Peto" for binary data pooling.
-#' @param alpha   NUMERIC value between 0 to 1 for indicating the assumed type I
-#'                error.
-#' @param beta    NUMERIC value between 0 to 1 for indicating the assumed type II
-#'                error.
-#' @param PES     NUMERIC value for indicating the presumed meaningful effect size.
-#' @param RRR     NUMERIC value between 0 and 1 for indicating the presumed relative
-#'                risk reduction. This parameter only works for dichotomous outcome
-#'                by replacing parameter `PES`.
-#' @param PV      NUMERIC value for indicating the presumed variance of the
-#'                meaningful effect size. Current version allows a numeric value,
-#'                "post-hoc", and "PES" based on different considerations.
-#' @param adjust  CHARACTER for indicating how to adjust optimal information size.
-#'                Current version consists of "none", "D2", "I2", "CHL", "CHM", and
-#'                "CHH" for the adjustment.
-#' @param plot    LOGIC value for indicating whether to illustrate alpha-spending
-#'                monitoring plot.
-#' @param id      LOGIC value for indicating whether to label each data source.
-#' @param invert  LOGIC value for indicating whether to invert plot.
-#' @param smooth  LOGIC value for indicating whether to smooth error boundaries.
-#' @param SAP     LOGIC value for indicating whether to show sequential-adjusted
-#'                power.
-#' @param BSB     LOGIC value for indicating whether to illustrate beta-spending
-#'                boundaries.
+#' @param data     DATAFRAME consists of relevant information.
+#' @param source   CHARACTER for labeling the included data sets.
+#' @param time     NUMERIC values of time sequence.
+#' @param n        INTEGER values of sample sizes.
+#' @param es       NUMERIC values of effect sizes.
+#' @param se       NUMERIC values of standard errors for the effect sizes.
+#' @param r1       INTEGER values of observed events in group 1 in the included data.
+#' @param m1       NUMERIC values of estimated means in group 1 in the included data.
+#' @param sd1      NUMERIC values of standard deviations in group 1 in the
+#'                 included data.
+#' @param n1       INTEGER values of sample sizes in group 1 in the included data.
+#' @param r2       INTEGER values of observed events in group 2 in the included data.
+#' @param m2       NUMERIC values of estimated means in group 2 in the included data.
+#' @param sd2      NUMERIC values of standard deviations in group 2 in the
+#'                 included data.
+#' @param n2       INTEGER values of sample sizes in group 2 in the included data.
+#' @param group    CHARACTER for labeling two groups.
+#' @param ref      NUMERIC values of 1 or 2 for indicating group 1 or 2 as reference.
+#' @param prefer   CHARACTER of "small" and "large" for indicating which direction
+#'                 is beneficial effect in statistic test.
+#' @param measure  CHARACTER for indicating which statistic measure should be used.
+#' @param model    CHARACTER of "random" and "fixed" for indicating whether
+#'                 to use random-effects model or fixed-effect model.
+#' @param method   CHARACTER for indicating which estimator should be used in
+#'                 random-effects model. In addition to the default "DL" method,
+#'                 the current version also supports "REML" and "PM" methods for
+#'                 calculating heterogeneity estimator.
+#' @param pooling  CHARACTER for indicating which method has to be used for pooling
+#'                 binary data. Besides, current version also supports "MH" and
+#'                 "Peto" for binary data pooling.
+#' @param trnsfrm  CHARACTER for indicating which method for transforming pooled
+#'                 proportion. Current version supports "none", "logit", "log",
+#'                 "arcsine", and "DAT" for the transformation.
+#' @param poolProp CHARACTER for indicating which method has to be used for pooling
+#'                 proportion. Current version supports "IV" and "GLMM" for the
+#'                 data pooling.
+#' @param alpha    NUMERIC value between 0 to 1 for indicating the assumed type I
+#'                 error.
+#' @param beta     NUMERIC value between 0 to 1 for indicating the assumed type II
+#'                 error.
+#' @param PES      NUMERIC value for indicating the presumed meaningful effect size.
+#' @param RRR      NUMERIC value between 0 and 1 for indicating the presumed relative
+#'                 risk reduction. This parameter only works for dichotomous outcome
+#'                 by replacing parameter `PES`.
+#' @param PV       NUMERIC value for indicating the presumed variance of the
+#'                 meaningful effect size. Current version allows a numeric value,
+#'                 "post-hoc", and "PES" based on different considerations.
+#' @param adjust   CHARACTER for indicating how to adjust optimal information size.
+#'                 Current version consists of "none", "D2", "I2", "CHL", "CHM", and
+#'                 "CHH" for the adjustment.
+#' @param plot     LOGIC value for indicating whether to illustrate alpha-spending
+#'                 monitoring plot.
+#' @param id       LOGIC value for indicating whether to label each data source.
+#' @param invert   LOGIC value for indicating whether to invert plot.
+#' @param smooth   LOGIC value for indicating whether to smooth error boundaries.
+#' @param SAP      LOGIC value for indicating whether to show sequential-adjusted
+#'                 power.
+#' @param BSB      LOGIC value for indicating whether to illustrate beta-spending
+#'                 boundaries.
 #'
 #'
 #' @details
@@ -185,39 +191,41 @@
 
 
 
-DoSA <- function(data    = NULL,
-                 source  = NULL,
-                 time    = NULL,
-                 n       = NULL,
-                 es      = NULL,
-                 se      = NULL,
-                 r1      = NULL,
-                 m1      = NULL,
-                 sd1     = NULL,
-                 n1      = NULL,
-                 r2      = NULL,
-                 m2      = NULL,
-                 sd2     = NULL,
-                 n2      = NULL,
-                 group   = c("Group 1", "Group 2"),
-                 ref     = 2,
-                 prefer  = "small",
-                 measure = "ES",
-                 model   = "random",
-                 method  = "DL",
-                 pooling = "IV",
-                 alpha   = 0.05,
-                 beta    = 0.2,
-                 PES     = NULL,
-                 RRR     = NULL,
-                 PV      = "post-hoc",
-                 adjust  = "D2",
-                 plot    = FALSE,
-                 id      = FALSE,
-                 invert  = FALSE,
-                 smooth  = FALSE,
-                 SAP     = FALSE,
-                 BSB     = FALSE) {
+DoSA <- function(data     = NULL,
+                 source   = NULL,
+                 time     = NULL,
+                 n        = NULL,
+                 es       = NULL,
+                 se       = NULL,
+                 r1       = NULL,
+                 m1       = NULL,
+                 sd1      = NULL,
+                 n1       = NULL,
+                 r2       = NULL,
+                 m2       = NULL,
+                 sd2      = NULL,
+                 n2       = NULL,
+                 group    = c("Group 1", "Group 2"),
+                 ref      = 2,
+                 prefer   = "small",
+                 measure  = "ES",
+                 model    = "random",
+                 method   = "DL",
+                 pooling  = "IV",
+                 trnsfrm  = "logit",
+                 poolProp = "IV",
+                 alpha    = 0.05,
+                 beta     = 0.2,
+                 PES      = NULL,
+                 RRR      = NULL,
+                 PV       = "post-hoc",
+                 adjust   = "D2",
+                 plot     = FALSE,
+                 id       = FALSE,
+                 invert   = FALSE,
+                 smooth   = FALSE,
+                 SAP      = FALSE,
+                 BSB      = FALSE) {
 
   # 01. CHECK arguments -----
   lgcInData   <- ifelse(is.null(data), FALSE, TRUE)
@@ -337,7 +345,27 @@ DoSA <- function(data    = NULL,
                                        "Inverse",
                                        pooling),
                                 "Inverse")
-  )
+                         )
+  infoTrnsfrm  <- ifelse(base::isFALSE(trnsfrm %in% c("none", "logit", "log", "arcsine", "DAT")),
+                         "PRAW",
+                         ifelse(trnsfrm == "none",
+                                "PRAW",
+                                ifelse(trnsfrm == "logit",
+                                       "PLOGIT",
+                                       ifelse(trnsfrm == "log",
+                                              "PLN",
+                                              ifelse(trnsfrm == "arcsine",
+                                                     "PAS",
+                                                     "PRAW"))))
+                         )
+  infoPoolProp <- ifelse(trnsfrm != "logit",
+                         "Inverse",
+                         ifelse(base::isFALSE(poolProp %in% c("IV", "GLMM")),
+                                "Inverse",
+                                ifelse(poolProp == "IV",
+                                       "Inverse",
+                                       "GLMM"))
+                         )
   infoAlpha    <- alpha
   infoBeta     <- beta
   infoPES      <- PES
@@ -424,8 +452,25 @@ DoSA <- function(data    = NULL,
 
   if (lgcReq3) {
     if (infoModel == "random") {
-      infoProp1 <- boot::inv.logit(meta::metaprop(event = r1, n = n1, method = "GLMM", data = dataIn)$TE.random)
-      infoProp2 <- boot::inv.logit(meta::metaprop(event = r2, n = n2, method = "GLMM", data = dataIn)$TE.random)
+      infoProp1 <- meta::metaprop(event = r1,
+                                  n = n1,
+                                  method = infoPoolProp,
+                                  sm = infoTrnsfrm,
+                                  data = dataIn)$TE.random
+      infoProp2 <- meta::metaprop(event = r2,
+                                  n = n2,
+                                  method = infoPoolProp,
+                                  sm = infoTrnsfrm,
+                                  data = dataIn)$TE.random
+
+      if (trnsfrm == "logit") {
+        infoProp1 <- boot::inv.logit(infoProp1)
+        infoProp2 <- boot::inv.logit(infoProp2)
+      }
+      if (trnsfrm == "log") {
+        infoProp1 <- exp(infoProp1)
+        infoProp2 <- exp(infoProp2)
+      }
 
       # Hajian-Tilaki K. Sample size estimation in epidemiologic studies. Caspian J Intern Med. 2011 Fall;2(4):289-98. PMID: 24551434; PMCID: PMC3895825.
       if (infoProp2 < 0.001) {
@@ -437,8 +482,25 @@ DoSA <- function(data    = NULL,
       }
 
     } else {
-      infoProp1 <- boot::inv.logit(meta::metaprop(event = r1, n = n1, method = "GLMM", data = dataIn)$TE.fixed)
-      infoProp2 <- boot::inv.logit(meta::metaprop(event = r2, n = n2, method = "GLMM", data = dataIn)$TE.fixed)
+      infoProp1 <- meta::metaprop(event = r1,
+                                  n = n1,
+                                  method = infoPoolProp,
+                                  sm = infoTrnsfrm,
+                                  data = dataIn)$TE.fixed
+      infoProp2 <- meta::metaprop(event = r2,
+                                  n = n2,
+                                  method = infoPoolProp,
+                                  sm = infoTrnsfrm,
+                                  data = dataIn)$TE.fixed
+
+      if (trnsfrm == "logit") {
+        infoProp1 <- boot::inv.logit(infoProp1)
+        infoProp2 <- boot::inv.logit(infoProp2)
+      }
+      if (trnsfrm == "log") {
+        infoProp1 <- exp(infoProp1)
+        infoProp2 <- exp(infoProp2)
+      }
 
       if (infoProp2 < 0.001) {
         if (infoProp2 < 0.000001) {
@@ -463,6 +525,7 @@ DoSA <- function(data    = NULL,
       infoESMAByPostHoc  <- infoProp2 - infoProp1
       infoPES            <- infoESMAByPostHoc
       infoVarMAByPostHoc <- (infoProp2 + infoProp1) / 2 * (1 - (infoProp2 + infoProp1) / 2)
+      infoProp1ByinfoPES <- infoVarMAByPostHoc
     } else {
       infoProp1ByinfoPES <- infoProp2 - infoPES
       infoRRR            <- (infoProp2 - infoProp1ByinfoPES) / infoProp2
@@ -744,6 +807,8 @@ DoSA <- function(data    = NULL,
                  alpha     = infoAlpha,
                  beta      = infoBeta,
                  pooling   = infoPooling,
+                 transform = trnsfrm,
+                 pool.prop = infoPoolProp,
                  PES       = infoPES,
                  RRR       = ifelse(infoRRR < 0.001, "< 0.001", round(infoRRR, 3)),
                  variance  = infoPV,
@@ -853,7 +918,15 @@ DoSA <- function(data    = NULL,
                                              sep = ""))
                                 ),
                          round(infoProp2, 10) * 100,
-                         "% respectively; RRR ",
+                         "% respectively; ",
+                         ifelse(PES == "post-hoc",
+                                paste(trnsfrm, " transformation with ",
+                                      infoPoolProp,
+                                      " method for pooling the proportion; ",
+                                      sep = ""),
+                                ""
+                                ),
+                         "RRR ",
                          ifelse(infoRRR < 0.001, "< 0.001)",
                                 paste("= ", round(infoRRR, 3), ")",
                                       sep = "")),

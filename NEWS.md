@@ -2,10 +2,32 @@
 
 
 
+## aides 1.3.3. (release version)
+### Date: April 08, 2024
+
+**Modify document:** improve Vignettes file of package *aides* with much more information regarding sequential analysis.
+
+** Note:** functions `DoSA()` and `DoOSA()` work as argument `IV` for parameter `poolProp` with package *lme4* 1.1-35.2. Users have to downgrade package *lme4* to version 1.1-35 if they would like to run functions `DoSA()` and `DoOSA()` with argument `GLMM` for parameter `poolProp`. 
+
+**Release:** submit *aides* 1.3.3 to the CRAN.
+
+<br>
+
+### Date: March 31, 2024
+
+**Modify function:** improve function `DoSA()` by introducing two new parameters, including `trnsfrm` and `poolProp`. The two parameters support users to obtain proportion of risk in each group using different method. Parameter `trnsfrm` is added for allowing users to calculate proportion of risk with transformation by log, logit, arcsine, or double arcsine approach. Parameter `poolProp` enables users to pool proportion of risk using inverse variance method and generalized linear mixed model.
+
+**Modify function:** improve function `DoOSA()` by introducing two new parameters, including `trnsfrm` and `poolProp`. The two parameters support users to obtain proportion of risk in each group using different method. Parameter `trnsfrm` is added for allowing users to calculate proportion of risk with transformation by log, logit, arcsine, or double arcsine approach. Parameter `poolProp` enables users to pool proportion of risk using inverse variance method and generalized linear mixed model.
+
+<br>
+
+
 ## aides 1.3.2. (release version)
 ### Date: March 07, 2024
 
 **Modify document:** improve Vignettes file of package *aides* with much more information regarding sequential analysis.
+
+**Release:** submit *aides* 1.3.2 to the CRAN.
 
 <br>
 
